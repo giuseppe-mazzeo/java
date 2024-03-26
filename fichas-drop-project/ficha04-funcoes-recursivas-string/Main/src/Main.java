@@ -3,9 +3,10 @@ public class Main {
     }
 
     static int f01(String texto, char letra, int inicio) {
-        if (texto.length() == 0) {
+        if (texto.length() == 0 || inicio > texto.length()) {
             return 0;
         }
+
         if (texto.length() == 1) {
             if (texto.charAt(0) == letra) {
                 return 1;
@@ -13,8 +14,10 @@ public class Main {
                 return 0;
             }
         }
+
         String textoEsq = texto.substring(0, 1);
-        String textoDir = texto.substring(1, inicio);
+        String textoDir = texto.substring(1, texto.length());
+
         return f01(textoEsq,letra,inicio) + f01(textoDir,letra,inicio);
     }
 

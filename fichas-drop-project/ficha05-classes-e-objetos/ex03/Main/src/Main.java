@@ -2,7 +2,9 @@ import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println(Arrays.toString(f07(new Pessoa[]{gerarAmigosDosAnimais()[1], gerarAmigosDosAnimais()[0]})));
+        Pessoa[] pessoas = gerarAmigosDosAnimais();
+        Pessoa pessoa1 = new Pessoa("Victor", "Valente", 12388193, new Animal[]{});
+        System.out.println(f02(pessoa1));
     }
 
     static Pessoa[] gerarAmigosDosAnimais() {
@@ -20,7 +22,11 @@ public class Main {
     }
 
     static boolean f02(Pessoa pessoa) {
-        return pessoa.animais != null;
+        if (pessoa.animais.length > 0) {
+            return pessoa.animais[0] == null;
+        }
+
+        return true;
     }
 
     static boolean f03(Pessoa pessoa) {
