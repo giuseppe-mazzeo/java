@@ -9,15 +9,23 @@ import java.util.Arrays;
 
 public class Main {
     static ArrayList<String[]> baseDado = new ArrayList<>();
-    static int[] leituraLinhas = new int[3];
+    static int[] leituraLinhas = new int[9];
 
 
-    /*
-    public static ArrayList getObjects(TipoEntidade tipo) {
+
+    public static ArrayList<String> getObjects(TipoEntidade tipo) {
+        ArrayList<String> output = new ArrayList<>();
+
+        if (tipo == TipoEntidade.INPUT_INVALIDO) {
+            output.add("paises.csv | " + leituraLinhas[0] + " | " + leituraLinhas[1] + " | " + leituraLinhas[2]);
+            output.add("cidades.csv | " + leituraLinhas[3] + " | " + leituraLinhas[4] + " | " + leituraLinhas[5]);
+            output.add("populacao.csv | " + leituraLinhas[6] + " | " + leituraLinhas[7] + " | " + leituraLinhas[8]);
+        }
+
+        return output;
     }
 
-     */
-    
+
     public static boolean parseFiles(File folder) {
         String[] dados;
         int linhaOK = 0;
@@ -70,7 +78,6 @@ public class Main {
         leituraLinhas[0] = linhaOK;
         leituraLinhas[1] = linhaNOK;
         leituraLinhas[2] = primeiraLinhaIncorreta;
-        System.out.println(Arrays.toString(leituraLinhas));
 
         return true;
     }
@@ -87,6 +94,11 @@ public class Main {
 
         for (int i = 0; i < baseDado.size(); i++) System.out.print(Arrays.toString(baseDado.get(i)) + " ");
         System.out.println();
+
+        ArrayList aaa = getObjects(TipoEntidade.INPUT_INVALIDO);
+        System.out.println(aaa.get(0));
+        System.out.println(aaa.get(1));
+        System.out.println(aaa.get(2));
 
         System.out.println("Ficheiros lidos com sucesso em " + (end - start) + " ms.");
     }
