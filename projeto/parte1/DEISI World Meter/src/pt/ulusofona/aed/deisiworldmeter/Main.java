@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Main {
     static ArrayList<String[]> dadosPaises = new ArrayList<>();
@@ -57,87 +56,106 @@ public class Main {
         int linhaOK = 0;
         int linhaNOK = 0;
         int primeiraLinhaIncorreta = -1;
-        int tamanhoArray;
+        int tamanhoArray = 0;
         int tamanhoLeituraLinhas = -1;
         boolean encontrado;
 
-        try (BufferedReader br = new BufferedReader(new FileReader(folder))) {
-            tamanhoArray = br.readLine().split(",").length;
+        if (folder.isDirectory()) {
+            File[] arquivos = folder.listFiles();
+            boolean achouFicheiro = false;
+            int posicaoFicheiro;
 
-            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-            /* Verificar com qual ficheiro estamos trabalhando */
-            if (tamanhoArray == 4) { /* pasta paises */
-                tamanhoLeituraLinhas = 0;
-            } else if (tamanhoArray == 5) { /* pasta populacao */
-                tamanhoLeituraLinhas = 6;
-            } else if (tamanhoArray == 6) { /* pasta cidades */
-                tamanhoLeituraLinhas = 3;
-            }
-            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
-            while ((linhaAtual = br.readLine()) != null) {
-                dados = new String[tamanhoArray];
-                encontrado = false;
-                separador = linhaAtual.split(",");
-
-                if (separador.length != tamanhoArray) {
-                    if (primeiraLinhaIncorreta == -1) {
-                        primeiraLinhaIncorreta = linhaOK + 1;
+            if (arquivos != null) {
+                for (posicaoFicheiro = 0; posicaoFicheiro < arquivos.length; posicaoFicheiro++) {
+                    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+                    /* Verificar com qual ficheiro estamos trabalhando */
+                    if (arquivos[posicaoFicheiro].getName().equals("paises.csv") && (leituraLinhas[0] == 0 && leituraLinhas[2] == 0)) {
+                        achouFicheiro = true;
+                        tamanhoArray = 4;
+                        tamanhoLeituraLinhas = 0;
+                        break;
+                    } else if (arquivos[posicaoFicheiro].getName().equals("cidades.csv") && (leituraLinhas[3] == 0 && leituraLinhas[5] == 0)) {
+                        achouFicheiro = true;
+                        tamanhoArray = 6;
+                        tamanhoLeituraLinhas = 3;
+                        break;
+                    } else if (arquivos[posicaoFicheiro].getName().equals("populacao.csv") && (leituraLinhas[6] == 0 && leituraLinhas[8] == 0)) {
+                        achouFicheiro = true;
+                        tamanhoArray = 5;
+                        tamanhoLeituraLinhas = 6;
+                        break;
                     }
-                    linhaNOK++;
-                    continue;
+                    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
                 }
 
-                for (int i = 0; i < tamanhoArray; i++) {
-                    dados[i] = separador[i];
-                    if ((dados[1] = separador[1]).equals("Medium")) dados[1] = "";
-                    if (separador[3].equals("")) dados[3] = "0";
+                if (!achouFicheiro) {
+                    return false;
                 }
 
-                /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-                /* Guardando informações dos ficheiros em variáveis */
-                if (tamanhoArray == 4) { /* pasta paises */
-                    for (String[] dadosPais : dadosPaises) {
-                        if (dadosPais[0].equals(dados[0])) {
-                            encontrado = true;
-                            break;
+                try (BufferedReader br = new BufferedReader(new FileReader(arquivos[posicaoFicheiro]))) {
+                    br.readLine();
+
+                    while ((linhaAtual = br.readLine()) != null) {
+                        dados = new String[tamanhoArray];
+                        encontrado = false;
+                        separador = linhaAtual.split(",");
+
+                        if (separador.length != tamanhoArray) {
+                            if (primeiraLinhaIncorreta == -1) {
+                                primeiraLinhaIncorreta = linhaOK + 1;
+                            }
+                            linhaNOK++;
+                            continue;
                         }
+
+                        for (int i = 0; i < tamanhoArray; i++) {
+                            dados[i] = separador[i];
+                            if ((dados[1] = separador[1]).equals("Medium")) dados[1] = "";
+                            if (separador[3].equals("")) dados[3] = "0";
+                        }
+
+                        /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+                        /* Guardando informações dos ficheiros em variáveis */
+                        if (tamanhoArray == 4) { /* pasta paises */
+                            for (String[] dadosPais : dadosPaises) {
+                                if (dadosPais[0].equals(dados[0])) {
+                                    encontrado = true;
+                                    break;
+                                }
+                            }
+                            if (!encontrado) {
+                                dadosPaises.add(dados);
+                            }
+                        }
+                        if (tamanhoArray == 5) { /* pasta populacao */
+                            dadosPopulacao.add(dados);
+                        }
+                        if (tamanhoArray == 6) { /* pasta cidades */
+                            dadosCidades.add(dados);
+                        }
+                        /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+                        linhaOK++;
                     }
-                    if (!encontrado) {
-                        dadosPaises.add(dados);
-                    }
+                } catch (IOException e) {
+                    return false;
                 }
-                if (tamanhoArray == 5) { /* pasta populacao */
-                    dadosPopulacao.add(dados);
-                }
-                if (tamanhoArray == 6) { /* pasta cidades */
-                    dadosCidades.add(dados);
-                }
+
+                /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+                /* Guardar informações para o Enumerado do tipo INPUT_INVALIDO */
+                leituraLinhas[tamanhoLeituraLinhas] = linhaOK;
+                leituraLinhas[tamanhoLeituraLinhas + 1] = linhaNOK;
+                leituraLinhas[tamanhoLeituraLinhas + 2] = primeiraLinhaIncorreta;
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-                linhaOK++;
+                /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+                /* Ler os demais ficheiros para ter os dados de todos eles */
+                if (leituraLinhas[0] == 0 || leituraLinhas[3] == 0 || leituraLinhas[6] == 0) {
+                    parseFiles(new File("."));
+                }
+                /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
             }
-        } catch (IOException e) {
-            return false;
         }
-
-        /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-        /* Guardar informações para o Enumerado do tipo INPUT_INVALIDO */
-        leituraLinhas[tamanhoLeituraLinhas] = linhaOK;
-        leituraLinhas[tamanhoLeituraLinhas + 1] = linhaNOK;
-        leituraLinhas[tamanhoLeituraLinhas + 2] = primeiraLinhaIncorreta;
-        /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
-        /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-        /* Ler os demais ficheiros para ter os dados de todos eles */
-        if (leituraLinhas[0] == 0 && leituraLinhas[2] == 0) {
-            parseFiles(new File("paises.csv"));
-        } else if (leituraLinhas[3] == 0 && leituraLinhas[5] == 0) {
-            parseFiles(new File("cidades.csv"));
-        } else if (leituraLinhas[6] == 0 && leituraLinhas[8] == 0) {
-            parseFiles(new File("populacao.csv"));
-        }
-        /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
         return true;
     }
@@ -145,25 +163,21 @@ public class Main {
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        boolean parseOk = parseFiles(new File("test-files/populacao.csv"));
+        boolean parseOk = parseFiles(new File("./"));
         if (!parseOk) {
             System.out.println("Erro na leitura dos ficheiros");
             return;
         }
         long end = System.currentTimeMillis();
 
-        ArrayList aaa = getObjects(TipoEntidade.INPUT_INVALIDO);
+        ArrayList<String> aaa = getObjects(TipoEntidade.INPUT_INVALIDO);
         System.out.println(aaa.get(0));
         System.out.println(aaa.get(1));
         System.out.println(aaa.get(2));
         System.out.println();
 
-        ArrayList bbb = getObjects(TipoEntidade.PAIS);
-        System.out.println(bbb.get(0));
-        System.out.println(bbb.get(1));
-        System.out.println(bbb.get(2));
-        System.out.println(bbb.get(5));
-        System.out.println(bbb.get(6));
+        ArrayList<String> bbb = getObjects(TipoEntidade.PAIS);
+        for (String bb : bbb) System.out.println(bb);
         System.out.println();
 
         ArrayList<String> ccc = getObjects(TipoEntidade.CIDADE);
