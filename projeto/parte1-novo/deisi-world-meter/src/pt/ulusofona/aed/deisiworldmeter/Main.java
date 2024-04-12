@@ -60,6 +60,8 @@ public class Main {
         int tamanhoLeituraLinhas = -1;
         boolean encontrado;
 
+        System.out.println(ficheiro.getAbsolutePath());
+
         if (ficheiro.getName().equals("paises.csv")) {
             tamanhoArray = 4;
             tamanhoLeituraLinhas = 0;
@@ -117,6 +119,7 @@ public class Main {
                 linhaOK++;
             }
         } catch (IOException e) {
+            System.out.println(e.getMessage());
             return;
         }
 
@@ -153,8 +156,9 @@ public class Main {
 
 
     public static void main(String[] args) {
+        
         long start = System.currentTimeMillis();
-        boolean parseOk = parseFiles(new File("DEISI World Meter\\test-files"));
+        boolean parseOk = parseFiles(new File("test-files"));
         if (!parseOk) {
             System.out.println("Erro na leitura dos ficheiros");
             return;
