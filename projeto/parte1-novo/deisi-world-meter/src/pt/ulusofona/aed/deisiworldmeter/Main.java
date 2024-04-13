@@ -50,73 +50,76 @@ public class Main {
 
 
     private static void lerDadosFicheiro(File ficheiro) {
-        String linhaAtual;
-        String[] separador;
-        String[] dados;
+        String linhaAtual; /* Armazena o conteúdo da linha atual sendo lida do ficheiro */
+        String[] dadosFicheiro; /* Guarda os dados separados das vírgulas. Guardas as colunas */
         int linhaOK = 0;
         int linhaNOK = 0;
         int primeiraLinhaIncorreta = -1;
-        int tamanhoArray = 0;
-        int tamanhoLeituraLinhas = -1;
-        boolean encontrado;
+        int numeroDadosFicheiro = 0; /* Quantidade de colunas de um ficheiro */
+        int tamanhoLeituraLinhas = -1; /* Esta variável está relacionada com a variável global "leituraLinhas". Olhar comentário da linha 13 */
+        boolean paisRepetido; /* Verificar se tem países duplicados no ficheiro paises.csv */
 
-        System.out.println(ficheiro.getAbsolutePath());
-
+        /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+        /* Dependendo do ficheiro, tenho que ter dados diferentes */
         if (ficheiro.getName().equals("paises.csv")) {
-            tamanhoArray = 4;
+            numeroDadosFicheiro = 4;
             tamanhoLeituraLinhas = 0;
         } else if (ficheiro.getName().equals("cidades.csv")) {
-            tamanhoArray = 6;
+            numeroDadosFicheiro = 6;
             tamanhoLeituraLinhas = 3;
         } else if (ficheiro.getName().equals("populacao.csv")) {
-            tamanhoArray = 5;
+            numeroDadosFicheiro = 5;
             tamanhoLeituraLinhas = 6;
         }
+        /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
         try (BufferedReader br = new BufferedReader(new FileReader(ficheiro))) {
             br.readLine();
 
             while ((linhaAtual = br.readLine()) != null) {
-                dados = new String[tamanhoArray];
-                encontrado = false;
-                separador = linhaAtual.split(",");
+                paisRepetido = false;
+                dadosFicheiro = linhaAtual.split(",");
 
-                if (separador.length != tamanhoArray) {
+                /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+                /* Verifica linhas incorretas */
+                if (dadosFicheiro.length != numeroDadosFicheiro) { /* Linhas com dados a mais e a menos */
                     if (primeiraLinhaIncorreta == -1) {
                         primeiraLinhaIncorreta = linhaOK + 1;
                     }
                     linhaNOK++;
                     continue;
                 }
-
-                for (int i = 0; i < tamanhoArray; i++) {
-                    dados[i] = separador[i];
-                    if ((dados[1] = separador[1]).equals("Medium")) dados[1] = "";
-                    if (separador[3].equals("")) dados[3] = "0";
+                if (dadosFicheiro[1].equals("Medium")) { //TODO acrescentar linha incorreta
+                    continue;
                 }
+
+                if (dadosFicheiro[3].equals("")) { /* Linhas com dados vazio */ //TODO acrescentar linha incorreta
+                    continue;
+                }
+                /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
                 /* Guardando informações dos ficheiros em variáveis */
-                if (tamanhoArray == 4) { /* pasta paises */
+                if (numeroDadosFicheiro == 4) { /* pasta paises */
                     for (String[] dadosPais : dadosPaises) {
-                        if (dadosPais[0].equals(dados[0])) {
-                            encontrado = true;
+                        if (dadosPais[0].equals(dadosFicheiro[0])) {
+                            paisRepetido = true;
                             break;
                         }
                     }
-                    if (!encontrado) {
-                        dadosPaises.add(dados);
+                    if (!paisRepetido) {
+                        dadosPaises.add(dadosFicheiro);
                     }
                 }
-                if (tamanhoArray == 5) { /* pasta populacao */
-                    dadosPopulacao.add(dados);
+                if (numeroDadosFicheiro == 5) { /* pasta populacao */
+                    dadosPopulacao.add(dadosFicheiro);
                 }
-                if (tamanhoArray == 6) { /* pasta cidades */
-                    dadosCidades.add(dados);
+                if (numeroDadosFicheiro == 6) { /* pasta cidades */
+                    dadosCidades.add(dadosFicheiro);
                 }
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-                linhaOK++;
+                linhaOK++; /* Linha lida com perfeição!!! */
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -124,7 +127,7 @@ public class Main {
         }
 
         /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-        /* Guardar informações para o Enumerado do tipo INPUT_INVALIDO */
+        /* Guardar informações para o Enumerado do tipo "INPUT_INVALIDO" */
         leituraLinhas[tamanhoLeituraLinhas] = linhaOK;
         leituraLinhas[tamanhoLeituraLinhas + 1] = linhaNOK;
         leituraLinhas[tamanhoLeituraLinhas + 2] = primeiraLinhaIncorreta;
@@ -156,7 +159,7 @@ public class Main {
 
 
     public static void main(String[] args) {
-        
+
         long start = System.currentTimeMillis();
         boolean parseOk = parseFiles(new File("test-files"));
         if (!parseOk) {
