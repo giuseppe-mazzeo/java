@@ -5,13 +5,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Main {
     static ArrayList<String[]> dadosPaises = new ArrayList<>();
     static ArrayList<String[]> dadosCidades = new ArrayList<>();
     static ArrayList<String[]> dadosPopulacao = new ArrayList<>();
     static int[] leituraLinhas = new int[9]; /* [0-2] -> paises.csv || [3-5] -> cidades.csv || [6-8] -> populacao.csv */
-
 
     public static ArrayList<String> getObjects(TipoEntidade tipo) {
         ArrayList<String> output = new ArrayList<>();
@@ -49,12 +49,13 @@ public class Main {
     }
 
 
-    private static void lerDadosFicheiro(File ficheiro) {
+    public static boolean lerDadosFicheiro(File ficheiro) {
         String linhaAtual; /* Armazena o conteúdo da linha atual sendo lida do ficheiro */
         String[] dadosFicheiro; /* Guarda os dados separados das vírgulas. Guardas as colunas */
         int linhaOK = 0;
         int linhaNOK = 0;
         int primeiraLinhaIncorreta = -1;
+        int numLinhasFicheiro = 0; /* Acrescenta um valor à linha lida, estando certa ou errada */
         int numeroDadosFicheiro = 0; /* Quantidade de colunas de um ficheiro */
         int tamanhoLeituraLinhas = -1; /* Esta variável está relacionada com a variável global "leituraLinhas". Olhar comentário da linha 13 */
         boolean paisRepetido; /* Verificar se tem países duplicados no ficheiro paises.csv */
@@ -84,7 +85,7 @@ public class Main {
                 /* Verifica linhas incorretas */
                 if (dadosFicheiro.length != numeroDadosFicheiro) { /* Linhas com dados a mais e a menos */
                     if (primeiraLinhaIncorreta == -1) {
-                        primeiraLinhaIncorreta = linhaOK + 1;
+                        primeiraLinhaIncorreta = numLinhasFicheiro + 1;
                     }
                     linhaNOK++;
                     continue;
@@ -102,28 +103,31 @@ public class Main {
                 /* Guardando informações dos ficheiros em variáveis */
                 if (numeroDadosFicheiro == 4) { /* pasta paises */
                     for (String[] dadosPais : dadosPaises) {
-                        if (dadosPais[0].equals(dadosFicheiro[0])) {
+                        if (dadosPais[0].equals(dadosFicheiro[0])) { /* Verificar se tem país repetido */
                             paisRepetido = true;
                             break;
                         }
                     }
                     if (!paisRepetido) {
                         dadosPaises.add(dadosFicheiro);
+                        linhaOK++; /* Linha lida com perfeição!!! */
                     }
                 }
                 if (numeroDadosFicheiro == 5) { /* pasta populacao */
                     dadosPopulacao.add(dadosFicheiro);
+                    linhaOK++; /* Linha lida com perfeição!!! */
                 }
                 if (numeroDadosFicheiro == 6) { /* pasta cidades */
                     dadosCidades.add(dadosFicheiro);
+                    linhaOK++; /* Linha lida com perfeição!!! */
                 }
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-                linhaOK++; /* Linha lida com perfeição!!! */
+                numLinhasFicheiro++; /* Leu uma linha */
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            return;
+            return false;
         }
 
         /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -132,29 +136,16 @@ public class Main {
         leituraLinhas[tamanhoLeituraLinhas + 1] = linhaNOK;
         leituraLinhas[tamanhoLeituraLinhas + 2] = primeiraLinhaIncorreta;
         /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+        return true;
     }
 
 
     public static boolean parseFiles(File folder) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(folder + "\\paises.csv"))) {
-            lerDadosFicheiro(new File(folder + "\\paises.csv"));
-        } catch (IOException e) {
-            return false;
-        }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(folder + "\\cidades.csv"))) {
-            lerDadosFicheiro(new File(folder + "\\cidades.csv"));
-        } catch (IOException e) {
-            return false;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(folder + "\\populacao.csv"))) {
-            lerDadosFicheiro(new File(folder + "\\populacao.csv"));
-        } catch (IOException e) {
-            return false;
-        }
-
-        return true;
+        return lerDadosFicheiro(new File(folder, "paises.csv"))
+                && lerDadosFicheiro(new File(folder, "cidades.csv"))
+                && lerDadosFicheiro(new File(folder, "populacao.csv"));
     }
 
 
@@ -166,6 +157,9 @@ public class Main {
             System.out.println("Erro na leitura dos ficheiros");
             return;
         }
+
+        for (String[] dados : dadosPaises) System.out.println(dados[0]);
+
         long end = System.currentTimeMillis();
 
         ArrayList<String> aaa = getObjects(TipoEntidade.INPUT_INVALIDO);
