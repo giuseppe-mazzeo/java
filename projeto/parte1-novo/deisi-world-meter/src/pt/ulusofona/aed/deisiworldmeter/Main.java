@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Main {
-    static ArrayList<String[]> dadosPaises = new ArrayList<>();
-    static ArrayList<String[]> dadosCidades = new ArrayList<>();
-    static ArrayList<String[]> dadosPopulacao = new ArrayList<>();
+    static ArrayList<String[]> dadosPaises;
+    static ArrayList<String[]> dadosCidades;
+    static ArrayList<String[]> dadosPopulacao;
     static int[] leituraLinhas = new int[9]; /* [0-2] -> paises.csv || [3-5] -> cidades.csv || [6-8] -> populacao.csv */
 
     public static ArrayList<String> getObjects(TipoEntidade tipo) {
@@ -26,7 +26,7 @@ public class Main {
             for (String[] dadosPais : dadosPaises) {
                 if (Integer.parseInt(dadosPais[0].trim()) > 700) {
                     for (String[] dadosPop : dadosPopulacao) {
-                        if (dadosPais[0].equals(dadosPop[0])) {
+                        if (dadosPais[0].equals(dadosPop[0]) && (Integer.parseInt(dadosPop[1].trim()) >= 1950 && Integer.parseInt(dadosPop[1].trim()) <= 2100)) {
                             quantidadeDadoPais++;
                         }
                     }
@@ -39,6 +39,7 @@ public class Main {
             for (String[] dadosCidade : dadosCidades) {
                 for (String[] dadosPais : dadosPaises) {
                     if (dadosCidade[0].equals(dadosPais[1])) {
+                        dadosCidade[3] = dadosCidade[3].substring(0, dadosCidade[3].length() - 2);
                         output.add(dadosCidade[1] + " | " + dadosCidade[0].toUpperCase() + " | " + dadosCidade[2] + " | " + dadosCidade[3] + " | (" + dadosCidade[4] + "," + dadosCidade[5] + ")");
                     }
                 }
@@ -55,20 +56,24 @@ public class Main {
         int linhaOK = 0;
         int linhaNOK = 0;
         int primeiraLinhaIncorreta = -1;
-        int numLinhasFicheiro = 0; /* Acrescenta um valor à linha lida, estando certa ou errada */
+        int numLinhasFicheiro; /* Acrescenta um valor à linha lida, estando certa ou errada */
         int numeroDadosFicheiro = 0; /* Quantidade de colunas de um ficheiro */
         int tamanhoLeituraLinhas = -1; /* Esta variável está relacionada com a variável global "leituraLinhas". Olhar comentário da linha 13 */
         boolean paisRepetido; /* Verificar se tem países duplicados no ficheiro paises.csv */
+        boolean anoPopulacaoRepetido;
 
         /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
         /* Dependendo do ficheiro, tenho que ter dados diferentes */
         if (ficheiro.getName().equals("paises.csv")) {
+            dadosPaises = new ArrayList<>();
             numeroDadosFicheiro = 4;
             tamanhoLeituraLinhas = 0;
         } else if (ficheiro.getName().equals("cidades.csv")) {
+            dadosCidades = new ArrayList<>();
             numeroDadosFicheiro = 6;
             tamanhoLeituraLinhas = 3;
         } else if (ficheiro.getName().equals("populacao.csv")) {
+            dadosPopulacao = new ArrayList<>();
             numeroDadosFicheiro = 5;
             tamanhoLeituraLinhas = 6;
         }
@@ -76,25 +81,32 @@ public class Main {
 
         try (BufferedReader br = new BufferedReader(new FileReader(ficheiro))) {
             br.readLine();
+            numLinhasFicheiro = 1; /* Primeira linha de cada ficheiro é ignorada */
 
             while ((linhaAtual = br.readLine()) != null) {
                 paisRepetido = false;
+                anoPopulacaoRepetido = false;
                 dadosFicheiro = linhaAtual.split(",");
+                numLinhasFicheiro++; /* Leu uma linha */
 
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
                 /* Verifica linhas incorretas */
                 if (dadosFicheiro.length != numeroDadosFicheiro) { /* Linhas com dados a mais e a menos */
                     if (primeiraLinhaIncorreta == -1) {
-                        primeiraLinhaIncorreta = numLinhasFicheiro + 1;
+                        primeiraLinhaIncorreta = numLinhasFicheiro;
                     }
                     linhaNOK++;
                     continue;
                 }
-                if (dadosFicheiro[1].equals("Medium")) { //TODO acrescentar linha incorreta
+                if (dadosFicheiro[1].equals("Medium") || dadosFicheiro[1].equals("")) { /* Ficheiro populacao */
                     continue;
                 }
 
-                if (dadosFicheiro[3].equals("")) { /* Linhas com dados vazio */ //TODO acrescentar linha incorreta
+                if (dadosFicheiro[3].equals("")) { /* Ficheiro cidades */
+                    if (primeiraLinhaIncorreta == -1) {
+                        primeiraLinhaIncorreta = numLinhasFicheiro;
+                    }
+                    linhaNOK++;
                     continue;
                 }
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -103,8 +115,12 @@ public class Main {
                 /* Guardando informações dos ficheiros em variáveis */
                 if (numeroDadosFicheiro == 4) { /* pasta paises */
                     for (String[] dadosPais : dadosPaises) {
-                        if (dadosPais[0].equals(dadosFicheiro[0])) { /* Verificar se tem país repetido */
+                        if (dadosPais[0].trim().equals(dadosFicheiro[0].trim())) { /* Verificar se tem país repetido */
+                            if (primeiraLinhaIncorreta == -1) {
+                                primeiraLinhaIncorreta = numLinhasFicheiro;
+                            }
                             paisRepetido = true;
+                            linhaNOK++;
                             break;
                         }
                     }
@@ -114,16 +130,22 @@ public class Main {
                     }
                 }
                 if (numeroDadosFicheiro == 5) { /* pasta populacao */
-                    dadosPopulacao.add(dadosFicheiro);
-                    linhaOK++; /* Linha lida com perfeição!!! */
+                    for (String[] dadosPop : dadosPopulacao) {
+                        if (dadosPop[0].trim().equals(dadosFicheiro[0].trim()) && dadosPop[1].trim().equals(dadosFicheiro[1].trim())) {
+                            anoPopulacaoRepetido = true;
+                            break;
+                        }
+                    }
+                    if (!anoPopulacaoRepetido) {
+                        dadosPopulacao.add(dadosFicheiro);
+                        linhaOK++; /* Linha lida com perfeição!!! */
+                    }
                 }
                 if (numeroDadosFicheiro == 6) { /* pasta cidades */
                     dadosCidades.add(dadosFicheiro);
                     linhaOK++; /* Linha lida com perfeição!!! */
                 }
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
-                numLinhasFicheiro++; /* Leu uma linha */
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -158,8 +180,6 @@ public class Main {
             return;
         }
 
-        for (String[] dados : dadosPaises) System.out.println(dados[0]);
-
         long end = System.currentTimeMillis();
 
         ArrayList<String> aaa = getObjects(TipoEntidade.INPUT_INVALIDO);
@@ -168,12 +188,29 @@ public class Main {
         System.out.println(aaa.get(2));
         System.out.println();
 
+
         ArrayList<String> bbb = getObjects(TipoEntidade.PAIS);
-        for (String bb : bbb) System.out.println(bb);
+        /* for (String bb : bbb){
+         System.out.println(bb);
+         }
+
+         */
+        System.out.println(bbb.get(1));
         System.out.println();
 
+        /*
         ArrayList<String> ccc = getObjects(TipoEntidade.CIDADE);
-        for (String cc : ccc) System.out.println(cc);
+        for (String cc : ccc) {
+         System.out.println(cc);
+         }
+         */
+
+        for (String[] cc : dadosPopulacao) {
+            System.out.println(Arrays.toString(cc));
+        }
+
+        System.out.println();
+        System.out.println(getObjects(TipoEntidade.PAIS).size());
 
         System.out.println("Ficheiros lidos com sucesso em " + (end - start) + " ms.");
     }
