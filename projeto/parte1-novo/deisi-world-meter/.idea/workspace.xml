@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="37c06a83-697e-49e7-b564-2e38a3055b30" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AUTHORS.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/deisi-world-meter.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/deisi-world-meter/pt/ulusofona/aed/deisiworldmeter/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/deisi-world-meter/pt/ulusofona/aed/deisiworldmeter/TestXXX.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/deisi-world-meter/pt/ulusofona/aed/deisiworldmeter/TipoEntidade.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/ulusofona/aed/deisiworldmeter/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/ulusofona/aed/deisiworldmeter/TestXXX.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/ulusofona/aed/deisiworldmeter/TipoEntidade.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test-files/cidades.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test-files/paises.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test-files/populacao.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/z001.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/z002.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/z003.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/z004.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/z005.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/z006.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/z007.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/z008.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/z009.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/z010.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/z011.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/z012.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/.idea/libraries/DEISI_World_Meter.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/AUTHORS.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/DEISI World Meter.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/out/production/DEISI World Meter/pt/ulusofona/aed/deisiworldmeter/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/out/production/DEISI World Meter/pt/ulusofona/aed/deisiworldmeter/TestXXX.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/out/production/DEISI World Meter/pt/ulusofona/aed/deisiworldmeter/TipoEntidade.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/src/pt/ulusofona/aed/deisiworldmeter/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/src/pt/ulusofona/aed/deisiworldmeter/TestXXX.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/src/pt/ulusofona/aed/deisiworldmeter/TipoEntidade.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/test-files/cidades.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/test-files/paises.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/test-files/populacao.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/z001.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/z002.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/z003.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/z004.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/z005.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/z006.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/DEISI World Meter/z007.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/out/production/parte1/pt/ulusofona/aed/deisiworldmeter/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/out/production/parte1/pt/ulusofona/aed/deisiworldmeter/TestXXX.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/out/production/parte1/pt/ulusofona/aed/deisiworldmeter/TipoEntidade.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../parte1/parte1.iml" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2f0bHHMrK9zX0ID40G0mCQ9cVcN" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/giuma/OneDrive/Documentos/estudos/java/projeto/parte1-novo/deisi-world-meter&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\giuma\OneDrive\Documentos\estudos\java\projeto\parte1-novo\deisi-world-meter" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.TestXXX">
+    <configuration name="TestXXX" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="deisi-world-meter" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="pt.ulusofona.aed.deisiworldmeter.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="pt.ulusofona.aed.deisiworldmeter" />
+      <option name="MAIN_CLASS_NAME" value="pt.ulusofona.aed.deisiworldmeter.TestXXX" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestXXX.testGetObjectsPais" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="deisi-world-meter" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="pt.ulusofona.aed.deisiworldmeter.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="pt.ulusofona.aed.deisiworldmeter" />
+      <option name="MAIN_CLASS_NAME" value="pt.ulusofona.aed.deisiworldmeter.TestXXX" />
+      <option name="METHOD_NAME" value="testGetObjectsPais" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestXXX.testInputInvalidoToString" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="deisi-world-meter" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="pt.ulusofona.aed.deisiworldmeter.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="pt.ulusofona.aed.deisiworldmeter" />
+      <option name="MAIN_CLASS_NAME" value="pt.ulusofona.aed.deisiworldmeter.TestXXX" />
+      <option name="METHOD_NAME" value="testInputInvalidoToString" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestXXX.testLinhasIncorretas" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="deisi-world-meter" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="pt.ulusofona.aed.deisiworldmeter.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="pt.ulusofona.aed.deisiworldmeter" />
+      <option name="MAIN_CLASS_NAME" value="pt.ulusofona.aed.deisiworldmeter.TestXXX" />
+      <option name="METHOD_NAME" value="testLinhasIncorretas" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestXXX.testPaisToString" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="deisi-world-meter" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="pt.ulusofona.aed.deisiworldmeter.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="pt.ulusofona.aed.deisiworldmeter" />
+      <option name="MAIN_CLASS_NAME" value="pt.ulusofona.aed.deisiworldmeter.TestXXX" />
+      <option name="METHOD_NAME" value="testPaisToString" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.TestXXX" />
+        <item itemvalue="JUnit.TestXXX.testGetObjectsPais" />
+        <item itemvalue="JUnit.TestXXX.testPaisToString" />
+        <item itemvalue="JUnit.TestXXX.testInputInvalidoToString" />
+        <item itemvalue="JUnit.TestXXX.testLinhasIncorretas" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="37c06a83-697e-49e7-b564-2e38a3055b30" name="Changes" comment="" />
+      <created>1712940852701</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1712940852701</updated>
+    </task>
+    <servers />
+  </component>
+</project>
