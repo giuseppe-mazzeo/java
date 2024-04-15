@@ -98,11 +98,14 @@ public class Main {
                     linhaNOK++;
                     continue;
                 }
-                if (dadosFicheiro[1].equals("Medium") || dadosFicheiro[1].equals("")) { /* Ficheiro populacao */
+                if (ficheiro.getName().equals("populacao.csv") && (dadosFicheiro[1].equals("Medium") || dadosFicheiro[1].equals("") || dadosFicheiro[2].equals("") || dadosFicheiro[3].equals("") || dadosFicheiro[4].equals(""))) { /* Ficheiro populacao */
+                    if (primeiraLinhaIncorreta == -1) {
+                        primeiraLinhaIncorreta = numLinhasFicheiro;
+                    }
+                    linhaNOK++;
                     continue;
                 }
-
-                if (dadosFicheiro[3].equals("")) { /* Ficheiro cidades */
+                if (ficheiro.getName().equals("cidades.csv") && (dadosFicheiro[0].equals("") || dadosFicheiro[3].equals(""))) { /* Ficheiro cidades */
                     if (primeiraLinhaIncorreta == -1) {
                         primeiraLinhaIncorreta = numLinhasFicheiro;
                     }
@@ -113,7 +116,7 @@ public class Main {
 
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
                 /* Guardando informações dos ficheiros em variáveis */
-                if (numeroDadosFicheiro == 4) { /* pasta paises */
+                if (ficheiro.getName().equals("paises.csv")) { /* pasta paises */
                     for (String[] dadosPais : dadosPaises) {
                         if (dadosPais[0].trim().equals(dadosFicheiro[0].trim())) { /* Verificar se tem país repetido */
                             if (primeiraLinhaIncorreta == -1) {
@@ -129,7 +132,7 @@ public class Main {
                         linhaOK++; /* Linha lida com perfeição!!! */
                     }
                 }
-                if (numeroDadosFicheiro == 5) { /* pasta populacao */
+                if (ficheiro.getName().equals("populacao.csv")) { /* pasta populacao */
                     for (String[] dadosPop : dadosPopulacao) {
                         if (dadosPop[0].trim().equals(dadosFicheiro[0].trim()) && dadosPop[1].trim().equals(dadosFicheiro[1].trim())) {
                             anoPopulacaoRepetido = true;
@@ -141,7 +144,7 @@ public class Main {
                         linhaOK++; /* Linha lida com perfeição!!! */
                     }
                 }
-                if (numeroDadosFicheiro == 6) { /* pasta cidades */
+                if (ficheiro.getName().equals("cidades.csv")) { /* pasta cidades */
                     dadosCidades.add(dadosFicheiro);
                     linhaOK++; /* Linha lida com perfeição!!! */
                 }
@@ -194,23 +197,34 @@ public class Main {
          System.out.println(bb);
          }
 
-         */
+
+        System.out.println(bbb.get(0));
         System.out.println(bbb.get(1));
+        System.out.println(bbb.get(2));
         System.out.println();
 
-        /*
+
         ArrayList<String> ccc = getObjects(TipoEntidade.CIDADE);
+
         for (String cc : ccc) {
          System.out.println(cc);
-         }
-         */
+
+        System.out.println(ccc.get(0));
+        System.out.println(ccc.get(1));
+        System.out.println(ccc.get(2));
+        System.out.println();
+
+
+
+
 
         for (String[] cc : dadosPopulacao) {
             System.out.println(Arrays.toString(cc));
         }
 
-        System.out.println();
-        System.out.println(getObjects(TipoEntidade.PAIS).size());
+         */
+
+
 
         System.out.println("Ficheiros lidos com sucesso em " + (end - start) + " ms.");
     }
