@@ -10,16 +10,16 @@ public class Main {
     static ArrayList<Pais> dadosPaises___;
     static ArrayList<Cidade> dadosCidades___;
     static ArrayList<Populacao> dadosPopulacao___;
+    static ArrayList<InputInvalido> inputInvalido = new ArrayList<>();
 
-    static int[] leituraLinhas = new int[9]; /* [0-2] -> paises.csv || [3-5] -> cidades.csv || [6-8] -> populacao.csv */
 
     public static ArrayList<String> getObjects(TipoEntidade tipo) {
         ArrayList<String> output = new ArrayList<>();
 
-        if (tipo == TipoEntidade.INPUT_INVALIDO) { //TODO
-            output.add("paises.csv | " + leituraLinhas[0] + " | " + leituraLinhas[1] + " | " + leituraLinhas[2]);
-            output.add("cidades.csv | " + leituraLinhas[3] + " | " + leituraLinhas[4] + " | " + leituraLinhas[5]);
-            output.add("populacao.csv | " + leituraLinhas[6] + " | " + leituraLinhas[7] + " | " + leituraLinhas[8]);
+        if (tipo == TipoEntidade.INPUT_INVALIDO) {
+            output.add(inputInvalido.get(0).toString());
+            output.add(inputInvalido.get(1).toString());
+            output.add(inputInvalido.get(2).toString());
         } else if (tipo == TipoEntidade.PAIS) {
             for (Pais dadosPais : dadosPaises___) {
                 output.add(dadosPais.toString());
@@ -36,63 +36,40 @@ public class Main {
 
     public static boolean lerDadosFicheiro(File ficheiro) {
         String linhaAtual; /* Armazena o conteúdo da linha atual sendo lida do ficheiro */
-        String[] dadosFicheiro; /* Guarda os dados separados das vírgulas. Guardas as colunas */
-        int linhaOK = 0;
-        int linhaNOK = 0;
-        int primeiraLinhaIncorreta = -1;
-        int numLinhasFicheiro; /* Acrescenta um valor à linha lida, estando certa ou errada */
-        int numeroDadosFicheiro = 0; /* Quantidade de colunas de um ficheiro */
-        int tamanhoLeituraLinhas = -1; /* Esta variável está relacionada com a variável global "leituraLinhas". Olhar comentário da linha 13 */
+        String[] dadosFicheiro; /* Guarda os dados separados por vírgulas. Guardas as colunas */int numeroDadosFicheiro; /* Quantidade de colunas de um ficheiro */
         boolean paisRepetido; /* Verificar se tem países duplicados no ficheiro paises.csv */
         boolean anoPopulacaoRepetido;
-        Pais.setPaisIdMaior700(0);
+        Pais.resetPaisIdMaior700();
+        InputInvalido inputInvalidoAtual = new InputInvalido(ficheiro.getName());
+        dadosPaises___ = new ArrayList<>();
+        dadosCidades___ = new ArrayList<>();
+        dadosPopulacao___ = new ArrayList<>();
 
-        /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-        /* Dependendo do ficheiro, tenho que ter dados diferentes */
-        if (ficheiro.getName().equals("paises.csv")) {
-            dadosPaises___ = new ArrayList<>();
-            numeroDadosFicheiro = 4;
-            tamanhoLeituraLinhas = 0;
-        } else if (ficheiro.getName().equals("cidades.csv")) {
-            dadosCidades___ = new ArrayList<>();
-            numeroDadosFicheiro = 6;
-            tamanhoLeituraLinhas = 3;
-        } else if (ficheiro.getName().equals("populacao.csv")) {
-            dadosPopulacao___ = new ArrayList<>();
-            numeroDadosFicheiro = 5;
-            tamanhoLeituraLinhas = 6;
+        if (inputInvalido.size() > 3) {
+            inputInvalido = new ArrayList<>();
         }
-        /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
         try (BufferedReader br = new BufferedReader(new FileReader(ficheiro))) {
-            br.readLine();
-            numLinhasFicheiro = 1; /* Primeira linha de cada ficheiro é ignorada */
+            numeroDadosFicheiro = br.readLine().split(",").length;
 
             while ((linhaAtual = br.readLine()) != null) {
                 paisRepetido = false;
                 anoPopulacaoRepetido = false;
                 dadosFicheiro = linhaAtual.split(",");
-                numLinhasFicheiro++; /* Leu uma linha */
-
-                /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-                /* Guarda o número da primeira linha errada */
-                if (primeiraLinhaIncorreta == -1) {
-                    primeiraLinhaIncorreta = numLinhasFicheiro;
-                }
-                /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+                inputInvalidoAtual.addNumLinhaLidaFicheiro(); /* Leu uma linha */
 
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
                 /* Verifica linhas incorretas */
                 if (dadosFicheiro.length != numeroDadosFicheiro) { /* Linhas com dados a mais e a menos */
-                    linhaNOK++;
+                    inputInvalidoAtual.addLinhaNOK();
                     continue;
                 }
                 if (ficheiro.getName().equals("populacao.csv") && (dadosFicheiro[1].equals("Medium") || dadosFicheiro[1].equals("") || dadosFicheiro[2].equals("") || dadosFicheiro[3].equals("") || dadosFicheiro[4].equals(""))) { /* Ficheiro populacao */
-                    linhaNOK++;
+                    inputInvalidoAtual.addLinhaNOK();
                     continue;
                 }
                 if (ficheiro.getName().equals("cidades.csv") && (dadosFicheiro[0].equals("") || dadosFicheiro[3].equals(""))) { /* Ficheiro cidades */
-                    linhaNOK++;
+                    inputInvalidoAtual.addLinhaNOK();
                     continue;
                 }
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -103,7 +80,7 @@ public class Main {
                     for (Pais dadosPais : dadosPaises___) {
                         if (dadosPais.getId() == Integer.parseInt(dadosFicheiro[0].trim())) { /* Verificar se tem país repetido */
                             paisRepetido = true;
-                            linhaNOK++;
+                            inputInvalidoAtual.addLinhaNOK();
                             break;
                         }
                     }
@@ -114,7 +91,6 @@ public class Main {
                                 dadosFicheiro[2],
                                 dadosFicheiro[3]
                         ));
-                        linhaOK++; /* Linha lida com perfeição!!! */
                     }
                 }
 
@@ -130,7 +106,7 @@ public class Main {
                             if (dadosPais.getId() > 700) {
                                 for (Populacao dadosPop : dadosPopulacao___) {
                                     if (dadosPais.getId() == dadosPop.getId() && (dadosPop.getAno() >= 1950 && dadosPop.getAno() <= 2100)) {
-                                        dadosPais.addPaisIdMaior700();
+                                        dadosPais.temPaisFicheiroPopulacao();
                                     }
                                 }
                             }
@@ -143,7 +119,6 @@ public class Main {
                             dadosFicheiro[3],
                             dadosFicheiro[4]
                     ));
-                    linhaOK++; /* Linha lida com perfeição!!! */
                 }
 
                 if (ficheiro.getName().equals("cidades.csv")) { /* pasta cidades */
@@ -155,8 +130,9 @@ public class Main {
                             dadosFicheiro[4],
                             dadosFicheiro[5]
                     ));
-                    linhaOK++; /* Linha lida com perfeição!!! */
                 }
+
+                inputInvalidoAtual.addLinhaOK(); /* Linha lida com perfeição!!! */
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
             }
         } catch (IOException e) {
@@ -166,9 +142,8 @@ public class Main {
 
         /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
         /* Guardar informações para o Enumerado do tipo "INPUT_INVALIDO" */
-        leituraLinhas[tamanhoLeituraLinhas] = linhaOK;
-        leituraLinhas[tamanhoLeituraLinhas + 1] = linhaNOK;
-        leituraLinhas[tamanhoLeituraLinhas + 2] = primeiraLinhaIncorreta;
+        inputInvalido.add(inputInvalidoAtual);
+        /* .get(0) -> paises.csv ||| .get(1) -> populacao.csv ||| .get(2) -> cidades.csv */
         /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
         return true;

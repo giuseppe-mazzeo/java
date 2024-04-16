@@ -1,10 +1,10 @@
 package pt.ulusofona.aed.deisiworldmeter;
 
 public class Pais {
-    private int id;
-    private String  alfa2,
-            alfa3,
-            nome;
+    private final int id;
+    private final String alfa2,
+                         alfa3,
+                         nome;
     private static int paisIdMaior700;
 
 
@@ -19,12 +19,12 @@ public class Pais {
         return id;
     }
 
-    public void addPaisIdMaior700() {
+    public void temPaisFicheiroPopulacao() {
         paisIdMaior700++;
     }
 
-    public static void setPaisIdMaior700(int atual) {
-        paisIdMaior700 = atual;
+    public static void resetPaisIdMaior700() {
+        paisIdMaior700 = 0;
     }
 
     @Override

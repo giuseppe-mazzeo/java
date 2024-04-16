@@ -1,11 +1,11 @@
 package pt.ulusofona.aed.deisiworldmeter;
 
 public class Populacao {
-    private int id,
-                ano;
-    private String  popMasculina,
-                    popFeminina,
-                    densidade;
+    private final int id,
+                      ano;
+    private final String popMasculina,
+                         popFeminina,
+                         densidade;
 
 
     public Populacao(int id, int ano, String popMasculina, String popFeminina, String densidade) {
