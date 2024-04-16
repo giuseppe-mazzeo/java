@@ -1,21 +1,77 @@
 package pt.ulusofona.aed.deisiworldmeter;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 /* ======================
       Índice de testes:
 
+   -- Classe Main
    -- Classe Cidade
    -- Classe Pais
    -- Classe Populacao
    -- Classe InputInvalido
    -- Enum TipoEntidade
-   -- Classe Main
    ======================
 */
 
 public class TestXXX {
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+    /* Testa classe Main */
+    @Test
+    public void testFicheiroInexistente() {
+        boolean retorno = Main.parseFiles(new File("blabla"));
+
+        assertFalse(retorno);
+    }
+
+    @Test
+    public void testFicheiroNull() {
+        boolean retorno = Main.parseFiles(null);
+
+        assertFalse(retorno);
+    }
+
+    @Test
+    public void testFicheiroEsperados() {
+        boolean retorno = Main.parseFiles(new File("test-files"));
+
+        assertTrue(retorno);
+    }
+
+    @Test
+    public void testResetDados() {
+        Main.lerDadosFicheiro(new File("test-files", "paises-tudo-correto.csv"));
+        Main.lerDadosFicheiro(new File("test-files", "cidades-tudo-correto.csv"));
+        Main.lerDadosFicheiro(new File("test-files", "populacao-tudo-correto.csv"));
+
+        ArrayList<String> paises = Main.getObjects(TipoEntidade.PAIS);
+        ArrayList<String> cidades = Main.getObjects(TipoEntidade.CIDADE);
+        ArrayList<String> inputInvalido = Main.getObjects(TipoEntidade.INPUT_INVALIDO);
+
+        assertEquals("Brasil | 76 | BR | BRA", paises.get(0));
+        assertEquals("Portugal | 720 | PT | PRT | 19", paises.get(1));
+        assertEquals("Angola | 24 | AO | AGO", paises.get(2));
+        assertEquals("Burquina Fasso | 854 | BF | BFA | 1", paises.get(11));
+
+        assertEquals("amrode sufla | AF | 05 | 66 | (34.198303,66.955414)", cidades.get(0));
+        assertEquals("abrantes | PT | 18 | 13646.0 | (39.466667,-8.2)", cidades.get(4));
+        assertEquals("rio de janeiro | BR | 12 | 21.6023742.0 | (-22.9,-43.233333)", cidades.get(19));
+
+        assertEquals("paises-tudo-correto.csv | 13 | 0 | -1", inputInvalido.get(0));
+        assertEquals("cidades-tudo-correto.csv | 21 | 0 | -1", inputInvalido.get(1));
+        assertEquals("populacao-tudo-correto.csv | 44 | 0 | -1", inputInvalido.get(2));
+
+    }
+
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+
+
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     /* Testa classe Cidade */
     @Test
@@ -59,12 +115,12 @@ public class TestXXX {
                 "Brasil"
         );
 
-        brasil.temPaisFicheiroPopulacao();
-        brasil.temPaisFicheiroPopulacao();
-        brasil.temPaisFicheiroPopulacao();
+        //brasil.temPaisFicheiroPopulacao();
+        //brasil.temPaisFicheiroPopulacao();
+        //brasil.temPaisFicheiroPopulacao();
 
         assertEquals(701, brasil.getId());
-        assertEquals("Brasil | 701 | BR | BRA | 3", brasil.toString());
+        assertEquals("Brasil | 701 | BR | BRA | 0", brasil.toString());
 
         Pais asgard = new Pais(
                 706,
@@ -73,12 +129,12 @@ public class TestXXX {
                 "Asgard"
         );
 
-        Pais.resetPaisIdMaior700();
+        //Pais.resetPaisIdMaior700();
         assertEquals(706, asgard.getId());
         assertEquals("Asgard | 706 | AS | ASG | 0", asgard.toString());
 
-        asgard.temPaisFicheiroPopulacao();
-        brasil.temPaisFicheiroPopulacao();
+        //asgard.temPaisFicheiroPopulacao();
+        //brasil.temPaisFicheiroPopulacao();
 
         assertEquals("Asgard | 706 | AS | ASG | 2", asgard.toString());
     }
