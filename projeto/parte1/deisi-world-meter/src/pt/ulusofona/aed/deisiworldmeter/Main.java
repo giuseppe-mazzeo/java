@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 
 public class Main {
     private static ArrayList<Pais> dadosPaises___;
@@ -54,21 +54,18 @@ public class Main {
 
 
     public static boolean lerDadosFicheiro(File ficheiro) {
-        HashMap<Integer, Integer> novoMap;
         String linhaAtual; /* Armazena o conteúdo da linha atual sendo lida do ficheiro */
-        String[] dadosFicheiro; /* Guarda os dados separados por vírgulas. Guardas as colunas */int numeroDadosFicheiro; /* Quantidade de colunas de um ficheiro */
-        boolean paisRepetido; /* Verificar se tem países duplicados no ficheiro paises.csv */
-        boolean anoPopulacaoRepetido;
+        String[] dadosFicheiro; /* Guarda os dados separados por vírgulas. Guardas as colunas */
+        int numeroDadosFicheiro; /* Quantidade de colunas de um ficheiro */
         InputInvalido inputInvalidoAtual = new InputInvalido(ficheiro.getName());
+        boolean paisRepetido = false;
 
         try (BufferedReader br = new BufferedReader(new FileReader(ficheiro))) {
             resetarBancoDados(ficheiro);
             numeroDadosFicheiro = br.readLine().split(",").length;
 
-
             while ((linhaAtual = br.readLine()) != null) {
                 paisRepetido = false;
-                anoPopulacaoRepetido = false;
                 dadosFicheiro = linhaAtual.split(",");
                 inputInvalidoAtual.addNumLinhaLidaFicheiro(); /* Leu uma linha */
 
@@ -78,11 +75,30 @@ public class Main {
                     inputInvalidoAtual.addLinhaNOK();
                     continue;
                 }
-                if (numeroDadosFicheiro == 5 && (dadosFicheiro[1].equals("Medium") || dadosFicheiro[1].equals("") || dadosFicheiro[2].equals("") || dadosFicheiro[3].equals("") || dadosFicheiro[4].equals(""))) { /* Ficheiro populacao */
+                if (numeroDadosFicheiro == 4) {
+                    /* paises.csv */
+                    for (Pais dadosPais : dadosPaises___) { /* Verifica se tem país repetido */
+                        if (dadosPais.getId() == Integer.parseInt(dadosFicheiro[0].trim())) {
+                            inputInvalidoAtual.addLinhaNOK();
+                            paisRepetido = true;
+                            break;
+                        }
+                    }
+                    if (paisRepetido) {
+                        continue;
+                    }
+                    if (Arrays.stream(dadosFicheiro).anyMatch(String::isEmpty)) { /* Verifica se tem todos os dados preenchidos */
+                        inputInvalidoAtual.addLinhaNOK();
+                        continue;
+                    }
+                }
+                if (numeroDadosFicheiro == 5 && (dadosFicheiro[1].equals("Medium") || Arrays.stream(dadosFicheiro).anyMatch(String::isEmpty))) {
+                    /* populacao.csv */
                     inputInvalidoAtual.addLinhaNOK();
                     continue;
                 }
-                if (numeroDadosFicheiro == 6 && (dadosFicheiro[0].equals("") || dadosFicheiro[3].equals(""))) { /* Ficheiro cidades */
+                if (numeroDadosFicheiro == 6 && Arrays.stream(dadosFicheiro).anyMatch(String::isEmpty)) {
+                    /* cidades.csv */
                     inputInvalidoAtual.addLinhaNOK();
                     continue;
                 }
@@ -91,49 +107,42 @@ public class Main {
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
                 /* Guardando informações dos ficheiros em variáveis */
                 if (numeroDadosFicheiro == 4) { /* pasta paises */
-                    for (Pais dadosPais : dadosPaises___) {
-                        if (dadosPais.getId() == Integer.parseInt(dadosFicheiro[0].trim())) { /* Verificar se tem país repetido */
-                            paisRepetido = true;
-                            inputInvalidoAtual.addLinhaNOK();
-                            break;
-                        }
-                    }
-                    if (!paisRepetido) {
-                        dadosPaises___.add(new Pais(
-                                Integer.parseInt(dadosFicheiro[0].trim()),
-                                dadosFicheiro[1],
-                                dadosFicheiro[2],
-                                dadosFicheiro[3]
-                        ));
-                    }
+                    /* Verifica se o país não é repetido */
+                    dadosPaises___.add(new Pais(
+                            Integer.parseInt(dadosFicheiro[0].trim()),
+                            dadosFicheiro[1],
+                            dadosFicheiro[2],
+                            dadosFicheiro[3]
+                    ));
                 }
 
-                if (numeroDadosFicheiro == 5) { /* pasta populacao */
+                if (numeroDadosFicheiro == 5) { /* populacao.csv */
+                    /* Verifico se tem dados de anos repetidos
                     for (Populacao dadosPop : dadosPopulacao___) {
                         if (dadosPop.getId() == Integer.parseInt(dadosFicheiro[0].trim()) && dadosPop.getAno() == Integer.parseInt(dadosFicheiro[1].trim())) {
                             anoPopulacaoRepetido = true;
                             break;
                         }
                     }
-                    if (!anoPopulacaoRepetido) {
-                        if (Integer.parseInt(dadosFicheiro[0].trim()) > 700) {
-                            for (Pais pais : dadosPaises___) {
-                                if (Integer.parseInt(dadosFicheiro[0].trim()) == pais.getId()) {
-                                    pais.addPaisIdMaior700();
-                                }
+                    if (!anoPopulacaoRepetido) {}
+
+                     */
+
+                    if (Integer.parseInt(dadosFicheiro[0].trim()) > 700) {
+                        for (Pais pais : dadosPaises___) {
+                            if (Integer.parseInt(dadosFicheiro[0].trim()) == pais.getId()) {
+                                pais.addPaisIdMaior700();
                             }
                         }
-
-                        dadosPopulacao___.add(new Populacao(
-                                Integer.parseInt(dadosFicheiro[0].trim()),
-                                Integer.parseInt(dadosFicheiro[1].trim()),
-                                dadosFicheiro[2],
-                                dadosFicheiro[3],
-                                dadosFicheiro[4]
-                        ));
-
-
                     }
+
+                    dadosPopulacao___.add(new Populacao(
+                            Integer.parseInt(dadosFicheiro[0].trim()),
+                            Integer.parseInt(dadosFicheiro[1].trim()),
+                            dadosFicheiro[2],
+                            dadosFicheiro[3],
+                            dadosFicheiro[4]
+                    ));
                 }
 
                 if (numeroDadosFicheiro == 6) { /* pasta cidades */
@@ -174,6 +183,7 @@ public class Main {
 
 
     public static void main(String[] args) {
+        /*
         Main.lerDadosFicheiro(new File("test-files", "paises-tudo-correto.csv"));
         Main.lerDadosFicheiro(new File("test-files", "cidades-tudo-correto.csv"));
         Main.lerDadosFicheiro(new File("test-files", "populacao-tudo-correto.csv"));
@@ -210,5 +220,6 @@ public class Main {
         }
 
         System.out.println("Ficheiros lidos com sucesso em " + (end - start) + " ms.");
+         */
     }
 }
