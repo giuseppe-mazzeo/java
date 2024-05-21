@@ -23,6 +23,14 @@ public class Pais {
         return id;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
+    public String getAlfa2() {
+        return alfa2;
+    }
+
     public void addPaisIdMaior700() {
         paisIdMaior700++;
     }

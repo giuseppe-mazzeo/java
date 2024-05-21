@@ -23,4 +23,12 @@ public class Populacao {
     public int getAno() {
         return ano;
     }
+
+    public int getPopMasculina() {
+        return Integer.parseInt(popMasculina.trim());
+    }
+
+    public int getPopFeminina() {
+        return Integer.parseInt(popFeminina.trim());
+    }
 }

@@ -1,7 +1,7 @@
 package pt.ulusofona.aed.deisiworldmeter;
 
 public class Cidade {
-    private String  alfa2,
+    private final String  alfa2,
                     cidade,
                     regiao,
                     populacao,
@@ -16,6 +16,24 @@ public class Cidade {
         this.populacao = populacao;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public String getAlfa2() {
+        return alfa2;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+
+    /* Esta função além de retornar a população, também retira os dois últimos caracteres da string desnecessários (p.e. "20430.0", retira os caracteres ".0") */
+    public int getPopulacao() {
+        if (populacao.endsWith(".0")) {
+            return Integer.parseInt(populacao.substring(0,populacao.length() - 2).trim());
+        } else {
+            return Integer.parseInt(populacao.trim());
+        }
     }
 
     @Override

@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 */
 
 public class TestXXX {
+
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     /* Testa classe Main */
     @Test
@@ -43,8 +44,8 @@ public class TestXXX {
 
     @Test
     public void testDadosCorretos() {
-        Main.lerDadosFicheiro(new File("test-files", "paises-tudo-correto.csv"));
         Main.lerDadosFicheiro(new File("test-files", "cidades-tudo-correto.csv"));
+        Main.lerDadosFicheiro(new File("test-files", "paises-tudo-correto.csv"));
         Main.lerDadosFicheiro(new File("test-files", "populacao-tudo-correto.csv"));
 
         ArrayList<String> paises = Main.getObjects(TipoEntidade.PAIS);
@@ -54,21 +55,20 @@ public class TestXXX {
         assertEquals("Brasil | 76 | BR | BRA", paises.get(0));
         assertEquals("Portugal | 720 | PT | PRT | 19", paises.get(1));
         assertEquals("Angola | 24 | AO | AGO", paises.get(2));
-        assertEquals("Burquina Fasso | 854 | BF | BFA | 1", paises.get(11));
 
         assertEquals("amrode sufla | AF | 05 | 66 | (34.198303,66.955414)", cidades.get(0));
         assertEquals("abrantes | PT | 18 | 13646.0 | (39.466667,-8.2)", cidades.get(4));
         assertEquals("rio de janeiro | BR | 12 | 21.6023742.0 | (-22.9,-43.233333)", cidades.get(19));
 
-        assertEquals("paises-tudo-correto.csv | 13 | 0 | -1", inputInvalido.get(0));
+        assertEquals("paises-tudo-correto.csv | 3 | 10 | 5", inputInvalido.get(0));
         assertEquals("cidades-tudo-correto.csv | 21 | 0 | -1", inputInvalido.get(1));
         assertEquals("populacao-tudo-correto.csv | 44 | 0 | -1", inputInvalido.get(2));
     }
 
     @Test
     public void testLinhasErradas() {
-        Main.lerDadosFicheiro(new File("test-files", "paises-dados-errados.csv"));
         Main.lerDadosFicheiro(new File("test-files", "cidades-dados-errados.csv"));
+        Main.lerDadosFicheiro(new File("test-files", "paises-dados-errados.csv"));
         Main.lerDadosFicheiro(new File("test-files", "populacao-dados-errados.csv"));
 
         ArrayList<String> paises = Main.getObjects(TipoEntidade.PAIS);
@@ -78,14 +78,13 @@ public class TestXXX {
         assertEquals("Brasil | 76 | BR | BRA", paises.get(0));
         assertEquals("Portugal | 720 | PT | PRT | 21", paises.get(1));
         assertEquals("Angola | 24 | AO | AGO", paises.get(2));
-        assertEquals("Burquina Fasso | 854 | BF | BFA | 1", paises.get(11));
 
         assertEquals("abacate | XX | 20 | 2776125.0 | (-8.836803999999999,13.23317399999998)",cidades.get(0));
         assertEquals("amrode sufla | AF | 05 | 66 | (34.198303,66.955414)", cidades.get(1));
         assertEquals("ola | YY | 20 | 2776125.0 | (-8.836803999999999,13.23317399999998)", cidades.get(5));
         assertEquals("zombie | ZZ | 20 | 2776125.0 | (-8.836803999999999,13.23317399999998)", cidades.get(16));
 
-        assertEquals("paises-dados-errados.csv | 13 | 5 | 2", inputInvalido.get(0));
+        assertEquals("paises-dados-errados.csv | 4 | 14 | 2", inputInvalido.get(0));
         assertEquals("cidades-dados-errados.csv | 17 | 7 | 10", inputInvalido.get(1));
         assertEquals("populacao-dados-errados.csv | 43 | 4 | 8", inputInvalido.get(2));
     }

@@ -1,11 +1,9 @@
 package pt.ulusofona.aed.deisiworldmeter;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Main {
     private static ArrayList<Pais> dadosPaises___;
@@ -17,8 +15,9 @@ public class Main {
         ArrayList<String> output = new ArrayList<>();
 
         if (tipo == TipoEntidade.INPUT_INVALIDO) {
-            output.add(inputInvalido.get(0).toString());
+            /*  .get(0) -> cidades.csv ||| .get(1) -> paises.csv ||| .get(2) -> populacao.csv */
             output.add(inputInvalido.get(1).toString());
+            output.add(inputInvalido.get(0).toString());
             output.add(inputInvalido.get(2).toString());
         } else if (tipo == TipoEntidade.PAIS) {
             for (Pais dadosPais : dadosPaises___) {
@@ -35,6 +34,8 @@ public class Main {
 
 
     private static void resetarBancoDados(File ficheiro) {
+        /* Reseto o conteúdo de banco de dados do ficheiro que está sendo lido */
+
         if (ficheiro.getName().substring(0, Math.min(ficheiro.getName().length(), 6)).equals("paises")) {
             dadosPaises___ = new ArrayList<>();
         }
@@ -58,7 +59,8 @@ public class Main {
         String[] dadosFicheiro; /* Guarda os dados separados por vírgulas. Guardas as colunas */
         int numeroDadosFicheiro; /* Quantidade de colunas de um ficheiro */
         InputInvalido inputInvalidoAtual = new InputInvalido(ficheiro.getName());
-        boolean paisRepetido = false;
+        boolean paisRepetido;
+        boolean naoTemPaisFicheiroCidade;
 
         try (BufferedReader br = new BufferedReader(new FileReader(ficheiro))) {
             resetarBancoDados(ficheiro);
@@ -66,25 +68,33 @@ public class Main {
 
             while ((linhaAtual = br.readLine()) != null) {
                 paisRepetido = false;
+                naoTemPaisFicheiroCidade = true;
                 dadosFicheiro = linhaAtual.split(",");
                 inputInvalidoAtual.addNumLinhaLidaFicheiro(); /* Leu uma linha */
 
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
                 /* Verifica linhas incorretas */
-                if (dadosFicheiro.length != numeroDadosFicheiro) { /* Linhas com dados a mais e a menos */
+                if (dadosFicheiro.length != numeroDadosFicheiro) { /* Linhas com dados a mais ou a menos */
                     inputInvalidoAtual.addLinhaNOK();
                     continue;
                 }
+
+                /* paises.csv */
                 if (numeroDadosFicheiro == 4) {
-                    /* paises.csv */
-                    for (Pais dadosPais : dadosPaises___) { /* Verifica se tem país repetido */
-                        if (dadosPais.getId() == Integer.parseInt(dadosFicheiro[0].trim())) {
-                            inputInvalidoAtual.addLinhaNOK();
+                    for (Pais dadosPais : dadosPaises___) {
+                        if (dadosPais.getId() == Integer.parseInt(dadosFicheiro[0].trim())) { /* Verifica se tem país repetido */
                             paisRepetido = true;
                             break;
                         }
                     }
-                    if (paisRepetido) {
+                    for (Cidade dadosCidade : dadosCidades___) { /* Verifica se existe o país no ficheiro cidades.csv */
+                        if (dadosCidade.getAlfa2().equals(dadosFicheiro[1].trim())) {
+                            naoTemPaisFicheiroCidade = false;
+                            break;
+                        }
+                    }
+                    if (paisRepetido || naoTemPaisFicheiroCidade) {
+                        inputInvalidoAtual.addLinhaNOK();
                         continue;
                     }
                     if (Arrays.stream(dadosFicheiro).anyMatch(String::isEmpty)) { /* Verifica se tem todos os dados preenchidos */
@@ -92,13 +102,15 @@ public class Main {
                         continue;
                     }
                 }
+
+                /* populacao.csv */
                 if (numeroDadosFicheiro == 5 && (dadosFicheiro[1].equals("Medium") || Arrays.stream(dadosFicheiro).anyMatch(String::isEmpty))) {
-                    /* populacao.csv */
                     inputInvalidoAtual.addLinhaNOK();
                     continue;
                 }
+
+                /* cidades.csv */
                 if (numeroDadosFicheiro == 6 && Arrays.stream(dadosFicheiro).anyMatch(String::isEmpty)) {
-                    /* cidades.csv */
                     inputInvalidoAtual.addLinhaNOK();
                     continue;
                 }
@@ -106,8 +118,9 @@ public class Main {
 
                 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
                 /* Guardando informações dos ficheiros em variáveis */
-                if (numeroDadosFicheiro == 4) { /* pasta paises */
-                    /* Verifica se o país não é repetido */
+
+                /* paises.csv */
+                if (numeroDadosFicheiro == 4) {
                     dadosPaises___.add(new Pais(
                             Integer.parseInt(dadosFicheiro[0].trim()),
                             dadosFicheiro[1],
@@ -116,8 +129,9 @@ public class Main {
                     ));
                 }
 
-                if (numeroDadosFicheiro == 5) { /* populacao.csv */
-                    /* Verifico se tem dados de anos repetidos
+                /* populacao.csv */
+                if (numeroDadosFicheiro == 5) {
+                    /* Verifica se tem dados de anos repetidos
                     for (Populacao dadosPop : dadosPopulacao___) {
                         if (dadosPop.getId() == Integer.parseInt(dadosFicheiro[0].trim()) && dadosPop.getAno() == Integer.parseInt(dadosFicheiro[1].trim())) {
                             anoPopulacaoRepetido = true;
@@ -145,7 +159,8 @@ public class Main {
                     ));
                 }
 
-                if (numeroDadosFicheiro == 6) { /* pasta cidades */
+                /* cidades.csv */
+                if (numeroDadosFicheiro == 6) {
                     dadosCidades___.add(new Cidade(
                             dadosFicheiro[0],
                             dadosFicheiro[1],
@@ -167,7 +182,7 @@ public class Main {
         /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
         /* Guardar informações para o Enumerado do tipo "INPUT_INVALIDO" */
         inputInvalido.add(inputInvalidoAtual);
-        /* .get(0) -> paises.csv ||| .get(1) -> populacao.csv ||| .get(2) -> cidades.csv */
+        /*  .get(0) -> cidades.csv ||| .get(1) -> paises.csv ||| .get(2) -> populacao.csv
         /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
         return true;
@@ -176,16 +191,54 @@ public class Main {
 
     public static boolean parseFiles(File folder) {
 
-        return lerDadosFicheiro(new File(folder, "paises.csv"))
-                && lerDadosFicheiro(new File(folder, "populacao.csv"))
-                && lerDadosFicheiro(new File(folder, "cidades.csv"));
+        return lerDadosFicheiro(new File(folder, "cidades.csv"))
+                && lerDadosFicheiro(new File(folder, "paises.csv"))
+                && lerDadosFicheiro(new File(folder, "populacao.csv"));
+    }
+
+
+    public static Resultado execute(String comando) {
+        Resultado out = new Resultado(comando);
+
+        out.setDadosPaises(dadosPaises___);
+        out.setDadosCidades(dadosCidades___);
+        out.setDadosPopulacao(dadosPopulacao___);
+
+        out.executaComando(comando);
+
+        return out;
     }
 
 
     public static void main(String[] args) {
-        /*
-        Main.lerDadosFicheiro(new File("test-files", "paises-tudo-correto.csv"));
         Main.lerDadosFicheiro(new File("test-files", "cidades-tudo-correto.csv"));
+        Main.lerDadosFicheiro(new File("test-files", "paises-tudo-correto.csv"));
+        Main.lerDadosFicheiro(new File("test-files", "populacao-tudo-correto.csv"));
+
+        Scanner in = new Scanner(System.in);
+        String line;
+        Resultado resultado = execute("HELP");
+        System.out.println(resultado.getResult());
+
+        do {
+            System.out.print("> ");
+            line = in.nextLine();
+
+            if (line != null && !line.equals("QUIT")) {
+                resultado = execute(line);
+
+                if (resultado.isSucess()) {
+                    System.out.println(resultado.getResult());
+                } else {
+                    System.out.println("Error: " + resultado.getError());
+                }
+            }
+        } while (line != null && !line.equals("QUIT"));
+
+
+        /*.
+        Main.lerDadosFicheiro(new File("test-files", "cidades-tudo-correto.csv"));
+        Main.lerDadosFicheiro(new File("test-files", "paises-tudo-correto.csv"));
         Main.lerDadosFicheiro(new File("test-files", "populacao-tudo-correto.csv"));
 
         System.out.println(getObjects(TipoEntidade.PAIS));
