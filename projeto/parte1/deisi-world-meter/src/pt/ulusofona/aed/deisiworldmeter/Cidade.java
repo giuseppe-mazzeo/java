@@ -27,6 +27,10 @@ public class Cidade {
     }
 
 
+    public String getRegiao() {
+        return regiao;
+    }
+
     /* Esta função além de retornar a população, também retira os dois últimos caracteres da string desnecessários (p.e. "20430.0", retira os caracteres ".0") */
     public int getPopulacao() {
         if (populacao.endsWith(".0")) {

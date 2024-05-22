@@ -31,6 +31,8 @@ public class Resultado {
         String popFem = "";
         boolean comecaContagem = false;
         ArrayList<String> paisHistoricoCompleto = new ArrayList<>();
+        int maxPopulacao = -1;
+        ArrayList<String> cidadesMaisPopulosas = new ArrayList<>();
 
         int min_population;
         int num_results;
@@ -193,16 +195,13 @@ public class Resultado {
             case "GET_MOST_POPULOUS":
                 num_results = Integer.parseInt(separador[1].trim());
 
-                int maxPopulacao = -1;
-                ArrayList<String> data = new ArrayList<>();
-
                 for (Cidade cidade : dadosCidades) { /* Analiso o bando de dados das Cidades por completo */
                     /* Vejo se trocou de país (outro país é igual à outro alfa2). Se trocou, preciso atualizar as minhas variáveis para não houver erros */
                     if (!alfa2.equals(cidade.getAlfa2())) {
                         maxPopulacao = -1;
                         country_name = procuraCountryNamePeloAlfa2(cidade.getAlfa2());
                         if (!country_name.equals("")) { /* Caso não houver o país no ficheiro País */
-                            data.add(country_name + ":" + cidade.getCidade() + ":" + maxPopulacao + "\n");
+                            cidadesMaisPopulosas.add(country_name + ":" + cidade.getCidade() + ":" + maxPopulacao + "\n");
                         }
                         alfa2 = cidade.getAlfa2();
                     }
@@ -211,24 +210,125 @@ public class Resultado {
                         /* Verifico qual é a cidade de um determinado país (existente no ficheiro País) com maior população */
                         if (cidade.getPopulacao() > maxPopulacao && !country_name.equals("")) {
                             maxPopulacao = cidade.getPopulacao();
-                            data.remove(data.size() - 1);
-                            data.add(country_name + ":" + cidade.getCidade() + ":" + maxPopulacao + "\n"); /* Atualizo o último elemento do arraylist */
+                            cidadesMaisPopulosas.remove(cidadesMaisPopulosas.size() - 1);
+                            cidadesMaisPopulosas.add(country_name + ":" + cidade.getCidade() + ":" + maxPopulacao + "\n"); /* Atualizo o último elemento do arraylist */
                         }
                     }
                 }
 
-                data.sort((s1, s2) -> { /* Ordenando o arraylist com uma expressão lambda */
-                    int maxPopulacao1 = Integer.parseInt(s1.split(":")[2].trim()); /* Extrair maxPopulacao de s1 */
-                    int maxPopulacao2 = Integer.parseInt(s2.split(":")[2].trim()); /* Extrair maxPopulacao de s2 */
+                cidadesMaisPopulosas.sort((cidade1, cidade2) -> { /* Ordenando o arraylist com uma expressão lambda */
+                    int maxPopulacao1 = Integer.parseInt(cidade1.split(":")[2].trim()); /* Extrair maxPopulacao de cidade1 */
+                    int maxPopulacao2 = Integer.parseInt(cidade2.split(":")[2].trim()); /* Extrair maxPopulacao de cidade2 */
 
                     return Integer.compare(maxPopulacao2, maxPopulacao1); /* Ordenar em ordem decrescente */
                 });
 
                 for (int i = 0; i < num_results; i++) {
-                    if (i >= data.size()) { /* Caso o valor passado como parâmetro seja maior que o tamanho do array */
+                    if (i >= cidadesMaisPopulosas.size()) { /* Caso o valor passado como parâmetro seja maior que o tamanho do array */
                         break;
                     }
-                    result += data.get(i);
+                    result += cidadesMaisPopulosas.get(i);
+                }
+
+                break;
+
+            /* Apresenta as cidades mais populosas, em ordem decrescente, de um determinado país. O parâmetro numérico indica quantas cidades deve mostrar. */
+            case "GET_TOP_CITIES_BY_COUNTRY":
+                num_results = Integer.parseInt(separador[1].trim());
+                country_name = separador[2];
+
+                alfa2 = procuraAlfa2Pais(country_name);
+                cidadesMaisPopulosas = new ArrayList<>();
+
+                String popCidade;
+
+                for (Cidade cidade : dadosCidades) { /* Itero pelas cidades */
+                    if (alfa2.equals(cidade.getAlfa2())) { /* Percorre as cidades até encontrar o país passado como parâmetro */
+                        popCidade = cidade.getPopulacao() + "";
+                        if (popCidade.length() > 3) { /* Caso a cidade tiver mais que 999 habitantes */
+                            popCidade = popCidade.substring(0, popCidade.length() - 3) + "K";
+                        }
+                        cidadesMaisPopulosas.add(cidade.getCidade() + ":" + popCidade + "\n"); /* Adiciono a cidade ao array */
+                    }
+                }
+
+                cidadesMaisPopulosas.sort((cidade1, cidade2) -> { /* Ordenando o arraylist com uma expressão lambda */
+                    String popCidade1 = cidade1.split(":")[1].trim();
+                    String popCidade2 = cidade2.split(":")[1].trim();
+
+                    if (popCidade1.charAt(popCidade1.length() -1 ) == 'K') { /* Retiro o último caracter, 'K', para não ter problema */
+                        popCidade1 = popCidade1.substring(0, popCidade1.length() - 1);
+                    }
+
+                    if (popCidade2.charAt(popCidade2.length() -1 ) == 'K') { /* Retiro o último caracter, 'K', para não ter problema */
+                        popCidade2 = popCidade2.substring(0, popCidade2.length() - 1);
+                    }
+
+                    int maxPopulacao1 = Integer.parseInt(popCidade1.trim()); /* Extrair maxPopulacao de cidade1 */
+                    int maxPopulacao2 = Integer.parseInt(popCidade2.trim()); /* Extrair maxPopulacao de cidade2 */
+
+                    /* Ordenar por população em ordem decrescente*/
+                    int comparePopulacao = Integer.compare(maxPopulacao2, maxPopulacao1);
+                    if (comparePopulacao != 0) {
+                        return comparePopulacao;
+                    }
+
+                    /* Se as populações são iguais, ordenar por nome da cidade em ordem alfabética */
+                    String nomeCidade1 = cidade1.split(":")[0].trim();
+                    String nomeCidade2 = cidade2.split(":")[0].trim();
+                    return nomeCidade1.compareTo(nomeCidade2);
+                });
+
+                if (num_results == -1) { /* Mostrar todas as cidades de um país caso o parâmetro numérico seja -1 */
+                    for (String cidadePopulosa : cidadesMaisPopulosas) {
+                        result += cidadePopulosa;
+                    }
+                    break;
+                }
+
+                for (int i = 0; i < num_results; i++) {
+                    if (i >= cidadesMaisPopulosas.size()) { /* Caso o valor passado como parâmetro seja maior que o tamanho do array */
+                        break;
+                    }
+                    result += cidadesMaisPopulosas.get(i);
+                }
+
+                break;
+
+            /* Descobrir todas as cidades cujo nome estaja duplicado a nível mundial, porém, tem que ter, pelo menos, a quantidade da população passado como parâmetro. A primeira cidade que aparece no ficheiro é a original, as demais com o mesmo nome são as cópias */
+            case "GET_DUPLICATE_CITIES":
+                min_population = Integer.parseInt(separador[1].trim());
+
+                int populacaoCidade = 0;
+                ArrayList<String> cidadesNaoDuplicadas = new ArrayList<>();
+                ArrayList<String> cidadesDupli = new ArrayList<>();
+
+                for (Cidade cidade : dadosCidades) {
+                    if (cidadesNaoDuplicadas.size() == 0) {
+                        cidadesNaoDuplicadas.add(cidade.getCidade());
+                        continue;
+                    }
+
+                    if (!cidadesNaoDuplicadas.get(count).equals(cidade.getCidade())) {
+                        cidadesNaoDuplicadas.add(cidade.getCidade());
+                        count++;
+                    } else {
+                        country_name = procuraCountryNamePeloAlfa2(cidade.getAlfa2());
+
+                        cidadesDupli.add(cidade.getCidade() + " (" + country_name + "," + cidade.getRegiao() + ")" + "-" + cidade.getPopulacao());
+                    }
+                }
+
+                for (String cidade : cidadesDupli) {
+                    populacaoCidade = Integer.parseInt(cidade.split("-")[1]);
+
+                    if (populacaoCidade >= min_population) {
+                        result += cidade.split("-")[0] + "\n";
+                    }
+                }
+
+                if (result.equals("")) {
+                    result = "Sem resultados";
                 }
 
                 break;
