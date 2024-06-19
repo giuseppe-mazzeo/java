@@ -22,23 +22,40 @@ public class Resultado {
 
     public void executaComando(String comando) {
         String[] separador = comando.split(" ");
+        String alfa2 = "";
+        String popMas = "";
+        String popFem = "";
+        String popCidade = "";
         int count = 0;
         int sum = 0;
         int id = -1;
         int year_current = -1;
-        String alfa2 = "";
-        String popMas = "";
-        String popFem = "";
-        boolean comecaContagem = false;
-        ArrayList<String> paisHistoricoCompleto = new ArrayList<>();
         int maxPopulacao = -1;
+        int populacaoCidade = 0;
+        int popMasInt = 0;
+        int popFemInt = 0;
+        int popTotalAtual = 0;
+        int popTotalAnterior = 0;
+        float resultadoFormula = 0;
+        boolean comecaContagem = false;
+        boolean existePais = false;
+        ArrayList<String> paisHistoricoCompleto = new ArrayList<>();
         ArrayList<String> cidadesMaisPopulosas = new ArrayList<>();
+        ArrayList<String> cidadesNaoDuplicadas = new ArrayList<>();
+        ArrayList<String> cidadesDupli = new ArrayList<>();
+        ArrayList<String> paisesGenderGap = new ArrayList<>();
+        ArrayList<String> guardaPopEAno = new ArrayList<>();
+        ArrayList<String> guardaResultadosDaFormula = new ArrayList<>();
 
-        int min_population;
-        int num_results;
-        int year_start;
-        int year_end;
+        int min_population = 0;
+        int num_results = 0;
+        int year_start = 0;
+        int year_end = 0;
+        int min_gender_gap = 0;
         String country_name = "";
+        String city_name = "";
+        String region = "";
+        String population = "";
         ArrayList<String> countries_list = new ArrayList<>();
 
         /* Esta função substitui o papél do 'default' no 'switch', verificando a quantidade de argumentos necessários para cada comando */
@@ -238,9 +255,6 @@ public class Resultado {
                 country_name = separador[2];
 
                 alfa2 = procuraAlfa2Pais(country_name);
-                cidadesMaisPopulosas = new ArrayList<>();
-
-                String popCidade;
 
                 for (Cidade cidade : dadosCidades) { /* Itero pelas cidades */
                     if (alfa2.equals(cidade.getAlfa2())) { /* Percorre as cidades até encontrar o país passado como parâmetro */
@@ -295,13 +309,10 @@ public class Resultado {
 
                 break;
 
-            /* Descobrir todas as cidades cujo nome estaja duplicado a nível mundial, porém, tem que ter, pelo menos, a quantidade da população passado como parâmetro. A primeira cidade que aparece no ficheiro é a original, as demais com o mesmo nome são as cópias */
+            /* Descobrir todas as cidades cujo nome estaja duplicado a nível mundial, porém, tem que ter, pelo menos, a quantidade da população passado como parâmetro. */
+            /* A primeira cidade que aparece no ficheiro é a original, as demais com o mesmo nome são as cópias  */
             case "GET_DUPLICATE_CITIES":
                 min_population = Integer.parseInt(separador[1].trim());
-
-                int populacaoCidade = 0;
-                ArrayList<String> cidadesNaoDuplicadas = new ArrayList<>();
-                ArrayList<String> cidadesDupli = new ArrayList<>();
 
                 for (Cidade cidade : dadosCidades) {
                     if (cidadesNaoDuplicadas.size() == 0) {
@@ -331,6 +342,144 @@ public class Resultado {
                     result = "Sem resultados";
                 }
 
+                break;
+
+            /* Este comando analisa a discrepância entre a popMas e popFem em cada país (no ano de 2024), a nível mundial */
+            case "GET_COUNTRIES_GENDER_GAP":
+                min_gender_gap = Integer.parseInt(separador[1].trim());
+
+                for (Populacao populacao : dadosPopulacao) { /* Percorre os dados da População */
+                    if (populacao.getAno() == 2024) { /* Vejo apenas os dados do ano atual, 2024 */
+                        country_name = procuraCountryNamePeloId(populacao.getId());
+                        popMasInt = populacao.getPopMasculina();
+                        popFemInt = populacao.getPopFeminina();
+
+                        /* Fórmula -> |popMas - popFem| / popMas + popFem * 100 (valor com 2 casas decimais, sem arredondamentos) */
+                        resultadoFormula = (float) Math.abs(popMasInt - popFemInt) / (popMasInt + popFemInt) * 100;
+
+                        /* Locale.US serve para garantir que o ponto seja utilizado como separador decimal, independentes das configurações regionais */
+                        paisesGenderGap.add(country_name + ":" + String.format(Locale.US, "%.2f",resultadoFormula));
+                    }
+                }
+
+                for (String pais : paisesGenderGap) {
+                    /* Vejo se a parte inteira do resultado da fórmula é maior ou igual ao número passado como parâmetro */
+                    if (Integer.parseInt(pais.split(":")[1].split("\\.")[0]) >= min_gender_gap) {
+                        result += pais + "\n";
+                    }
+                }
+
+                if (result.equals("")) {
+                    result = "Sem resultados";
+                }
+
+                break;
+
+            /* Revela o aumento da população em um intervalor de anos. Relativamente ao nível mundial, quais foram os CINCO países que aumentaram a sua populção */
+            /* É mostrado de forma decrescente. Países com maior diferença em primeiro e com menor fica em último */
+            /* popTotal = popMas + popFem */
+            /* popTotal (ano) - popTotal (anoAnterior) / popTotal (ano) * 100 (valor com 2 casas decimais, sem arredondamentos) */
+            /* Se <0, devemos descartar, pois, não é um aumento populacional */
+            case "GET_TOP_POPULATION_INCREASE":
+                year_start = Integer.parseInt(separador[1].trim());
+                year_end = Integer.parseInt(separador[2].trim());
+
+                for (Populacao populacao : dadosPopulacao) { /* Itero pelo ficheiro do começo ao fim para analisar todos os países */
+                    /* Vejo se trocou de país (outro país é igual à outro id). Se trocou, preciso atualizar as minhas variáveis para não houver erros */
+                    if (id != populacao.getId()) {
+                        country_name = procuraCountryNamePeloId(populacao.getId());
+                        id = populacao.getId();
+                    }
+
+                    if (populacao.getAno() >= year_start && populacao.getAno() <= year_end) {
+                        guardaPopEAno.add(country_name + "-" + populacao.getAno() + "-" + populacao.getPopMasculina() + "-" + populacao.getPopFeminina());
+                    }
+                }
+
+                for (int i = 0; i < guardaPopEAno.size(); i++) {
+                    popTotalAnterior = Integer.parseInt(guardaPopEAno.get(i).split("-")[2].trim()) + Integer.parseInt(guardaPopEAno.get(i).split("-")[2].trim());
+                    country_name = guardaPopEAno.get(i).split("-")[0];
+
+                    for (int f = i; f < guardaPopEAno.size(); f++) {
+                        if (!country_name.equals(guardaPopEAno.get(f).split("-")[0])) {
+                            break;
+                        }
+
+                        if (guardaPopEAno.get(i).split("-")[1].trim().equals(guardaPopEAno.get(f).split("-")[1].trim())) {
+                            continue;
+                        }
+
+                        popTotalAtual = Integer.parseInt(guardaPopEAno.get(f).split("-")[2].trim()) + Integer.parseInt(guardaPopEAno.get(f).split("-")[2].trim());
+
+                        if (popTotalAtual - popTotalAnterior < 0) {
+                            continue;
+                        }
+
+                        resultadoFormula = (float) (popTotalAtual - popTotalAnterior) / popTotalAtual * 100;
+
+                        guardaResultadosDaFormula.add(country_name + ":" + guardaPopEAno.get(i).split("-")[1].trim() + "-"
+                                + guardaPopEAno.get(f).split("-")[1].trim() + ":" + String.format(Locale.US, "%.2f",resultadoFormula) + "%\n");
+                    }
+
+                    //TODO ordenar do maior para o menor
+
+                }
+
+                for (int i = 0; i < 5; i++) {
+                    result += guardaResultadosDaFormula.get(i);
+                }
+
+                break;
+
+            //Adiciona uma cidade para um país correspondente (se existir) somente na estrutura de memória do programa. Este comando não altera o ficheiro!
+            case "INSERT_CITY":
+                alfa2 = separador[1].trim();
+                city_name = separador[2].trim();
+                region = separador[3].trim();
+                population = separador[4].trim();
+
+                for (Pais pais : dadosPaises) {
+                    if (pais.getAlfa2().equals(alfa2)) {
+                        existePais = true;
+                    }
+                }
+
+                if (!existePais) {
+                    result = "Pais invalido";
+                    break;
+                }
+
+                Cidade cidade = new Cidade(alfa2, city_name, region, population, "0.0", "0.0");
+
+                Main.inserirCidade(cidade);
+
+                result = "Inserido com sucesso";
+                break;
+
+            //Remove o país passado como parâmetro. Se o país não existir o programa devolve uma mensagem de erro.
+            case "REMOVE_COUNTRY":
+                country_name = separador[1].trim();
+
+                for (Pais pais : dadosPaises) {
+                    if (pais.getNome().equals(country_name)) {
+                        existePais = true;
+                        Main.removerPais(count);
+                        break;
+                    }
+                    count++;
+                }
+
+                if (!existePais) {
+                    result = "Pais invalido";
+                    break;
+                }
+
+                result = "Removido com sucesso";
+                break;
+
+            //
+            case "GET_DUPLICATE_CITIES_DIFFERENT_COUNTRIES":
+                result = "a";
                 break;
         }
     }

@@ -209,6 +209,15 @@ public class Main {
         return out;
     }
 
+    public static void inserirCidade(Cidade cidade) {
+        dadosCidades___.add(cidade);
+    }
+
+
+    public static void removerPais(int count) {
+        dadosPaises___.remove(count);
+    }
+
 
     public static void main(String[] args) {
         Main.lerDadosFicheiro(new File("test-files", "cidades-tudo-correto.csv"));
