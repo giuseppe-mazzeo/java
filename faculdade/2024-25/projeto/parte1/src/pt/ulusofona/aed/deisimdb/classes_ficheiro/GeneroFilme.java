@@ -2,9 +2,12 @@ package pt.ulusofona.aed.deisimdb.classes_ficheiro;
 
 import pt.ulusofona.aed.deisimdb.Main;
 
+import java.util.List;
+
 public class GeneroFilme {
     private int genreId;
     private int movieId;
+    private String genreName;
 
 
 
@@ -27,16 +30,15 @@ public class GeneroFilme {
 
     @Override
     public String toString() {
-        String[][] todosGeneros = Main.todosGeneros;
-        String genero = "";
+        List<Genero> todosGeneros = Main.listaGeneros;
 
-        for (String[] tipoGereno : todosGeneros) {
-            if (Integer.parseInt(tipoGereno[0]) == genreId) {
-                genero = tipoGereno[1];
+        for (Genero genero : todosGeneros) {
+            if (genero.getGenreId() == genreId) {
+                genreName = genero.getGenreName();
                 break;
             }
         }
 
-        return movieId + " | " + genero;
+        return movieId + " | " + genreName;
     }
 }

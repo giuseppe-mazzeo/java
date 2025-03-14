@@ -1,11 +1,12 @@
 package pt.ulusofona.aed.deisimdb.classes_ficheiro;
 
 public class Filme {
-    int movieId;
-    String movieName;
-    float movieDuration;
-    long movieBudget;
-    String movieReleaseDate;
+    private int movieId;
+    private String movieName;
+    private float movieDuration;
+    private long movieBudget;
+    private String movieReleaseDate;
+    private int numAtoresEnvolvidos = -1;
 
 
 
@@ -17,6 +18,11 @@ public class Filme {
         this.movieReleaseDate = movieReleaseDate;
     }
 
+
+
+    public void setnumAtoresEnvolvidos(int numAtoresEnvolvidos) {
+        this.numAtoresEnvolvidos = numAtoresEnvolvidos;
+    }
 
 
     public int getMovieId() {
@@ -43,7 +49,11 @@ public class Filme {
 
     @Override
     public String toString() {
-        String[] movieReleaseDate = this.movieReleaseDate.split("-");
+        String[] movieReleaseDate = this.movieReleaseDate.split("-"); // Serve para inverter, ou seja, antes estava dia-mes-ano, porém, agora vou retornar como ano-mes-dia
+
+        if (movieId < 1000) {
+            return movieId + " | " + movieName + " | " + movieReleaseDate[2] + "-" + movieReleaseDate[1] + "-" + movieReleaseDate[0] + " | " + numAtoresEnvolvidos;
+        }
 
         return movieId + " | " + movieName + " | " + movieReleaseDate[2] + "-" + movieReleaseDate[1] + "-" + movieReleaseDate[0];
     }

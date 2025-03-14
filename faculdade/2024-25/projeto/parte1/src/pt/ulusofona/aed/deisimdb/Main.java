@@ -204,13 +204,34 @@ public class Main {
                     continue;
                 }
 
-                listaFilmes.add(new Filme(
-                        Integer.parseInt(dataLinha[0].trim()), // movieId
-                        dataLinha[1].trim(), // movieName
-                        Float.parseFloat(dataLinha[2].trim()), // movieDuration
-                        Long.parseLong(dataLinha[3].trim()), // movieBudget
-                        dataLinha[4].trim() // movieReleaseDate
-                ));
+                // Preciso de p
+                if (listaFilmes.size() != 0) {
+                    listaFilmes.add(new Filme(
+                            Integer.parseInt(dataLinha[0].trim()), // movieId
+                            dataLinha[1].trim(), // movieName
+                            Float.parseFloat(dataLinha[2].trim()), // movieDuration
+                            Long.parseLong(dataLinha[3].trim()), // movieBudget
+                            dataLinha[4].trim() // movieReleaseDate
+                    ));
+                }
+                // Verifico se já existe o mesmo movieId na lista
+                // Se não houver -> adiciono à lista e linha lida com sucesso
+                // Se houver -> não adiciono à lista, mas mesmo assim a linha foi lida com sucesso
+                for (int pos = 0; pos < listaFilmes.size(); pos++) {
+                    if (Integer.parseInt(dataLinha[0].trim()) != listaFilmes.get(pos).getMovieId()) {
+                        listaFilmes.add(new Filme(
+                                Integer.parseInt(dataLinha[0].trim()), // movieId
+                                dataLinha[1].trim(), // movieName
+                                Float.parseFloat(dataLinha[2].trim()), // movieDuration
+                                Long.parseLong(dataLinha[3].trim()), // movieBudget
+                                dataLinha[4].trim() // movieReleaseDate
+                        ));
+
+                        if (Integer.parseInt(dataLinha[0].trim()) < 1000) {
+
+                        }
+                    }
+                }
 
                 linhaOK[5]++;
             }
@@ -237,26 +258,6 @@ public class Main {
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
-    static String criaListaObjetos(Scanner scanner, int quantidaColunas, int posLinhaOK) {
-        String linha = scanner.nextLine();
-        String[] dadosLinha;
-
-        while (scanner.hasNext()) {
-            linha = scanner.nextLine();
-            dadosLinha = linha.split(",");
-
-            if (dadosLinha.length != quantidaColunas) { // Tem mais ou menos informações do que deveria
-                acrescentarLinhaNOK(posLinhaOK);
-                continue;
-            }
-
-            
-
-            linhaOK[posLinhaOK]++;
-        }
-    }
-
-
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     // Retorna um arraylist com algumas informações dos ficheiros na mesma ordem que é lido no ficheiro
@@ -266,18 +267,14 @@ public class Main {
             case ATOR:
                 return (ArrayList) listaAtores;
 
-
             case FILME:
-                break;
-
+                return (ArrayList) listaFilmes;
 
             case REALIZADOR:
-                break;
-
+                return (ArrayList) listaDiretores;
 
             case GENERO_CINEMATROGRAFICO:
-                break;
-
+                return (ArrayList) listaGeneroFilmes;
 
             case INPUT_INVALIDO:
                 ArrayList<String> valores = new ArrayList<>();
@@ -300,11 +297,18 @@ public class Main {
     public static void main(String[] args) {
         parseFiles(new File("test-files/."));
 
-        System.out.println(listaAtores.size());
-        System.out.println(listaDiretores.size());
+
+        ArrayList retorno = getObjects(TipoEntidade.INPUT_INVALIDO);
+        System.out.println(retorno.get(0));
+        System.out.println(retorno.get(1));
+        System.out.println(retorno.get(2));
+        System.out.println(retorno.get(3));
+        System.out.println(retorno.get(4));
+        System.out.println(retorno.get(5));
+
         System.out.println(listaFilmes.size());
-        System.out.println(listaGeneroFilmes.size());
-        System.out.println(listaVotosFilmes.size());
-        System.out.println(listaGeneros.size());
+        for (Filme filme : listaFilmes) {
+            System.out.println(filme);
+        }
     }
 }
