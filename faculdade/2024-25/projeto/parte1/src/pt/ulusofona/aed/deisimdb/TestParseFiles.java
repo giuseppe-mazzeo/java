@@ -180,7 +180,7 @@ public class TestParseFiles {
         Main.parseFiles(new File("test-files/genres.csv"));
         Main.parseFiles(new File("test-files/genres.csv"));
 
-        String[][] resultadoEsperado = new String[20][2];
+        List<Genero> resultadoEsperado = new ArrayList<>();
 
         File ficheiro = new File("test-files/genres.csv");
         Scanner scanner;
@@ -195,19 +195,18 @@ public class TestParseFiles {
             linha = scanner.nextLine();
             String[] dataLinha = linha.split(",");
 
-            resultadoEsperado[linhaAtual][0] = dataLinha[0].trim(); // genreId
-            resultadoEsperado[linhaAtual][1] = dataLinha[1].trim(); // genreName
+            resultadoEsperado.add( new Genero(Integer.parseInt(dataLinha[0].trim()), dataLinha[1].trim()));
         }
 
-        String[][] resultadoAtual = Main.todosGeneros;
+        List<Genero> resultadoAtual = Main.listaGeneros;
 
-        if (resultadoEsperado.length != resultadoAtual.length) {
-            throw new IllegalArgumentException("Erro: Dados a mais ou a menos. Esperado: " + resultadoEsperado.length + ". Atual: " + resultadoAtual.length);
+        if (resultadoEsperado.size() != resultadoAtual.size()) {
+            throw new IllegalArgumentException("Erro: Dados a mais ou a menos. Esperado: " + resultadoEsperado.size() + ". Atual: " + resultadoAtual.size());
         }
 
-        for (int pos = 0; pos < resultadoEsperado.length; pos++) {
-            if (!resultadoEsperado[pos][0].equals(resultadoAtual[pos][0]) &&
-                !resultadoEsperado[pos][1].equals(resultadoAtual[pos][1])
+        for (int pos = 0; pos < resultadoEsperado.size(); pos++) {
+            if (resultadoEsperado.get(0) == resultadoAtual.get(0) &&
+                !resultadoEsperado.get(1).equals(resultadoAtual.get(1))
             ) {
                 throw new IllegalArgumentException("Erro: Dados errados");
             }

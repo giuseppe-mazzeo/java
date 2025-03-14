@@ -16,7 +16,7 @@ public class Main {
     static List<GeneroFilme> listaGeneroFilmes = new ArrayList<>();
     static List<VotosFilme> listaVotosFilmes = new ArrayList<>();
     static List<Filme> listaFilmes = new ArrayList<>();
-    public static String[][] todosGeneros = new String[20][2];
+    public static List<Genero> listaGeneros = new ArrayList<>();
     //
     static int[] linhaOK = new int[6];
     static int[] linhaNOK = new int[6];
@@ -32,6 +32,18 @@ public class Main {
     // retornou true -> Ficheiro existe, logo, leu ficheiro (mesmo que tenha pequenos erros dentro do ficheiro, por exemplo: filmes com id repetidos, colunas a mais ou a menos, etc)
     //
     public static boolean parseFiles(File ficheiro) {
+        if (ficheiro.isDirectory()) { // Representa a um diretório raiz (ou uma pasta)
+            File[] ficheiros = ficheiro.listFiles();
+
+            if (ficheiros != null) {
+                for (File file : ficheiros) {
+                    if (file.isFile()) {
+                        parseFiles(file);
+                    }
+                }
+            }
+        }
+
         Scanner scanner;
         try {
             scanner = new Scanner(ficheiro);
@@ -68,6 +80,8 @@ public class Main {
 
                 linhaOK[0]++;
             }
+
+            return true; // Ficheiro lido com sucesso!
         }
 
 
@@ -92,6 +106,8 @@ public class Main {
 
                 linhaOK[1]++;
             }
+
+            return true; // Ficheiro lido com sucesso!
         }
 
 
@@ -117,16 +133,16 @@ public class Main {
 
                 linhaOK[2]++;
             }
+
+            return true; // Ficheiro lido com sucesso!
         }
 
 
         // Ficheiro -> genres
         if (ficheiro.getName().equals("genres.csv")) {
-            if (todosGeneros[0][0] != null) { // Ficheiro já foi lido
-                return true;
-            }
+            listaGeneros.clear();
 
-            for (int linhaAtual = 0; linhaAtual < 20; linhaAtual++) {
+            while (scanner.hasNext()) {
                 linha = scanner.nextLine();
                 dataLinha = linha.split(",");
 
@@ -135,11 +151,16 @@ public class Main {
                     continue;
                 }
 
-                todosGeneros[linhaAtual][0] = dataLinha[0].trim(); // genreId
-                todosGeneros[linhaAtual][1] = dataLinha[1].trim(); // genreName
+                listaGeneros.add(new Genero(
+                        Integer.parseInt(dataLinha[0].trim()), // genreId
+                        dataLinha[1].trim() // genreName
+                ));
+
 
                 linhaOK[3]++;
             }
+
+            return true; // Ficheiro lido com sucesso!
         }
 
 
@@ -165,6 +186,8 @@ public class Main {
 
                 linhaOK[4]++;
             }
+
+            return true; // Ficheiro lido com sucesso!
         }
 
 
@@ -191,10 +214,12 @@ public class Main {
 
                 linhaOK[5]++;
             }
+
+            return true; // Ficheiro lido com sucesso!
         }
 
 
-        return true; // Ficheiro(os) lido(os) com sucesso!
+        return false;
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -211,6 +236,25 @@ public class Main {
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+
+    static String criaListaObjetos(Scanner scanner, int quantidaColunas, int posLinhaOK) {
+        String linha = scanner.nextLine();
+        String[] dadosLinha;
+
+        while (scanner.hasNext()) {
+            linha = scanner.nextLine();
+            dadosLinha = linha.split(",");
+
+            if (dadosLinha.length != quantidaColunas) { // Tem mais ou menos informações do que deveria
+                acrescentarLinhaNOK(posLinhaOK);
+                continue;
+            }
+
+            
+
+            linhaOK[posLinhaOK]++;
+        }
+    }
 
 
 
@@ -253,5 +297,14 @@ public class Main {
 
 
 
-    public static void main(String[] args) {}
+    public static void main(String[] args) {
+        parseFiles(new File("test-files/."));
+
+        System.out.println(listaAtores.size());
+        System.out.println(listaDiretores.size());
+        System.out.println(listaFilmes.size());
+        System.out.println(listaGeneroFilmes.size());
+        System.out.println(listaVotosFilmes.size());
+        System.out.println(listaGeneros.size());
+    }
 }
