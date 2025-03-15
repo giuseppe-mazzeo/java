@@ -27,18 +27,20 @@ public class Main {
 
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    // Função que lê ficheiros e guarda as informações
-    // retornou false -> Ficheiro não foi encontrado, logo, não leu o ficheiro (ficheiro não existe ou o formato não é .csv)
-    // retornou true -> Ficheiro existe, logo, leu ficheiro (mesmo que tenha pequenos erros dentro do ficheiro, por exemplo: filmes com id repetidos, colunas a mais ou a menos, etc)
+    // Função que lê ficheiros e guarda as informações.
+    // Retornou false ⇾ Ficheiro não foi encontrado, logo, não leu o ficheiro (ficheiro não existe ou o formato não é .csv)
+    // retornou true ⇾ Ficheiro existe, logo, leu ficheiro (mesmo que tenha pequenos erros dentro do ficheiro, por exemplo: filmes com "id" repetidos, colunas a mais ou a menos, etc)
     //
     public static boolean parseFiles(File ficheiro) {
-        if (ficheiro.isDirectory()) { // Representa a um diretório raiz (ou uma pasta)
+
+        // Verifico se representa a um diretório raiz (ou uma pasta)
+        if (ficheiro.isDirectory()) {
             File[] ficheiros = ficheiro.listFiles();
 
             if (ficheiros != null) {
-                for (File file : ficheiros) {
-                    if (file.isFile()) {
-                        parseFiles(file);
+                for (File ficheiroAtual : ficheiros) {
+                    if (ficheiroAtual.isFile()) {
+                        parseFiles(ficheiroAtual);
                     }
                 }
             }
@@ -57,37 +59,51 @@ public class Main {
         String[] dataLinha;
 
 
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> actors
         if (ficheiro.getName().equals("actors.csv")) {
             listaAtores.clear();
 
+            Ator novoAtor;
+            int actorId;
+            String actorName;
+            String actorGender;
+            int movieId;
+
             while (scanner.hasNext()) {
                 linha = scanner.nextLine();
                 dataLinha = linha.split(",");
-
 
                 if (dataLinha.length != 4) { // Tem mais ou menos informações do que deveria
                     acrescentarLinhaNOK(0);
                     continue;
                 }
 
-                listaAtores.add(new Ator(
-                        Integer.parseInt(dataLinha[0].trim()),
-                        dataLinha[1].trim(),
-                        dataLinha[2].trim(),
-                        Integer.parseInt(dataLinha[3].trim())
-                ));
+                actorId = Integer.parseInt(dataLinha[0].trim());
+                actorName = dataLinha[1].trim();
+                actorGender = dataLinha[2].trim();
+                movieId = Integer.parseInt(dataLinha[3].trim());
+                novoAtor = new Ator(actorId, actorName, actorGender, movieId);
+
+                listaAtores.add(novoAtor);
 
                 linhaOK[0]++;
             }
 
             return true; // Ficheiro lido com sucesso!
         }
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> directors
         if (ficheiro.getName().equals("directors.csv")) {
             listaDiretores.clear();
+
+            Diretor novoDiretor;
+            int directorId;
+            String directorName;
+            int movieId;
 
             while (scanner.hasNext()) {
                 linha = scanner.nextLine();
@@ -98,24 +114,31 @@ public class Main {
                     continue;
                 }
 
-                listaDiretores.add(new Diretor(
-                        Integer.parseInt(dataLinha[0].trim()), // directorId
-                        dataLinha[1].trim(), // directorName
-                        Integer.parseInt(dataLinha[2].trim()) // movieId
-                ));
+                directorId = Integer.parseInt(dataLinha[0].trim());
+                directorName = dataLinha[1].trim();
+                movieId = Integer.parseInt(dataLinha[2].trim());
+                novoDiretor = new Diretor(directorId, directorName, movieId);
+
+                listaDiretores.add(novoDiretor);
 
                 linhaOK[1]++;
             }
 
             return true; // Ficheiro lido com sucesso!
         }
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> genres_movies
         if (ficheiro.getName().equals("genres_movies.csv")) {
             listaGeneroFilmes.clear();
 
             parseFiles(new File("test-file/genres.csv"));
+
+            GeneroFilme novoGeneroFilme;
+            int genreId;
+            int movieId;
 
             while (scanner.hasNext()) {
                 linha = scanner.nextLine();
@@ -126,21 +149,28 @@ public class Main {
                     continue;
                 }
 
-                listaGeneroFilmes.add(new GeneroFilme(
-                        Integer.parseInt(dataLinha[0].trim()), // genreId
-                        Integer.parseInt(dataLinha[1].trim()) // movieId
-                ));
+                genreId = Integer.parseInt(dataLinha[0].trim());
+                movieId = Integer.parseInt(dataLinha[1].trim());
+                novoGeneroFilme = new GeneroFilme(genreId, movieId);
+
+                listaGeneroFilmes.add(novoGeneroFilme);
 
                 linhaOK[2]++;
             }
 
             return true; // Ficheiro lido com sucesso!
         }
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> genres
         if (ficheiro.getName().equals("genres.csv")) {
             listaGeneros.clear();
+
+            Genero novoGenero;
+            int genreId;
+            String genreName;
 
             while (scanner.hasNext()) {
                 linha = scanner.nextLine();
@@ -151,22 +181,29 @@ public class Main {
                     continue;
                 }
 
-                listaGeneros.add(new Genero(
-                        Integer.parseInt(dataLinha[0].trim()), // genreId
-                        dataLinha[1].trim() // genreName
-                ));
+                genreId = Integer.parseInt(dataLinha[0].trim());
+                genreName = dataLinha[1].trim();
+                novoGenero = new Genero(genreId, genreName);
 
+                listaGeneros.add(novoGenero);
 
                 linhaOK[3]++;
             }
 
             return true; // Ficheiro lido com sucesso!
         }
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> movie_votes
         if (ficheiro.getName().equals("movie_votes.csv")) {
             listaVotosFilmes.clear();
+
+            VotosFilme novoVotosFilme;
+            int movieId;
+            float movieRating;
+            int movieRatingCount;
 
             while (scanner.hasNext()) {
                 linha = scanner.nextLine();
@@ -177,23 +214,36 @@ public class Main {
                     continue;
                 }
 
-                listaVotosFilmes.add(new VotosFilme(
-                        Integer.parseInt(dataLinha[0].trim()), // movieId
-                        Float.parseFloat(dataLinha[1].trim()), // movieRating
-                        Integer.parseInt(dataLinha[2].trim()) // movieRatingCount
-                ));
+                movieId = Integer.parseInt(dataLinha[0].trim());
+                movieRating = Float.parseFloat(dataLinha[1].trim());
+                movieRatingCount = Integer.parseInt(dataLinha[2].trim());
+                novoVotosFilme = new VotosFilme(movieId, movieRating, movieRatingCount);
 
+                listaVotosFilmes.add(novoVotosFilme);
 
                 linhaOK[4]++;
             }
 
             return true; // Ficheiro lido com sucesso!
         }
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> movies
         if (ficheiro.getName().equals("movies.csv")) {
             listaFilmes.clear();
+
+            // TODO usar hashset futuramente
+            // Usando uma variável que guarda todos os movieId consigo diminuir o tempo que o programa demora para "correr" com arquivos grandes
+            ArrayList<String> movieIdUnicos = new ArrayList<>();
+
+            Filme novoFilme;
+            int movieId = -1;
+            String movieName;
+            float movieDuration;
+            long movieBudget;
+            String movieReleaseDate;
 
             while (scanner.hasNext()) {
                 linha = scanner.nextLine();
@@ -204,33 +254,30 @@ public class Main {
                     continue;
                 }
 
-                // Preciso de p
-                if (listaFilmes.size() != 0) {
-                    listaFilmes.add(new Filme(
-                            Integer.parseInt(dataLinha[0].trim()), // movieId
-                            dataLinha[1].trim(), // movieName
-                            Float.parseFloat(dataLinha[2].trim()), // movieDuration
-                            Long.parseLong(dataLinha[3].trim()), // movieBudget
-                            dataLinha[4].trim() // movieReleaseDate
-                    ));
-                }
-                // Verifico se já existe o mesmo movieId na lista
-                // Se não houver -> adiciono à lista e linha lida com sucesso
-                // Se houver -> não adiciono à lista, mas mesmo assim a linha foi lida com sucesso
-                for (int pos = 0; pos < listaFilmes.size(); pos++) {
-                    if (Integer.parseInt(dataLinha[0].trim()) != listaFilmes.get(pos).getMovieId()) {
-                        listaFilmes.add(new Filme(
-                                Integer.parseInt(dataLinha[0].trim()), // movieId
-                                dataLinha[1].trim(), // movieName
-                                Float.parseFloat(dataLinha[2].trim()), // movieDuration
-                                Long.parseLong(dataLinha[3].trim()), // movieBudget
-                                dataLinha[4].trim() // movieReleaseDate
-                        ));
+                // Verifico se já existe um movieId na listaFilmes
+                // Se não houver ⇾ adiciono à lista e a linha foi lida com sucesso
+                // Se houver ⇾ não adiciono à lista, mas mesmo assim a linha foi lida com sucesso
+                if (!movieIdUnicos.contains(movieId)) {
 
-                        if (Integer.parseInt(dataLinha[0].trim()) < 1000) {
+                    movieId = Integer.parseInt(dataLinha[0].trim());
+                    movieName = dataLinha[1].trim();
+                    movieDuration = Float.parseFloat(dataLinha[2].trim());
+                    movieBudget = Long.parseLong(dataLinha[3].trim());
+                    movieReleaseDate = dataLinha[4].trim();
+                    novoFilme = new Filme(movieId, movieName, movieDuration, movieBudget, movieReleaseDate);
 
+                    // Quando o movieId < 1000, terá que mostrar quantos atores estiveram nesse filme
+                    if (movieId < 1000) {
+                        for (Ator ator : listaAtores) {
+                            if (ator.getMovieId() == movieId) {
+                                novoFilme.accNumAtoresEnvolvidos();
+                            }
                         }
                     }
+
+                    listaFilmes.add(novoFilme);
+
+                    movieIdUnicos.add(movieId + "");
                 }
 
                 linhaOK[5]++;
@@ -238,7 +285,7 @@ public class Main {
 
             return true; // Ficheiro lido com sucesso!
         }
-
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
         return false;
     }
@@ -249,19 +296,19 @@ public class Main {
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     // Existe algum erro nesta linha:
     // - dados a mais ou a menos
-    static void acrescentarLinhaNOK(int ficheiroAtual) {
-        if (linhaNOK[ficheiroAtual] == 0) {
-            primeiraLinhaErrada[ficheiroAtual] = (linhaOK[ficheiroAtual] + 1);
+    static void acrescentarLinhaNOK(int posAtual) {
+        if (linhaNOK[posAtual] == 0) {
+            primeiraLinhaErrada[posAtual] = (linhaOK[posAtual] + 1);
         }
-        linhaNOK[ficheiroAtual]++;
+        linhaNOK[posAtual]++;
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    // Retorna um arraylist com algumas informações dos ficheiros na mesma ordem que é lido no ficheiro
-    // Por exemplo: tipoEntidade.ATOR -> irá devolver um arraylist com vários objetos relacionado com o ator
+    // Retorna um arraylist com algumas informações dos ficheiros na mesma ordem lido no ficheiro
+    // Por exemplo: tipoEntidade.ATOR → irá devolver um arraylist com vários objetos relacionado com o ator
     public static ArrayList getObjects(TipoEntidade tipoEntidade) {
         switch (tipoEntidade) {
             case ATOR:
@@ -295,20 +342,16 @@ public class Main {
 
 
     public static void main(String[] args) {
-        parseFiles(new File("test-files/."));
+        long start = System.currentTimeMillis();
+        parseFiles(new File("."));
+        long end = System.currentTimeMillis();
+        System.out.println("Tempo: " + (end - start) + " ms");
 
-
-        ArrayList retorno = getObjects(TipoEntidade.INPUT_INVALIDO);
-        System.out.println(retorno.get(0));
-        System.out.println(retorno.get(1));
-        System.out.println(retorno.get(2));
-        System.out.println(retorno.get(3));
-        System.out.println(retorno.get(4));
-        System.out.println(retorno.get(5));
-
+        System.out.println(listaAtores.size());
+        System.out.println(listaDiretores.size());
         System.out.println(listaFilmes.size());
-        for (Filme filme : listaFilmes) {
-            System.out.println(filme);
-        }
+        System.out.println(listaGeneros.size());
+        System.out.println(listaGeneroFilmes.size());
+        System.out.println(listaVotosFilmes.size());
     }
 }

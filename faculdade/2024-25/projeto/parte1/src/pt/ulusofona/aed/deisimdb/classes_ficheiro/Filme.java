@@ -6,7 +6,7 @@ public class Filme {
     private float movieDuration;
     private long movieBudget;
     private String movieReleaseDate;
-    private int numAtoresEnvolvidos = -1;
+    private int numAtoresEnvolvidos = 0;
 
 
 
@@ -20,8 +20,8 @@ public class Filme {
 
 
 
-    public void setnumAtoresEnvolvidos(int numAtoresEnvolvidos) {
-        this.numAtoresEnvolvidos = numAtoresEnvolvidos;
+    public void accNumAtoresEnvolvidos() {
+        this.numAtoresEnvolvidos++;
     }
 
 
