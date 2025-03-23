@@ -2,7 +2,6 @@ package pt.ulusofona.aed.deisimdb;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pt.ulusofona.aed.deisimdb.classes_ficheiro.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -1,4 +1,4 @@
-package pt.ulusofona.aed.deisimdb.classes_ficheiro;
+package pt.ulusofona.aed.deisimdb;
 
 public class Genero {
     private int genreId;

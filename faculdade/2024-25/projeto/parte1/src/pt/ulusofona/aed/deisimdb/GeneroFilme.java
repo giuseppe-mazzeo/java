@@ -1,6 +1,4 @@
-package pt.ulusofona.aed.deisimdb.classes_ficheiro;
-
-import pt.ulusofona.aed.deisimdb.Main;
+package pt.ulusofona.aed.deisimdb;
 
 import java.util.List;
 
