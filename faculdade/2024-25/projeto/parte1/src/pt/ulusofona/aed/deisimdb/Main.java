@@ -29,255 +29,299 @@ public class Main {
     // Retornou false ⇾ Ficheiro não foi encontrado, logo, não leu o ficheiro (ficheiro não existe ou o formato não é .csv)
     // retornou true ⇾ Ficheiro existe, logo, leu ficheiro (mesmo que tenha pequenos erros dentro do ficheiro, por exemplo: filmes com "id" repetidos, colunas a mais ou a menos, etc)
     //
-    public static boolean parseFiles(File ficheiro) {
 
-        // Verifico se representa a um diretório raiz (ou uma pasta)
-        if (ficheiro.isDirectory()) {
-            File[] ficheiros = ficheiro.listFiles();
-
-            if (ficheiros != null) {
-                for (File ficheiroAtual : ficheiros) {
-                    if (ficheiroAtual.isFile()) {
-                        parseFiles(ficheiroAtual);
-                    }
-                }
-            }
-
-            return false; // Não foi lido nenhum ficheiro
+    public static boolean parseFiles2(File pasta) {
+        // Ficheiro não existe
+        if (!pasta.exists()) {
+            return false;
         }
 
-
-        try (Scanner scanner = new Scanner(ficheiro)) {
-            // Verifica se o ficheiro tem conteúdo antes de tentar ignorar a primeira linha
-            if (!scanner.hasNextLine()) {
-                // Ficheiro vazio
-                return false;
-            }
-
-            // Ficheiro existe, logo, irá "correr" o código abaixo
-            scanner.nextLine(); // Ignora a 1.ª linha (cabeçalho)
-            String linha;
-            String[] dataLinha;
-            String nomeFicheiro = ficheiro.getName();
-
-            switch (nomeFicheiro) {
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                // Ficheiro -> actors
-                case "actors.csv":
-                    listaAtores.clear();
-
-                    Ator novoAtor;
-                    int actorId;
-                    String actorName;
-                    String actorGender;
-                    int movieId;
-
-                    while (scanner.hasNext()) {
-                        linha = scanner.nextLine();
-                        dataLinha = linha.split(",");
-
-                        if (dataLinha.length != 4) { // Tem mais ou menos informações do que deveria
-                            acrescentarLinhaNOK(0);
-                            continue;
-                        }
-
-                        actorId = Integer.parseInt(dataLinha[0].trim());
-                        actorName = dataLinha[1].trim();
-                        actorGender = dataLinha[2].trim();
-                        movieId = Integer.parseInt(dataLinha[3].trim());
-                        novoAtor = new Ator(actorId, actorName, actorGender, movieId);
-
-                        listaAtores.add(novoAtor);
-                        linhaOK[0]++;
-                    }
-
-                    return true; // Ficheiro lido com sucesso!
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                // Ficheiro -> directors
-                case "directors.csv":
-                    listaDiretores.clear();
-
-                    Diretor novoDiretor;
-                    int directorId;
-                    String directorName;
-                    // int movieId;
-
-                    while (scanner.hasNext()) {
-                        linha = scanner.nextLine();
-                        dataLinha = linha.split(",");
-
-                        if (dataLinha.length != 3) { // Tem mais ou menos informações do que deveria
-                            acrescentarLinhaNOK(1);
-                            continue;
-                        }
-
-                        directorId = Integer.parseInt(dataLinha[0].trim());
-                        directorName = dataLinha[1].trim();
-                        movieId = Integer.parseInt(dataLinha[2].trim());
-                        novoDiretor = new Diretor(directorId, directorName, movieId);
-
-                        listaDiretores.add(novoDiretor);
-                        linhaOK[1]++;
-                    }
-
-                    return true; // Ficheiro lido com sucesso!
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                // Ficheiro -> genres_movies
-                case "genres_movies.csv":
-                    listaGeneroFilmes.clear();
-                    parseFiles(new File("genres.csv")); // Garante que os gêneros estão carregados
-
-                    GeneroFilme novoGeneroFilme;
-                    int genreId;
-                    // int movieId;
-
-                    while (scanner.hasNext()) {
-                        linha = scanner.nextLine();
-                        dataLinha = linha.split(",");
-
-                        if (dataLinha.length != 2) { // Tem mais ou menos informações do que deveria
-                            acrescentarLinhaNOK(2);
-                            continue;
-                        }
-
-                        genreId = Integer.parseInt(dataLinha[0].trim());
-                        movieId = Integer.parseInt(dataLinha[1].trim());
-                        novoGeneroFilme = new GeneroFilme(genreId, movieId);
-
-                        listaGeneroFilmes.add(novoGeneroFilme);
-                        linhaOK[2]++;
-                    }
-
-                    return true; // Ficheiro lido com sucesso!
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                // Ficheiro -> genres
-                case "genres.csv":
-                    listaGeneros.clear();
-
-                    Genero novoGenero;
-                    // int genreId;
-                    String genreName;
-
-                    while (scanner.hasNext()) {
-                        linha = scanner.nextLine();
-                        dataLinha = linha.split(",");
-
-                        if (dataLinha.length != 2) { // Tem mais ou menos informações do que deveria
-                            acrescentarLinhaNOK(3);
-                            continue;
-                        }
-
-                        genreId = Integer.parseInt(dataLinha[0].trim());
-                        genreName = dataLinha[1].trim();
-                        novoGenero = new Genero(genreId, genreName);
-
-                        listaGeneros.add(novoGenero);
-                        linhaOK[3]++;
-                    }
-
-                    return true; // Ficheiro lido com sucesso!
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                // Ficheiro -> movie_votes
-                case "movie_votes.csv":
-                    listaVotosFilmes.clear();
-
-                    VotosFilme novoVotosFilme;
-                    // int movieId;
-                    float movieRating;
-                    int movieRatingCount;
-
-                    while (scanner.hasNext()) {
-                        linha = scanner.nextLine();
-                        dataLinha = linha.split(",");
-
-                        if (dataLinha.length != 3) { // Tem mais ou menos informações do que deveria
-                            acrescentarLinhaNOK(4);
-                            continue;
-                        }
-
-                        movieId = Integer.parseInt(dataLinha[0].trim());
-                        movieRating = Float.parseFloat(dataLinha[1].trim());
-                        movieRatingCount = Integer.parseInt(dataLinha[2].trim());
-                        novoVotosFilme = new VotosFilme(movieId, movieRating, movieRatingCount);
-
-                        listaVotosFilmes.add(novoVotosFilme);
-                        linhaOK[4]++;
-                    }
-
-                    return true; // Ficheiro lido com sucesso!
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                // Ficheiro -> movies
-                case "movies.csv":
-                    listaFilmes.clear();
-
-                    // TODO usar hashset futuramente
-                    // Usando uma variável que guarda todos os movieId consigo diminuir o tempo que o programa demora para "correr" com arquivos grandes
-                    ArrayList<String> movieIdUnicos = new ArrayList<>();
-
-                    Filme novoFilme;
-                    movieId = -1;
-                    String movieName;
-                    float movieDuration;
-                    long movieBudget;
-                    String movieReleaseDate;
-
-                    while (scanner.hasNext()) {
-                        linha = scanner.nextLine();
-                        dataLinha = linha.split(",");
-
-                        if (dataLinha.length != 5) { // Tem mais ou menos informações do que deveria
-                            acrescentarLinhaNOK(5);
-                            continue;
-                        }
-
-                        // Verifico se já existe um movieId na listaFilmes
-                        // Se não houver ⇾ adiciono à lista e a linha foi lida com sucesso
-                        // Se houver ⇾ não adiciono à lista, mas mesmo assim a linha foi lida com sucesso
-                        if (!movieIdUnicos.contains(movieId)) {
-
-                            movieId = Integer.parseInt(dataLinha[0].trim());
-                            movieName = dataLinha[1].trim();
-                            movieDuration = Float.parseFloat(dataLinha[2].trim());
-                            movieBudget = Long.parseLong(dataLinha[3].trim());
-                            movieReleaseDate = dataLinha[4].trim();
-                            novoFilme = new Filme(movieId, movieName, movieDuration, movieBudget, movieReleaseDate);
-
-                            // Quando o movieId < 1000, terá que mostrar quantos atores estiveram nesse filme
-                            if (movieId < 1000) {
-                                for (Ator ator : listaAtores) {
-                                    if (ator.getMovieId() == movieId) {
-                                        novoFilme.accNumAtoresEnvolvidos();
-                                    }
-                                }
-                            }
-
-                            listaFilmes.add(novoFilme);
-                            movieIdUnicos.add(movieId + "");
-                        }
-
-                        linhaOK[5]++;
-                    }
-
-                    return true; // Ficheiro lido com sucesso!
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            }
-
-            return false;
-
+        File fichMovies = new File(pasta, "movies.csv");
+        try {
+            Scanner s = new Scanner(fichMovies);
         } catch (FileNotFoundException e) {
             // Ficheiro não existe
             return false;
         }
+
+        return true;
+    }
+
+
+
+    public static boolean parseFiles(File pasta) {
+
+        // Ficheiro não existe
+        if (!pasta.exists()) {
+            return false;
+        }
+
+        String linha;
+        String[] dataLinha;
+
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        // Ficheiro -> actors
+        File ficheiroActors = new File(pasta, "actors.csv");
+
+        try {
+            listaAtores.clear();
+            Scanner scanner = new Scanner(ficheiroActors);
+            scanner.nextLine(); // Ignora a 1.ª linha (cabeçalho)
+
+            Ator novoAtor;
+            int actorId;
+            String actorName;
+            String actorGender;
+            int movieId;
+
+            while (scanner.hasNext()) {
+                linha = scanner.nextLine();
+                dataLinha = linha.split(",");
+
+                if (dataLinha.length != 4) { // Tem mais ou menos informações do que deveria
+                    acrescentarLinhaNOK(0);
+                    continue;
+                }
+
+                actorId = Integer.parseInt(dataLinha[0].trim());
+                actorName = dataLinha[1].trim();
+                actorGender = dataLinha[2].trim();
+                movieId = Integer.parseInt(dataLinha[3].trim());
+                novoAtor = new Ator(actorId, actorName, actorGender, movieId);
+
+                listaAtores.add(novoAtor);
+                linhaOK[0]++;
+            }
+
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            // Ficheiro não existe
+            return false;
+        }
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        // Ficheiro -> directors
+        File ficheiroDirectors = new File(pasta, "directors.csv");
+
+        try {
+            listaDiretores.clear();
+            Scanner scanner = new Scanner(ficheiroDirectors);
+            scanner.nextLine(); // Ignora a 1.ª linha (cabeçalho)
+
+            Diretor novoDiretor;
+            int directorId;
+            String directorName;
+            int movieId;
+
+            while (scanner.hasNext()) {
+                linha = scanner.nextLine();
+                dataLinha = linha.split(",");
+
+                if (dataLinha.length != 3) { // Tem mais ou menos informações do que deveria
+                    acrescentarLinhaNOK(1);
+                    continue;
+                }
+
+                directorId = Integer.parseInt(dataLinha[0].trim());
+                directorName = dataLinha[1].trim();
+                movieId = Integer.parseInt(dataLinha[2].trim());
+                novoDiretor = new Diretor(directorId, directorName, movieId);
+
+                listaDiretores.add(novoDiretor);
+                linhaOK[1]++;
+            }
+
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            // Ficheiro não existe
+            return false;
+        }
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        // Ficheiro -> genres
+        File ficheiroGenero = new File(pasta, "genres.csv");
+
+        try {
+            listaGeneros.clear();
+            Scanner scanner = new Scanner(ficheiroGenero);
+            scanner.nextLine(); // Ignora a 1.ª linha (cabeçalho)
+
+            Genero novoGenero;
+            int genreId;
+            String genreName;
+
+            while (scanner.hasNext()) {
+                linha = scanner.nextLine();
+                dataLinha = linha.split(",");
+
+                if (dataLinha.length != 2) { // Tem mais ou menos informações do que deveria
+                    acrescentarLinhaNOK(3);
+                    continue;
+                }
+
+                genreId = Integer.parseInt(dataLinha[0].trim());
+                genreName = dataLinha[1].trim();
+                novoGenero = new Genero(genreId, genreName);
+
+                listaGeneros.add(novoGenero);
+                linhaOK[3]++;
+            }
+
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            // Ficheiro não existe
+            return false;
+        }
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        // Ficheiro -> genres_movies
+        File ficheiroGenerosFilme = new File(pasta, "genres_movies.csv");
+
+        try {
+            listaGeneroFilmes.clear();
+            Scanner scanner = new Scanner(ficheiroGenerosFilme);
+            scanner.nextLine(); // Ignora a 1.ª linha (cabeçalho)
+
+            GeneroFilme novoGeneroFilme;
+            int genreId;
+            int movieId;
+
+            while (scanner.hasNext()) {
+                linha = scanner.nextLine();
+                dataLinha = linha.split(",");
+
+                if (dataLinha.length != 2) { // Tem mais ou menos informações do que deveria
+                    acrescentarLinhaNOK(2);
+                    continue;
+                }
+
+                genreId = Integer.parseInt(dataLinha[0].trim());
+                movieId = Integer.parseInt(dataLinha[1].trim());
+                novoGeneroFilme = new GeneroFilme(genreId, movieId);
+
+                listaGeneroFilmes.add(novoGeneroFilme);
+                linhaOK[2]++;
+            }
+
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            // Ficheiro não existe
+            return false;
+        }
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        // Ficheiro -> movie_votes
+        File ficheiroVotosFilmes = new File(pasta, "movie_votes.csv");
+
+        try {
+            listaVotosFilmes.clear();
+            Scanner scanner = new Scanner(ficheiroVotosFilmes);
+            scanner.nextLine(); // Ignora a 1.ª linha (cabeçalho)
+
+            VotosFilme novoVotosFilme;
+            int movieId;
+            float movieRating;
+            int movieRatingCount;
+
+            while (scanner.hasNext()) {
+                linha = scanner.nextLine();
+                dataLinha = linha.split(",");
+
+                if (dataLinha.length != 3) { // Tem mais ou menos informações do que deveria
+                    acrescentarLinhaNOK(4);
+                    continue;
+                }
+
+                movieId = Integer.parseInt(dataLinha[0].trim());
+                movieRating = Float.parseFloat(dataLinha[1].trim());
+                movieRatingCount = Integer.parseInt(dataLinha[2].trim());
+                novoVotosFilme = new VotosFilme(movieId, movieRating, movieRatingCount);
+
+                listaVotosFilmes.add(novoVotosFilme);
+                linhaOK[4]++;
+            }
+
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            // Ficheiro não existe
+            return false;
+        }
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        // Ficheiro -> movies
+        File ficheiroFilmes = new File(pasta, "movies.csv");
+
+        try {
+            listaFilmes.clear();
+            Scanner scanner = new Scanner(ficheiroFilmes);
+            scanner.nextLine(); // Ignora a 1.ª linha (cabeçalho)
+
+            // TODO usar hashset futuramente
+            // Usando uma variável que guarda todos os movieId consigo diminuir o tempo que o programa demora para "correr" com arquivos grandes
+            ArrayList<String> movieIdUnicos = new ArrayList<>();
+
+            Filme novoFilme;
+            int movieId = -1;
+            String movieName;
+            float movieDuration;
+            long movieBudget;
+            String movieReleaseDate;
+
+            while (scanner.hasNext()) {
+                linha = scanner.nextLine();
+                dataLinha = linha.split(",");
+
+                if (dataLinha.length != 5) { // Tem mais ou menos informações do que deveria
+                    acrescentarLinhaNOK(5);
+                    continue;
+                }
+
+                // Verifico se já existe um movieId na listaFilmes
+                // Se não houver ⇾ adiciono à lista e a linha foi lida com sucesso
+                // Se houver ⇾ não adiciono à lista, mas mesmo assim a linha foi lida com sucesso
+                if (!movieIdUnicos.contains(movieId)) {
+                    movieId = Integer.parseInt(dataLinha[0].trim());
+                    movieName = dataLinha[1].trim();
+                    movieDuration = Float.parseFloat(dataLinha[2].trim());
+                    movieBudget = Long.parseLong(dataLinha[3].trim());
+                    movieReleaseDate = dataLinha[4].trim();
+                    novoFilme = new Filme(movieId, movieName, movieDuration, movieBudget, movieReleaseDate);
+
+                    // Quando o movieId < 1000, terá que mostrar quantos atores estiveram nesse filme
+                    if (movieId < 1000) {
+                        for (Ator ator : listaAtores) {
+                            if (ator.getMovieId() == movieId) {
+                                novoFilme.accNumAtoresEnvolvidos();
+                            }
+                        }
+                    }
+
+                    listaFilmes.add(novoFilme);
+                    movieIdUnicos.add(movieId + "");
+                }
+
+                linhaOK[5]++;
+            }
+
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            // Ficheiro não existe
+            return false;
+        }
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+        return true; // Ficheiro(s) da pasta lido com sucesso!
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -332,7 +376,29 @@ public class Main {
 
 
     public static void main(String[] args) {
-        parseFiles(new File("ficheiro-vazio"));
+        parseFiles(new File("."));
+
+        /*
+        File pasta = new File(".");
+
+        System.out.println(Arrays.toString(pasta.listFiles()));
+
+        File novo = new File(pasta, "movies.csv");
+
+        if (novo.exists()) {
+            System.out.println("ficheiro existe");
+        } else {
+            System.out.println("ficheiro nao existe");
+        }
+
+        if (pasta.exists()) {
+            System.out.println("pasta existe");
+        } else {
+            System.out.println("pasta nao existe");
+        }
+
+         */
+
 
         long start = System.currentTimeMillis();
         parseFiles(new File("."));
