@@ -9,9 +9,10 @@ public class GeneroFilme {
 
 
 
-    public GeneroFilme(int genreId, int movieId) {
+    public GeneroFilme(int genreId, int movieId, String genreName) {
         this.genreId = genreId;
         this.movieId = movieId;
+        this.genreName = genreName;
     }
 
 
@@ -28,15 +29,6 @@ public class GeneroFilme {
 
     @Override
     public String toString() {
-        List<Genero> todosGeneros = Main.listaGeneros;
-
-        for (Genero genero : todosGeneros) {
-            if (genero.getGenreId() == genreId) {
-                genreName = genero.getGenreName();
-                break;
-            }
-        }
-
-        return movieId + " | " + genreName;
+        return genreId + " | " + genreName;
     }
 }

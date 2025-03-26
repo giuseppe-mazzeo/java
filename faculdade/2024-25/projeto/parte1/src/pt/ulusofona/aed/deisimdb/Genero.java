@@ -20,4 +20,11 @@ public class Genero {
     public String getGenreName() {
         return genreName;
     }
+
+
+
+    @Override
+    public String toString() {
+        return genreId + " | " + genreName;
+    }
 }

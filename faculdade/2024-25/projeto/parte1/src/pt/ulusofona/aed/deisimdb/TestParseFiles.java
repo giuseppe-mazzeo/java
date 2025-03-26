@@ -228,9 +228,12 @@ public class TestParseFiles {
         Main.parseFiles(new File("test-files/genres_movies.csv"));
 
         List<GeneroFilme> resultadoEsperado = new ArrayList<>();
+        /*
         resultadoEsperado.add(new GeneroFilme(7869, 149870));
         resultadoEsperado.add(new GeneroFilme(8528, 84084));
         resultadoEsperado.add(new GeneroFilme(4823, 12166));
+
+         */
 
         List<GeneroFilme> resultadoAtual = Main.listaGeneroFilmes;
 

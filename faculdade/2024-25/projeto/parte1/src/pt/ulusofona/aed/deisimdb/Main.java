@@ -16,9 +16,9 @@ public class Main {
     static List<Filme> listaFilmes = new ArrayList<>();
     public static List<Genero> listaGeneros = new ArrayList<>();
     //
-    static int[] linhaOK = new int[6];
-    static int[] linhaNOK = new int[6];
-    static int[] primeiraLinhaErrada = new int[] {-1, -1, -1, -1, -1, -1};
+    static int[] linhaOK;
+    static int[] linhaNOK;
+    static int[] primeiraLinhaErrada;
     //
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -29,36 +29,17 @@ public class Main {
     // Retornou false ⇾ Ficheiro não foi encontrado, logo, não leu o ficheiro (ficheiro não existe ou o formato não é .csv)
     // retornou true ⇾ Ficheiro existe, logo, leu ficheiro (mesmo que tenha pequenos erros dentro do ficheiro, por exemplo: filmes com "id" repetidos, colunas a mais ou a menos, etc)
     //
-
-    public static boolean parseFiles2(File pasta) {
-        // Ficheiro não existe
-        if (!pasta.exists()) {
-            return false;
-        }
-
-        File fichMovies = new File(pasta, "movies.csv");
-        try {
-            Scanner s = new Scanner(fichMovies);
-        } catch (FileNotFoundException e) {
-            // Ficheiro não existe
-            return false;
-        }
-
-        return true;
-    }
-
-
-
     public static boolean parseFiles(File pasta) {
-
         // Ficheiro não existe
         if (!pasta.exists()) {
             return false;
         }
 
+        linhaOK = new int[6];
+        linhaNOK = new int[6];
+        primeiraLinhaErrada = new int[] {-1, -1, -1, -1, -1, -1};
         String linha;
         String[] dataLinha;
-
 
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> actors
@@ -192,6 +173,7 @@ public class Main {
             GeneroFilme novoGeneroFilme;
             int genreId;
             int movieId;
+            String genreName = "";
 
             while (scanner.hasNext()) {
                 linha = scanner.nextLine();
@@ -204,7 +186,15 @@ public class Main {
 
                 genreId = Integer.parseInt(dataLinha[0].trim());
                 movieId = Integer.parseInt(dataLinha[1].trim());
-                novoGeneroFilme = new GeneroFilme(genreId, movieId);
+
+                for (Genero genero : listaGeneros) {
+                    if (genero.getGenreId() == genreId) {
+                        genreName = genero.getGenreName();
+                        break;
+                    }
+                }
+
+                novoGeneroFilme = new GeneroFilme(genreId, movieId, genreName);
 
                 listaGeneroFilmes.add(novoGeneroFilme);
                 linhaOK[2]++;
@@ -269,10 +259,10 @@ public class Main {
 
             // TODO usar hashset futuramente
             // Usando uma variável que guarda todos os movieId consigo diminuir o tempo que o programa demora para "correr" com arquivos grandes
-            ArrayList<String> movieIdUnicos = new ArrayList<>();
+            ArrayList<Integer> movieIdUnicos = new ArrayList<>();
 
             Filme novoFilme;
-            int movieId = -1;
+            int movieId;
             String movieName;
             float movieDuration;
             long movieBudget;
@@ -290,8 +280,10 @@ public class Main {
                 // Verifico se já existe um movieId na listaFilmes
                 // Se não houver ⇾ adiciono à lista e a linha foi lida com sucesso
                 // Se houver ⇾ não adiciono à lista, mas mesmo assim a linha foi lida com sucesso
+
+                movieId = Integer.parseInt(dataLinha[0].trim());
+
                 if (!movieIdUnicos.contains(movieId)) {
-                    movieId = Integer.parseInt(dataLinha[0].trim());
                     movieName = dataLinha[1].trim();
                     movieDuration = Float.parseFloat(dataLinha[2].trim());
                     movieBudget = Long.parseLong(dataLinha[3].trim());
@@ -308,7 +300,7 @@ public class Main {
                     }
 
                     listaFilmes.add(novoFilme);
-                    movieIdUnicos.add(movieId + "");
+                    movieIdUnicos.add(movieId);
                 }
 
                 linhaOK[5]++;
@@ -355,7 +347,7 @@ public class Main {
                 return (ArrayList) listaDiretores;
 
             case GENERO_CINEMATOGRAFICO:
-                return (ArrayList) listaGeneroFilmes;
+                return (ArrayList) listaGeneros;
 
             case INPUT_INVALIDO:
                 ArrayList<String> valores = new ArrayList<>();
@@ -376,40 +368,37 @@ public class Main {
 
 
     public static void main(String[] args) {
-        parseFiles(new File("."));
-
-        /*
-        File pasta = new File(".");
-
-        System.out.println(Arrays.toString(pasta.listFiles()));
-
-        File novo = new File(pasta, "movies.csv");
-
-        if (novo.exists()) {
-            System.out.println("ficheiro existe");
-        } else {
-            System.out.println("ficheiro nao existe");
-        }
-
-        if (pasta.exists()) {
-            System.out.println("pasta existe");
-        } else {
-            System.out.println("pasta nao existe");
-        }
-
-         */
-
-
         long start = System.currentTimeMillis();
         parseFiles(new File("."));
         long end = System.currentTimeMillis();
         System.out.println("Tempo: " + (end - start) + " ms");
 
-        System.out.println(listaAtores.size());
-        System.out.println(listaDiretores.size());
-        System.out.println(listaFilmes.size());
-        System.out.println(listaGeneros.size());
-        System.out.println(listaGeneroFilmes.size());
-        System.out.println(listaVotosFilmes.size());
+        System.out.println("filmes - " + listaFilmes.size());
+        /*
+        for (Filme filme : listaFilmes) {
+            System.out.println(filme);
+        }
+         */
+        System.out.println("atores - " + listaAtores.size());
+        System.out.println("diretores - " + listaDiretores.size());
+        System.out.println("generos - " + listaGeneros.size());
+        System.out.println("genero-filmes - " + listaGeneroFilmes.size());
+        //for (GeneroFilme a : listaGeneroFilmes) {
+          //  System.out.println(a);
+        //}
+
+        for (Object a : getObjects(TipoEntidade.GENERO_CINEMATOGRAFICO)) {
+            System.out.println(a);
+        }
+
+        System.out.println("votos-filmes - " + listaVotosFilmes.size());
+
+        System.out.println("\n");
+        /*
+        for (Object a : getObjects(TipoEntidade.INPUT_INVALIDO)) {
+            System.out.println(a);
+        }
+
+         */
     }
 }
