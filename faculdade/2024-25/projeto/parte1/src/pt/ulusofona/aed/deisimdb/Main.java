@@ -7,14 +7,14 @@ import java.util.*;
 public class Main {
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    // Variáveis Globais (guarda todas as informações dos ficheiros que são lidas corretamente)
+    // Variáveis Globais (guarda todas as informações dos ficheiros que são lidos corretamente)
     //
     static List<Ator> listaAtores = new ArrayList<>();
     static List<Diretor> listaDiretores = new ArrayList<>();
     static List<GeneroFilme> listaGeneroFilmes = new ArrayList<>();
     static List<VotosFilme> listaVotosFilmes = new ArrayList<>();
     static List<Filme> listaFilmes = new ArrayList<>();
-    public static List<Genero> listaGeneros = new ArrayList<>();
+    static List<Genero> listaGeneros = new ArrayList<>();
     //
     static int[] linhaOK;
     static int[] linhaNOK;
@@ -25,12 +25,12 @@ public class Main {
 
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    // Função que lê ficheiros e guarda as informações.
-    // Retornou false ⇾ Ficheiro não foi encontrado, logo, não leu o ficheiro (ficheiro não existe ou o formato não é .csv)
-    // retornou true ⇾ Ficheiro existe, logo, leu ficheiro (mesmo que tenha pequenos erros dentro do ficheiro, por exemplo: filmes com "id" repetidos, colunas a mais ou a menos, etc)
+    // Função que lê ficheiros dentro de uma pasta e guarda as informações.
+    // Retornou false ⇾ Pasta não foi encontrado, pasta vazia ou não existe nenhum ficheiro necessário para este Projeto.
+    // Retornou true ⇾ Pasta existe, logo, leu os ficheiros.
     //
     public static boolean parseFiles(File pasta) {
-        // Ficheiro não existe
+        // Pasta não existe
         if (!pasta.exists()) {
             return false;
         }
@@ -44,7 +44,7 @@ public class Main {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> actors
         File ficheiroActors = new File(pasta, "actors.csv");
-
+        //
         try {
             listaAtores.clear();
             Scanner scanner = new Scanner(ficheiroActors);
@@ -86,7 +86,7 @@ public class Main {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> directors
         File ficheiroDirectors = new File(pasta, "directors.csv");
-
+        //
         try {
             listaDiretores.clear();
             Scanner scanner = new Scanner(ficheiroDirectors);
@@ -126,7 +126,7 @@ public class Main {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> genres
         File ficheiroGenero = new File(pasta, "genres.csv");
-
+        //
         try {
             listaGeneros.clear();
             Scanner scanner = new Scanner(ficheiroGenero);
@@ -164,7 +164,7 @@ public class Main {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> genres_movies
         File ficheiroGenerosFilme = new File(pasta, "genres_movies.csv");
-
+        //
         try {
             listaGeneroFilmes.clear();
             Scanner scanner = new Scanner(ficheiroGenerosFilme);
@@ -211,7 +211,7 @@ public class Main {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> movie_votes
         File ficheiroVotosFilmes = new File(pasta, "movie_votes.csv");
-
+        //
         try {
             listaVotosFilmes.clear();
             Scanner scanner = new Scanner(ficheiroVotosFilmes);
@@ -251,7 +251,7 @@ public class Main {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> movies
         File ficheiroFilmes = new File(pasta, "movies.csv");
-
+        //
         try {
             listaFilmes.clear();
             Scanner scanner = new Scanner(ficheiroFilmes);
@@ -277,12 +277,12 @@ public class Main {
                     continue;
                 }
 
-                // Verifico se já existe um movieId na listaFilmes
-                // Se não houver ⇾ adiciono à lista e a linha foi lida com sucesso
-                // Se houver ⇾ não adiciono à lista, mas mesmo assim a linha foi lida com sucesso
 
                 movieId = Integer.parseInt(dataLinha[0].trim());
 
+                // Verifico se já existe um movieId na listaFilmes.
+                // Se não houver ⇾ guardo as informções do filme em listaFilmes e também guardo o movieId do filme para verificar se exite "ids" duplicados.
+                // Se houver ⇾ não adiciono à lista, mas mesmo assim a linha foi lida com sucesso.
                 if (!movieIdUnicos.contains(movieId)) {
                     movieName = dataLinha[1].trim();
                     movieDuration = Float.parseFloat(dataLinha[2].trim());
@@ -290,7 +290,7 @@ public class Main {
                     movieReleaseDate = dataLinha[4].trim();
                     novoFilme = new Filme(movieId, movieName, movieDuration, movieBudget, movieReleaseDate);
 
-                    // Quando o movieId < 1000, terá que mostrar quantos atores estiveram nesse filme
+                    // Quando o movieId < 1000, terá que mostrar quantos atores estiveram nesse filme.
                     if (movieId < 1000) {
                         for (Ator ator : listaAtores) {
                             if (ator.getMovieId() == movieId) {
@@ -308,12 +308,12 @@ public class Main {
 
             scanner.close();
         } catch (FileNotFoundException e) {
-            // Ficheiro não existe
+            // Pasta não existe
             return false;
         }
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-        return true; // Ficheiro(s) da pasta lido com sucesso!
+        return true; // Ficheiros da pasta lidos com sucesso!
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -321,7 +321,7 @@ public class Main {
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     // Existe algum erro nesta linha:
-    // - dados a mais ou a menos
+    // - dados a mais ou a menos.
     static void acrescentarLinhaNOK(int posAtual) {
         if (linhaNOK[posAtual] == 0) {
             primeiraLinhaErrada[posAtual] = (linhaOK[posAtual] + 1);
@@ -333,8 +333,8 @@ public class Main {
 
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    // Retorna um arraylist com algumas informações dos ficheiros na mesma ordem lido no ficheiro
-    // Por exemplo: tipoEntidade.ATOR → irá devolver um arraylist com vários objetos relacionado com o ator
+    // Retorna um arraylist com algumas informações dos ficheiros na mesma ordem lido no ficheiro.
+    // Por exemplo: tipoEntidade.ATOR → irá devolver um arraylist com vários objetos relacionado com o ator.
     public static ArrayList getObjects(TipoEntidade tipoEntidade) {
         switch (tipoEntidade) {
             case ATOR:
@@ -368,17 +368,18 @@ public class Main {
 
 
     public static void main(String[] args) {
+        /*
         long start = System.currentTimeMillis();
-        parseFiles(new File("."));
+        parseFiles(new File("test-files"));
         long end = System.currentTimeMillis();
         System.out.println("Tempo: " + (end - start) + " ms");
 
         System.out.println("filmes - " + listaFilmes.size());
-        /*
+
         for (Filme filme : listaFilmes) {
             System.out.println(filme);
         }
-         */
+
         System.out.println("atores - " + listaAtores.size());
         System.out.println("diretores - " + listaDiretores.size());
         System.out.println("generos - " + listaGeneros.size());
@@ -387,18 +388,19 @@ public class Main {
           //  System.out.println(a);
         //}
 
+
         for (Object a : getObjects(TipoEntidade.GENERO_CINEMATOGRAFICO)) {
             System.out.println(a);
         }
 
+
         System.out.println("votos-filmes - " + listaVotosFilmes.size());
 
         System.out.println("\n");
-        /*
+
         for (Object a : getObjects(TipoEntidade.INPUT_INVALIDO)) {
             System.out.println(a);
         }
-
          */
     }
 }

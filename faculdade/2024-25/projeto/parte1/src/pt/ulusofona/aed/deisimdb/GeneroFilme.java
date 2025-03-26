@@ -1,7 +1,5 @@
 package pt.ulusofona.aed.deisimdb;
 
-import java.util.List;
-
 public class GeneroFilme {
     private int genreId;
     private int movieId;
@@ -23,6 +21,10 @@ public class GeneroFilme {
 
     public int getMovieId() {
         return movieId;
+    }
+
+    public String getGenreName() {
+        return genreName;
     }
 
 
