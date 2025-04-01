@@ -3,78 +3,74 @@ package pt.ulusofona.aed;
 import java.util.Arrays;
 
 public class Main {
-
-    static int[] arrayGrande = Gerador.criarArrayInts(50000);
-    static int[] arrayPequeno = Gerador.criarArrayInts(10);
-    static int[] array = Gerador.criarArrayInts(10);
-
     public static void main(String[] args) {
-    }
+        Pessoa[] pessoas = new Pessoa[2];
 
-    static int[] f01(int[] array) {
-        boolean tudoOrdenado = false;
-        int ultimoOrdenado = array.length-1;
+        Pessoa p1 = new Pessoa("Eduar", "Kah", 9, "Alasca");
+        Pessoa p2 = new Pessoa("Joao", "Ribeiro", 3, "Italia");
+
+        pessoas[0] = p1;
+        pessoas[1] = p2;
+    }
+    static Pessoa[] arrayGrande = GeradorDePessoas.criarArrayPessoas(30000);
+    static Pessoa[] arrayPequeno = GeradorDePessoas.criarArrayPessoas(10);
+
+
+
+    static int[] f01(Pessoa[] pessoas) {
         int[] resultado = new int[]{0,0};
+        boolean ordenado = false;
+        int n = pessoas.length;
         int comparacoes = 0;
         int trocas = 0;
 
-        while (!tudoOrdenado) {
-            tudoOrdenado = true;
-
-            for (int i = 0; i < ultimoOrdenado; i++) {
+        while (!ordenado) {
+            ordenado = true;
+            for (int i = 0; i < n - 1; i++) {
                 comparacoes++;
-                if (array[i] > array[i+1]) {
-                    tudoOrdenado = false;
+                if (pessoas[i].nrBI > pessoas[i + 1].nrBI) {
+                    Pessoa temp = pessoas[i];
+                    pessoas[i] = pessoas[i + 1];
+                    pessoas[i + 1] = temp;
                     trocas++;
-
-
-                    int temp = array[i];
-                    array[i] = array[i+1];
-                    array[i+1] = temp;
+                    ordenado = false;
                 }
             }
-            ultimoOrdenado--;
+            n--;
         }
-        resultado[0] = trocas;
-        resultado[1] = comparacoes;
-        return resultado;
+
+        return new int[]{trocas, comparacoes};
     }
 
-    static int[] f02(int[] array) {
-        int[] resultado = new int[]{0,0};
-        int maiorOrdenadoPos = -1;
+
+    public static int[] f02(Pessoa[] pessoas) {
+        int n = pessoas.length;
         int comparacoes = 0;
         int trocas = 0;
 
-        while (maiorOrdenadoPos < array.length - 1) {
+        for (int i = 0; i < n - 1; i++) {
+            int minIndex = i;
 
-            int minPos = maiorOrdenadoPos + 1;
-
-            for (int i = minPos+1; i < array.length; i++) {
+            for (int j = i + 1; j < n; j++) {
                 comparacoes++;
-                if (array[i] < array[minPos]) {
-                    minPos = i;
-
+                if (pessoas[j].nrBI < pessoas[minIndex].nrBI) {
+                    minIndex = j;
                 }
             }
 
-            maiorOrdenadoPos++;
-
-            if (maiorOrdenadoPos != minPos) {
-                int temp = array[maiorOrdenadoPos];
-                array[maiorOrdenadoPos] = array[minPos];
-                array[minPos] = temp;
+            if (minIndex != i) {
+                Pessoa temp = pessoas[i];
+                pessoas[i] = pessoas[minIndex];
+                pessoas[minIndex] = temp;
                 trocas++;
             }
         }
-        resultado[0] = trocas;
-        resultado[1] = comparacoes;
 
-        return resultado;
+        return new int[]{trocas, comparacoes};
     }
 
-    static long[] f03() {
 
+    static long[] f03() {
         long[] resultado = new long[4];
         long start = System.currentTimeMillis();
         f01(arrayGrande);
@@ -107,7 +103,7 @@ public class Main {
         return Arrays.toString(f03());
     }
 
-    public static int[] estatisticas(int[] dados) {
+    public static int[] estatisticas(Pessoa[] dados) {
         int[] resultado = new int[4];
 
         int[] bubblesort = f01(dados.clone());
@@ -121,11 +117,13 @@ public class Main {
         return resultado;
     }
 
+
+
     static String[] nomesDasFuncoes() {
         return new String[] {
                 "bubblesort",
-                "sortSelection",
-                "medirtempos"
+                "sortselection",
+                "medirTempos"
         };
     }
 }

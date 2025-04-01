@@ -402,5 +402,11 @@ public class Main {
             System.out.println(a);
         }
          */
+
+
+
+        parseFiles(new File("."));
+
+        parseFiles(new File("test-files"));
     }
 }
