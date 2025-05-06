@@ -1,11 +1,11 @@
 package pt.ulusofona.aed.deisimdb;
 
-import pt.ulusofona.aed.deisimdb.classes_importantes.*;
+import pt.ulusofona.aed.deisimdb.data_classes.*;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
 
 public class Main {
 
@@ -270,9 +270,8 @@ public class Main {
             reader = new BufferedReader(new FileReader(ficheiroFilmes));
             reader.readLine(); // Ignora a 1.ª linha (cabeçalho)
 
-            // TODO usar hashset futuramente
             // Usando uma variável que guarda todos os movieId consigo diminuir o tempo que o programa demora para "correr" com arquivos grandes
-            ArrayList<Integer> movieIdUnicos = new ArrayList<>();
+            HashSet<Integer> movieIdUnicos = new HashSet<>();
 
             Filme novoFilme;
             int movieId;
@@ -301,15 +300,25 @@ public class Main {
                     movieReleaseDate = dataLinha[4].trim();
                     novoFilme = new Filme(movieId, movieName, movieDuration, movieBudget, movieReleaseDate);
 
-                    // Quando o movieId < 1000, terá que mostrar quantos atores estiveram nesse filme.
-                    if (movieId < 1000) {
-                        for (Ator ator : listaAtores) {
-                            if (ator.getMovieId() == movieId) {
-                                novoFilme.accNumAtoresEnvolvidos();
+                    // Grava quantos atores (masculino e feminino) estiveram nesse filme.
+                    for (Ator ator : listaAtores) {
+                        if (ator.getMovieId() == movieId) {
+                            novoFilme.accNumAtoresEnvolvidos(ator.getActorGender());
+                        }
+                    }
+
+                    // Grava o(os) género(os) cinematográfico(os) desse filme.
+                    for (GeneroFilme generoFilme : listaGeneroFilmes) {
+                        if (generoFilme.getMovieId() == movieId) {
+                            for (Genero genero : listaGeneros) {
+                                if (genero.getGenreId() == generoFilme.getGenreId()) {
+                                    novoFilme.accGenerosAssociados(genero.getGenreName());
+                                }
                             }
                         }
                     }
 
+                    novoFilme.verificarIdMaior1000();
                     listaFilmes.add(novoFilme);
                     movieIdUnicos.add(movieId);
                 }
@@ -373,9 +382,10 @@ public class Main {
                 valores.add("genres_movies.csv | " + linhaOK[2] + " | " + linhaNOK[2] + " | " + primeiraLinhaErrada[2]);
                 valores.add("movie_votes.csv | " + linhaOK[4] + " | " + linhaNOK[4] + " | " + primeiraLinhaErrada[4]);
                 return valores;
-        }
 
-        return null;
+            default:
+                return null;
+        }
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -383,9 +393,20 @@ public class Main {
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        parseFiles(new File("."));
+        parseFiles(new File("test-files"));
         long end = System.currentTimeMillis();
         System.out.println("Tempo: " + (end - start) + " ms");
+        for (Object a : getObjects(TipoEntidade.FILME)) {
+            System.out.println(a);
+        }
+
+        System.out.println("--");
+        System.out.println(getObjects(TipoEntidade.REALIZADOR));
+        System.out.println("--");
+        System.out.println(getObjects(TipoEntidade.ATOR));
+        System.out.println("--");
+        System.out.println(getObjects(TipoEntidade.GENERO_CINEMATOGRAFICO));
+        System.out.println("--");
 
         /*
         System.out.println("filmes - " + listaFilmes.size());

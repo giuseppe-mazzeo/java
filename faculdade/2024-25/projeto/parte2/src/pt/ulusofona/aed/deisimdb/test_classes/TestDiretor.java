@@ -1,8 +1,8 @@
-package pt.ulusofona.aed.deisimdb.classes_testes;
+package pt.ulusofona.aed.deisimdb.test_classes;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pt.ulusofona.aed.deisimdb.classes_importantes.Diretor;
+import pt.ulusofona.aed.deisimdb.data_classes.Diretor;
 
 public class TestDiretor {
     Diretor diretor = new Diretor(1, "Carlos", 1234);

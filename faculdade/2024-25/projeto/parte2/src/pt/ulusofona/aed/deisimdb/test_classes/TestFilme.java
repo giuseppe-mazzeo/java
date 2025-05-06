@@ -1,8 +1,8 @@
-package pt.ulusofona.aed.deisimdb.classes_testes;
+package pt.ulusofona.aed.deisimdb.test_classes;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pt.ulusofona.aed.deisimdb.classes_importantes.Filme;
+import pt.ulusofona.aed.deisimdb.data_classes.Filme;
 
 public class TestFilme {
     Filme filme1000 = new Filme(1, "O Sonho de um Programador", 1.0f, 10, "11-22-3333");
@@ -39,9 +39,10 @@ public class TestFilme {
             Assertions.fail("\n\nErro ao testar toString()");
         }
 
-        filme500.accNumAtoresEnvolvidos();
-        filme500.accNumAtoresEnvolvidos();
-        filme500.accNumAtoresEnvolvidos();
+        // TODO
+        filme500.accNumAtoresEnvolvidos("");
+        filme500.accNumAtoresEnvolvidos("");
+        filme500.accNumAtoresEnvolvidos("");
 
         if (!filme500.toString().equals("2 | O Pesadelo de um Programador | 3333-22-11 | 3")) {
             Assertions.fail("\n\nErro ao testar toString()");

@@ -1,9 +1,9 @@
-package pt.ulusofona.aed.deisimdb.classes_testes;
+package pt.ulusofona.aed.deisimdb.test_classes;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import pt.ulusofona.aed.deisimdb.*;
-import pt.ulusofona.aed.deisimdb.classes_importantes.*;
+import pt.ulusofona.aed.deisimdb.data_classes.*;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package pt.ulusofona.aed.deisimdb.classes_importantes;
+package pt.ulusofona.aed.deisimdb.data_classes;
 
 public class Ator {
     private final int actorId;
