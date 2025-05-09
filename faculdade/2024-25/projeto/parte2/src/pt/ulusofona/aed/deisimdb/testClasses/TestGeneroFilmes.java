@@ -1,8 +1,8 @@
-package pt.ulusofona.aed.deisimdb.test_classes;
+package pt.ulusofona.aed.deisimdb.testClasses;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pt.ulusofona.aed.deisimdb.data_classes.GeneroFilme;
+import pt.ulusofona.aed.deisimdb.GeneroFilme;
 
 public class TestGeneroFilmes {
     GeneroFilme generoFilme = new GeneroFilme(1, 1, "GeneroFilme");

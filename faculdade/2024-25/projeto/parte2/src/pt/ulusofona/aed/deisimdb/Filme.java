@@ -1,7 +1,6 @@
-package pt.ulusofona.aed.deisimdb.data_classes;
+package pt.ulusofona.aed.deisimdb;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashSet;
 
 public class Filme {
     private final int movieId;
@@ -12,7 +11,8 @@ public class Filme {
     private String toString;
     private int numAtoresMasculino = 0;
     private int numAtoresFeminino = 0;
-    private final ArrayList<String> generosAssociados;
+    private final HashSet<String> generosAssociados;
+    private final HashSet<String> diretoresAssociados;
 
 
 
@@ -22,7 +22,8 @@ public class Filme {
         this.movieDuration = movieDuration;
         this.movieBudget = movieBudget;
         this.movieReleaseDate = movieReleaseDate;
-        this.generosAssociados = new ArrayList<>();
+        this.generosAssociados = new HashSet<>();
+        this.diretoresAssociados = new HashSet<>();
     }
 
 
@@ -39,17 +40,23 @@ public class Filme {
         generosAssociados.add(genero);
     }
 
+    public void accDiretoresAssociados(String diretor) {
+        diretoresAssociados.add(diretor);
+    }
+
     public void verificarIdMaior1000() {
         String[] movieReleaseDate = this.movieReleaseDate.split("-"); // Serve para inverter, ou seja, antes estava dia-mes-ano, porém, agora vou retornar como ano-mes-dia
-        String generos;
+        String generos, diretores;
 
         if (movieId < 1000) {
-            generos = String.join(", ", generosAssociados);
+            generos = String.join(",", generosAssociados);
+            diretores = String.join(",", diretoresAssociados);
         } else {
             generos = generosAssociados.size() + "";
+            diretores = diretoresAssociados.size() + "";
         }
 
-        toString = movieId + " | " + movieName + " | " + movieReleaseDate[2] + "-" + movieReleaseDate[1] + "-" + movieReleaseDate[0] + " | " + generos + " | " + "[[]]" + " | " + numAtoresMasculino + " | " + numAtoresFeminino;
+        toString = movieId + " | " + movieName + " | " + movieReleaseDate[2] + "-" + movieReleaseDate[1] + "-" + movieReleaseDate[0] + " | " + generos + " | " + diretores + " | " + numAtoresMasculino + " | " + numAtoresFeminino;
     }
 
 
@@ -72,6 +79,23 @@ public class Filme {
 
     public String getMovieReleaseDate() {
         return movieReleaseDate;
+    }
+
+    public String getMovieReleaseOnlyYear() {
+        return movieReleaseDate.substring(6,10);
+    }
+
+    public int getMovieReleaseOnlyYearInt() {
+        return Integer.parseInt(movieReleaseDate.substring(6,10));
+    }
+
+    // substring(3,10) fica no formato: mes-ano (por exemplo, 12-3456)
+    public String getMovieReleaseOnlyMonthAndYear() {
+        return movieReleaseDate.substring(3,10);
+    }
+
+    public int getAllActors() {
+        return (numAtoresMasculino + numAtoresFeminino);
     }
 
 

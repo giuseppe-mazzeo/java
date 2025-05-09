@@ -1,8 +1,8 @@
-package pt.ulusofona.aed.deisimdb.test_classes;
+package pt.ulusofona.aed.deisimdb.testClasses;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pt.ulusofona.aed.deisimdb.data_classes.Genero;
+import pt.ulusofona.aed.deisimdb.Genero;
 
 public class TestGenero {
     Genero genero = new Genero(1, "Ficção Científica");

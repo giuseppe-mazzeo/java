@@ -1,8 +1,8 @@
-package pt.ulusofona.aed.deisimdb.test_classes;
+package pt.ulusofona.aed.deisimdb.testClasses;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pt.ulusofona.aed.deisimdb.data_classes.Filme;
+import pt.ulusofona.aed.deisimdb.Filme;
 
 public class TestFilme {
     Filme filme1000 = new Filme(1, "O Sonho de um Programador", 1.0f, 10, "11-22-3333");

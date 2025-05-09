@@ -1,8 +1,8 @@
-package pt.ulusofona.aed.deisimdb.test_classes;
+package pt.ulusofona.aed.deisimdb.testClasses;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pt.ulusofona.aed.deisimdb.data_classes.Ator;
+import pt.ulusofona.aed.deisimdb.Ator;
 
 public class TestAtor {
     Ator ator = new Ator(1,"Joao", "M", 1234);
@@ -14,7 +14,7 @@ public class TestAtor {
             Assertions.fail("\n\nErro ao testar getActorId()");
         }
 
-        if (!ator.getActorName().equals("Joao") && !atriz.getActorName().equals("Joana")) {
+        if (!ator.getActorFullName().equals("Joao") && !atriz.getActorFullName().equals("Joana")) {
             Assertions.fail("\n\nErro ao testar getActorName()");
         }
 

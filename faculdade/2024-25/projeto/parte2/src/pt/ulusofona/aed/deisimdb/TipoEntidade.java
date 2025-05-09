@@ -1,4 +1,4 @@
-package pt.ulusofona.aed.deisimdb.data_classes;
+package pt.ulusofona.aed.deisimdb;
 
 public enum TipoEntidade {
     ATOR,
