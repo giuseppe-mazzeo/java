@@ -81,6 +81,39 @@ Todas as interações com LLMs a seguir foram feitas com o ChatGPT
 
 
 
+|>>>Prompt: No hashmap, como eu percorro de um elemento para o outro?
+|>>>Resposta:
+|Ótima pergunta! Para percorrer (iterar) os elementos de um HashMap<K, V> em Java, você pode usar várias formas, dependendo do que você quer acessar: as chaves, os valores ou os pares chave–valor.
+|
+|Exemplo básico de HashMap<String, Integer>:
+|
+|Map<String, Integer> mapa = new HashMap<>();
+|mapa.put("banana", 2);
+|mapa.put("maçã", 5);
+|mapa.put("laranja", 3);
+|
+|Opção 1: Percorrer todos os pares (chave e valor):
+|
+|for (Map.Entry<String, Integer> entrada : mapa.entrySet()) {
+|    System.out.println("Fruta: " + entrada.getKey() + ", Quantidade: " + entrada.getValue());
+|}
+|
+|Opção 2: Percorrer só as chaves:
+|
+|for (String chave : mapa.keySet()) {
+|    System.out.println("Chave: " + chave);
+|}
+|
+|Opção 3: Percorrer só os valores:
+|
+|for (Integer valor : mapa.values()) {
+|    System.out.println("Valor: " + valor);
+|}
+|
+|>>>Análise crítica: Como o meu objetivo é pegar chave e valor ao mesmo tempo, optei a opção 1.
+
+
+
 |>>>Prompt:
 |>>>Resposta:
 |

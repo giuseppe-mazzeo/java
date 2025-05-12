@@ -82,11 +82,22 @@ public class Filme {
     }
 
     public String getMovieReleaseOnlyYear() {
-        return movieReleaseDate.substring(6,10);
+        return movieReleaseDate.substring(6, 10);
     }
 
     public int getMovieReleaseOnlyYearInt() {
         return Integer.parseInt(movieReleaseDate.substring(6,10));
+    }
+
+    // O bloco if serve para devolver, por exemplo, o mês no formato 9 e não 09
+    public String getMovieReleaseMonth() {
+        String string = movieReleaseDate.substring(3,5);
+
+        if (string.charAt(0) == '0') {
+            string = string.charAt(1)+"";
+        }
+
+        return string;
     }
 
     // substring(3,10) fica no formato: mes-ano (por exemplo, 12-3456)

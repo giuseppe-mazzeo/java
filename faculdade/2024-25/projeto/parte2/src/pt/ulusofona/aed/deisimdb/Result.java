@@ -1,5 +1,9 @@
 package pt.ulusofona.aed.deisimdb;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 public class Result {
     boolean success;
     String error;
@@ -21,6 +25,30 @@ public class Result {
         success = true;
         error = null;
         this.result = resultado;
+    }
+
+    public void comandoCorreto(int resultado) {
+        comandoCorreto(resultado + "");
+    }
+
+    public void comandoCorreto(HashSet<String> resultado) {
+        comandoCorreto(String.join("\n", resultado));
+    }
+
+    public void comandoCorreto(HashMap<String, Integer> resultado) {
+        StringBuilder string = new StringBuilder();
+        int contador = 0;
+
+        for (Map.Entry<String, Integer> anoFilmes : resultado.entrySet()) {
+            string.append(anoFilmes.getKey()).append(":").append(anoFilmes.getValue());
+
+            contador++;
+            if (contador < resultado.size()) {
+                string.append("\n");
+            }
+        }
+
+        comandoCorreto(string.toString());
     }
 
     public void comandoNaoEncontrouResultado() {

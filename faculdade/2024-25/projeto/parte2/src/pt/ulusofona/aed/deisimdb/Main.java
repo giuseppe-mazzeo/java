@@ -6,7 +6,7 @@ import java.util.*;
 public class Main {
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    // Variáveis Globais (guarda todas as informações dos ficheiros que são lidos corretamente)
+    // Variáveis Globais (guarda todas as informações dos ficheiros que são lidos corretamente).
     //
     public static List<Ator> listaAtores = new ArrayList<>();
     public static List<Diretor> listaDiretores = new ArrayList<>();
@@ -24,7 +24,7 @@ public class Main {
 
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    // Função que lê ficheiros dentro de uma pasta e guarda as informações.
+    // Função que lê ficheiros numa pasta e guarda as informações.
     // Retornou false ⇾ Pasta não foi encontrado, pasta vazia ou não existe nenhum ficheiro necessário para este Projeto.
     // Retornou true ⇾ Pasta existe, logo, leu os ficheiros.
     //
@@ -111,7 +111,7 @@ public class Main {
                 directorName = dataLinha[1].trim();
                 movieId = Integer.parseInt(dataLinha[2].trim());
                 novoDiretor = new Diretor(directorId, directorName, movieId);
-
+                
                 listaDiretores.add(novoDiretor);
                 linhaOK[1]++;
             }
@@ -377,19 +377,28 @@ public class Main {
                 return (ArrayList) listaGeneros;
 
             case INPUT_INVALIDO:
-                ArrayList<String> valores = new ArrayList<>();
-
-                valores.add("movies.csv | " + linhaOK[5] + " | " + linhaNOK[5] + " | " + primeiraLinhaErrada[5]);
-                valores.add("actors.csv | " + linhaOK[0] + " | " + linhaNOK[0] + " | " + primeiraLinhaErrada[0]);
-                valores.add("directors.csv | " + linhaOK[1] + " | " + linhaNOK[1] + " | " + primeiraLinhaErrada[1]);
-                valores.add("genres.csv | " + linhaOK[3] + " | " + linhaNOK[3] + " | " + primeiraLinhaErrada[3]);
-                valores.add("genres_movies.csv | " + linhaOK[2] + " | " + linhaNOK[2] + " | " + primeiraLinhaErrada[2]);
-                valores.add("movie_votes.csv | " + linhaOK[4] + " | " + linhaNOK[4] + " | " + primeiraLinhaErrada[4]);
-                return valores;
+                return obterStringInputInvalido();
 
             default:
                 return null;
         }
+    }
+    // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+
+    // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+    // Retorna a String como se deve ser para o comando INPUT_INVALIDO
+    private static ArrayList<String> obterStringInputInvalido() {
+        ArrayList<String> valores = new ArrayList<>();
+
+        valores.add("movies.csv | " + linhaOK[5] + " | " + linhaNOK[5] + " | " + primeiraLinhaErrada[5]);
+        valores.add("actors.csv | " + linhaOK[0] + " | " + linhaNOK[0] + " | " + primeiraLinhaErrada[0]);
+        valores.add("directors.csv | " + linhaOK[1] + " | " + linhaNOK[1] + " | " + primeiraLinhaErrada[1]);
+        valores.add("genres.csv | " + linhaOK[3] + " | " + linhaNOK[3] + " | " + primeiraLinhaErrada[3]);
+        valores.add("genres_movies.csv | " + linhaOK[2] + " | " + linhaNOK[2] + " | " + primeiraLinhaErrada[2]);
+        valores.add("movie_votes.csv | " + linhaOK[4] + " | " + linhaNOK[4] + " | " + primeiraLinhaErrada[4]);
+        return valores;
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -423,7 +432,7 @@ public class Main {
                     }
                 }
 
-                resultado.comandoCorreto(contaFilmes+"");
+                resultado.comandoCorreto(contaFilmes);
                 break;
 
 
@@ -442,7 +451,7 @@ public class Main {
                     }
                 }
 
-                resultado.comandoCorreto(contaDiretores+"");
+                resultado.comandoCorreto(contaDiretores);
                 break;
 
 
@@ -490,7 +499,7 @@ public class Main {
                     }
                 }
 
-                resultado.comandoCorreto(contaAtores+"");
+                resultado.comandoCorreto(contaAtores);
                 break;
 
 
@@ -516,11 +525,12 @@ public class Main {
                     }
                 }
 
-                resultado.comandoCorreto(contaFilmes+"");
+                resultado.comandoCorreto(contaFilmes);
                 break;
 
 
             // Retorna todos os nomes dos filmes de um certo ano em que participa o ator.
+            // Filmes ordenados por ordem de lançamento TODO
             case "GET_MOVIES_ACTORS_YEAR":
                 if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 3, 5, resultado)) {
                     break;
@@ -543,17 +553,152 @@ public class Main {
                 if (filmes.isEmpty()) {
                     resultado.comandoNaoEncontrouResultado();
                 } else {
-                    resultado.comandoCorreto(String.join("\n", filmes));
+                    resultado.comandoCorreto(filmes);
                 }
                 break;
 
 
-            // Retorna todos os filmes cujo nome dos atores estam envolvidos.
+            // Retorna todos os filmes cujo nome dos atores estão envolvidos.
+            // Filmes ordenados por ordem alfabética TODO
             case "GET_MOVIES_WITH_ACTOR_CONTAINING":
+                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 2, 4, resultado)) {
+                    break;
+                }
 
+                nomeAtor = retornaNomeParametro(comandoPorPartes, 1);
+                filmes = new HashSet<>();
+
+                for (Ator ator : listaAtores) {
+                    if (ator.getActorFirstName().equals(nomeAtor)) {
+                        for (Filme filme : listaFilmes) {
+                            if (ator.getMovieId() == filme.getMovieId()) {
+                                filmes.add(filme.getMovieName());
+                            }
+                        }
+                    }
+                }
+
+                resultado.comandoCorreto(filmes);
                 break;
 
 
+            // Retorna quais os 4 anos (no máximo) em que foram realizados os filmes cujo título contenha uma certa string passada pelo parâmetro
+            // Ordenado pelo n.º de ocorrencias, do maior ao menor (ou, se houver empate, pelo ano menor até ao maior) TODO
+            case "GET_TOP_4_YEARS_WITH_MOVIES_CONTAINING":
+                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 2, resultado)) {
+                    break;
+                }
+
+                String stringAlvo = comandoPorPartes[1].trim();
+                int valor;
+                HashMap<String, Integer> anoFilme = new HashMap<>();
+
+                for (Filme filme : listaFilmes) {
+                    if (filme.getMovieName().toLowerCase().contains(stringAlvo)) {
+                        ano = filme.getMovieReleaseOnlyYear();
+                        if (anoFilme.containsKey(ano)) {
+                            valor = anoFilme.get(ano);
+                            valor++;
+                            anoFilme.put(ano, valor);
+                        } else {
+                            anoFilme.put(ano, 1);
+                        }
+                    }
+                }
+
+                if (anoFilme.isEmpty()) {
+                    resultado.comandoNaoEncontrouResultado();
+                } else {
+                    resultado.comandoCorreto(anoFilme);
+                }
+                break;
+
+
+            // Retorna todos os atores que trabalharam n (num) vezes ou mais com o diretor.
+            case "GET_ACTORS_BY_DIRECTOR":
+                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 3, 5, resultado)) {
+                    break;
+                }
+
+                HashMap<String, Integer> atorNumVezes = new HashMap<>();
+                int numVezes = Integer.parseInt(comandoPorPartes[1].trim());
+                nomeDiretor = retornaNomeParametro(comandoPorPartes, 2);
+
+                for (Diretor diretor : listaDiretores) {
+                    if (diretor.getDirectorName().equals(nomeDiretor)) {
+                        for (Ator ator : listaAtores) {
+                            if (ator.getMovieId() == diretor.getMovieId()) {
+                                nomeAtor = ator.getActorFullName();
+                                if (atorNumVezes.containsKey(nomeAtor)) {
+                                    valor = atorNumVezes.get(nomeAtor);
+                                    valor++;
+                                    atorNumVezes.put(nomeAtor, valor);
+                                } else {
+                                    atorNumVezes.put(nomeAtor, 1);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (atorNumVezes.isEmpty()) {
+                    resultado.comandoNaoEncontrouResultado();
+                } else {
+                    HashMap<String, Integer> auxiliar = new HashMap<>();
+
+                    for (Map.Entry<String, Integer> map : atorNumVezes.entrySet()) {
+                        if (map.getValue() >= numVezes) {
+                            auxiliar.put(map.getKey(), map.getValue());
+                        }
+                    }
+
+                    resultado.comandoCorreto(auxiliar);
+                }
+                break;
+
+
+            // Retorna qual o mês com mais filmes no ano.
+            case "TOP_MONTH_MOVIE_COUNT":
+                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 2, resultado)) {
+                    break;
+                }
+
+                HashMap<String, Integer> mesValor = new HashMap<>();
+                ano = comandoPorPartes[1].trim();
+
+                for (Filme filme : listaFilmes) {
+                    if (filme.getMovieReleaseOnlyYear().equals(ano)) {
+                        mes = filme.getMovieReleaseMonth();
+                        if (mesValor.containsKey(mes)) {
+                            valor = mesValor.get(mes);
+                            valor++;
+                            mesValor.put(mes, valor);
+                        } else {
+                            mesValor.put(mes, 1);
+                        }
+                    }
+                }
+
+                if (mesValor.isEmpty()) {
+                    resultado.comandoNaoEncontrouResultado();
+                } else {
+                    String string = "";
+                    int maior = 0;
+                    int mapValor;
+
+                    for (Map.Entry<String, Integer> map : mesValor.entrySet()) {
+                        mapValor = map.getValue();
+                        if (mapValor > maior) {
+                            maior = mapValor;
+                            string = map.getKey() + ":" + mapValor;
+                        }
+                    }
+
+                    resultado.comandoCorreto(string);
+                }
+                break;
+
+                
             // Mostra todos os comandos existentes.
             case "HELP":
                 if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 1, resultado)) {
@@ -602,7 +747,7 @@ public class Main {
         }
         return true;
     }
-    //
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // Usamos essa função a baixo quando é passado um nome pelo parâmetro do comando.
     // Porque o nome pode ser um nome completo com dois ou três nomes, ou um nome simples com apenas um nome.
     // Nome completo - Leonardo DiCaprio, Samuel L. Jackson
