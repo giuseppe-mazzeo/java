@@ -8,12 +8,12 @@ public class Main {
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     // Variáveis Globais (guarda todas as informações dos ficheiros que são lidos corretamente).
     //
-    public static List<Ator> listaAtores = new ArrayList<>();
-    public static List<Diretor> listaDiretores = new ArrayList<>();
-    public static List<GeneroFilme> listaGeneroFilmes = new ArrayList<>();
-    public static List<VotosFilme> listaVotosFilmes = new ArrayList<>();
-    public static List<Filme> listaFilmes = new ArrayList<>();
-    public static List<Genero> listaGeneros = new ArrayList<>();
+    public static ArrayList<Ator> listaAtores = new ArrayList<>();
+    public static ArrayList<Diretor> listaDiretores = new ArrayList<>();
+    public static ArrayList<GeneroFilme> listaGeneroFilmes = new ArrayList<>();
+    public static ArrayList<VotosFilme> listaVotosFilmes = new ArrayList<>();
+    public static ArrayList<Filme> listaFilmes = new ArrayList<>();
+    public static ArrayList<Genero> listaGeneros = new ArrayList<>();
     //
     public static int[] linhaOK;
     public static int[] linhaNOK;
@@ -40,6 +40,7 @@ public class Main {
         String linha;
         String[] dataLinha;
         BufferedReader reader;
+        HashMap<Integer, HashMap<Integer, String>> movieIdActorId = new HashMap<>();
 
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> actors
@@ -69,6 +70,17 @@ public class Main {
                 actorGender = dataLinha[2].trim();
                 movieId = Integer.parseInt(dataLinha[3].trim());
                 novoAtor = new Ator(actorId, actorName, actorGender, movieId);
+
+                // Novo código da parte 2.
+                // - - -
+                // Verifico se já foi "encontrado" um movieId.
+                // Se sim ⇾ adiociono um novo ActorId relacionado com o movieId.
+                // Se não ⇾ crio um novo elemento com o movieId e já relaciono a um ActorId.
+                if (!movieIdActorId.containsKey(movieId)) {
+                    movieIdActorId.put(movieId, new HashMap<>());
+                }
+                movieIdActorId.get(movieId).put(actorId, actorName);
+                // - - -
 
                 listaAtores.add(novoAtor);
                 linhaOK[0]++;
@@ -296,12 +308,14 @@ public class Main {
                     movieReleaseDate = dataLinha[4].trim();
                     novoFilme = new Filme(movieId, movieName, movieDuration, movieBudget, movieReleaseDate);
 
-                    // Grava quantos atores (masculino e feminino) estiveram nesse filme.
-                    for (Ator ator : listaAtores) {
-                        if (ator.getMovieId() == movieId) {
-                            novoFilme.accNumAtoresEnvolvidos(ator.getActorGender());
-                        }
+                    // Novo código parte2.
+                    // - - -
+                    // Grava todos os ActorId no respectivo movieId.
+                    // Ou seja, relaciona todos os ActorsId no filme correspondente.
+                    if (movieIdActorId.containsKey(movieId)) {
+                        novoFilme.setIdNomesAtoresAssociados(movieIdActorId.get(movieId));
                     }
+                    // - - -
 
                     // Grava o(os) género(os) cinematográfico(os) desse filme.
                     for (GeneroFilme generoFilme : listaGeneroFilmes) {
@@ -363,25 +377,14 @@ public class Main {
     // Retorna um arraylist com algumas informações dos ficheiros na mesma ordem lido no ficheiro.
     // Por exemplo: tipoEntidade.ATOR → irá devolver um arraylist com vários objetos relacionado com o ator.
     public static ArrayList getObjects(TipoEntidade tipoEntidade) {
-        switch (tipoEntidade) {
-            case ATOR:
-                return (ArrayList) listaAtores;
-
-            case FILME:
-                return (ArrayList) listaFilmes;
-
-            case REALIZADOR:
-                return (ArrayList) listaDiretores;
-
-            case GENERO_CINEMATOGRAFICO:
-                return (ArrayList) listaGeneros;
-
-            case INPUT_INVALIDO:
-                return obterStringInputInvalido();
-
-            default:
-                return null;
-        }
+        return switch (tipoEntidade) {
+            case ATOR -> listaAtores;
+            case FILME -> listaFilmes;
+            case REALIZADOR -> listaDiretores;
+            case GENERO_CINEMATOGRAFICO -> listaGeneros;
+            case INPUT_INVALIDO -> obterStringInputInvalido();
+            default -> null;
+        };
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -418,134 +421,106 @@ public class Main {
         switch (comandoPorPartes[0]) {
             // Conta quantos filmes foram feitos no mês e ano passado no parâmetro.
             case "COUNT_MOVIES_MONTH_YEAR":
-                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 3, resultado)) {
-                    break;
-                }
-
-                String mes = retornaMesCom2Digitos(comandoPorPartes[1].trim());
-                String ano = comandoPorPartes[2].trim();
-                int contaFilmes = 0;
+                String mes = retornaMesCom2Digitos(comandoPorPartes[1]);
+                String ano = comandoPorPartes[2];
+                int contador = 0;
 
                 for (Filme filme : listaFilmes) {
-                    if (filme.getMovieReleaseOnlyMonthAndYear().equals(mes + "-" + ano)) {
-                        contaFilmes++;
+                    if (filme.getMovieReleaseOnlyMonth().equals(mes) && filme.getMovieReleaseOnlyYear().equals(ano)) {
+                        contador++;
                     }
                 }
 
-                resultado.comandoCorreto(contaFilmes);
+                resultado.comandoCorreto(contador);
                 break;
 
 
             // Conta quantos filmes o diretor fez.
             case "COUNT_MOVIES_DIRECTOR":
-                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 2, 4, resultado)) {
-                    break;
-                }
-
                 String nomeDiretor = retornaNomeParametro(comandoPorPartes,1);
-                int contaDiretores = 0;
+                contador = 0;
 
                 for (Diretor diretor : listaDiretores) {
                     if (diretor.getDirectorName().equals(nomeDiretor)) {
-                        contaDiretores++;
+                        contador++;
                     }
                 }
 
-                resultado.comandoCorreto(contaDiretores);
+                resultado.comandoCorreto(contador);
                 break;
 
 
             // Conta os números de atores que participaram em filmes desses dois anos.
             case "COUNT_ACTORS_IN_2_YEARS":
-                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 3, resultado)) {
-                    break;
-                }
-
-                String ano1 = comandoPorPartes[1].trim();
-                String ano2 = comandoPorPartes[2].trim();
-                ArrayList<Integer> atoresAno1 = new ArrayList<>();
-                ArrayList<Integer> atoresAno2 = new ArrayList<>();
-                String anoFilmeAtual;
-                int contaAtores = 0;
+                String ano1 = comandoPorPartes[1];
+                String ano2 = comandoPorPartes[2];
+                HashSet<Integer> actorsIdAno1 = new HashSet<>();
+                HashSet<Integer> actorsIdAno2 = new HashSet<>();
+                contador = 0;
 
                 for (Filme filme : listaFilmes) {
-                    anoFilmeAtual = filme.getMovieReleaseOnlyYear();
-                    if (!anoFilmeAtual.equals(ano1) && !anoFilmeAtual.equals(ano2)) {
-                        continue;
+                    if (filme.getMovieReleaseOnlyYear().equals(ano1)) {
+                        actorsIdAno1.addAll(filme.getAllActorsId());
                     }
 
-                    if (anoFilmeAtual.equals(ano1)) {
-                        for (Ator ator : listaAtores) {
-                            if (ator.getMovieId() == filme.getMovieId()) {
-                                atoresAno1.add(ator.getActorId());
-                            }
-                        }
-                    }
-
-                    if (anoFilmeAtual.equals(ano2)) {
-                        for (Ator ator : listaAtores) {
-                            if (ator.getMovieId() == filme.getMovieId()) {
-                                atoresAno2.add(ator.getActorId());
-                            }
-                        }
+                    if (filme.getMovieReleaseOnlyYear().equals(ano2)) {
+                        actorsIdAno2.addAll(filme.getAllActorsId());
                     }
                 }
 
-                for (int a : atoresAno1) {
-                    for (int b : atoresAno2) {
-                        if (a == b) {
-                            contaAtores++;
-                        }
+                for (int actorId : actorsIdAno1) {
+                    if (actorsIdAno2.contains(actorId)) {
+                        contador++;
                     }
                 }
 
-                resultado.comandoCorreto(contaAtores);
+                resultado.comandoCorreto(contador);
                 break;
 
 
-            // Conta todos os filmes no intervalo dos dois anos passado no parâmetro (exclusive) que tenham tido a quantidade de atores no intervalo de 'min' e 'max'.
-            case "COUNT_MOVIES_BETWEEN_YEAR_WITH_N_ACTORS":
-                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 5, resultado)) {
-                    break;
-                }
-
-                int anoInicio = Integer.parseInt(comandoPorPartes[1].trim());
-                int anoFim = Integer.parseInt(comandoPorPartes[2].trim());
-                int minAtores = Integer.parseInt(comandoPorPartes[3].trim());
-                int maxAtores = Integer.parseInt(comandoPorPartes[4].trim());
-                int anoFilmeAtualInt;
-                contaFilmes = 0;
+            // Conta todos os filmes no intervalo dos dois anos passado no parâmetro (exclusive) que tenham tido a quantidade de atores no intervalo de 'min' e 'max' (exclusive).
+            case "COUNT_MOVIES_BETWEEN_YEARS_WITH_N_ACTORS":
+                int anoInicio = Integer.parseInt(comandoPorPartes[1]);
+                int anoFim = Integer.parseInt(comandoPorPartes[2]);
+                int minAtores = Integer.parseInt(comandoPorPartes[3]);
+                int maxAtores = Integer.parseInt(comandoPorPartes[4]);
+                int anoFilmeAtual;
+                int quantTodosAtores;
+                contador = 0;
 
                 for (Filme filme : listaFilmes) {
-                    anoFilmeAtualInt = filme.getMovieReleaseOnlyYearInt();
-                    if (anoInicio < anoFilmeAtualInt && anoFilmeAtualInt < anoFim) {
-                        if (minAtores < filme.getAllActors() && filme.getAllActors() < maxAtores) {
-                            contaFilmes++;
+                    anoFilmeAtual = Integer.parseInt(filme.getMovieReleaseOnlyYear());
+                    if (anoInicio < anoFilmeAtual && anoFilmeAtual < anoFim) {
+                        quantTodosAtores = filme.getQuantAllActors();
+                        if (minAtores < quantTodosAtores && quantTodosAtores < maxAtores) {
+                            contador++;
                         }
                     }
                 }
 
-                resultado.comandoCorreto(contaFilmes);
+                resultado.comandoCorreto(contador);
                 break;
 
 
             // Retorna todos os nomes dos filmes de um certo ano em que participa o ator.
-            // Filmes ordenados por ordem de lançamento TODO
+            // Filmes ordenados por ordem de lançamento
             case "GET_MOVIES_ACTORS_YEAR":
-                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 3, 5, resultado)) {
-                    break;
-                }
+                ano = comandoPorPartes[1];
+                String nome = retornaNomeParametro(comandoPorPartes, 2);
+                int actorId = -1;
+                ArrayList<String> filmes = new ArrayList<>();
 
-                ano = comandoPorPartes[1].trim();
-                String nomeAtor = retornaNomeParametro(comandoPorPartes, 2);
-                HashSet<String> filmes = new HashSet<>();
+                for (Ator ator : listaAtores) {
+                    if (ator.getActorFullName().equals(nome)) {
+                        actorId = ator.getActorId();
+                        break;
+                    }
+                }
 
                 for (Filme filme : listaFilmes) {
                     if (filme.getMovieReleaseOnlyYear().equals(ano)) {
-                        for (Ator ator : listaAtores) {
-                            if (ator.getActorFullName().equals(nomeAtor) && ator.getMovieId() == filme.getMovieId()) {
-                                filmes.add(filme.getMovieName());
-                            }
+                        if (filme.getAllActorsId().contains(actorId)) {
+                            filmes.add(filme.getMovieReleaseOnlyDay() + filme.getMovieReleaseOnlyMonth() + "-" + filme.getMovieName());
                         }
                     }
                 }
@@ -553,140 +528,179 @@ public class Main {
                 if (filmes.isEmpty()) {
                     resultado.comandoNaoEncontrouResultado();
                 } else {
+                    Collections.sort(filmes);
+                    for (int i = 0; i < filmes.size(); i++) {
+                        filmes.set(i, filmes.get(i).substring(5));
+                    }
+
                     resultado.comandoCorreto(filmes);
                 }
                 break;
 
 
             // Retorna todos os filmes cujo nome dos atores estão envolvidos.
-            // Filmes ordenados por ordem alfabética TODO
+            // Filmes ordenados por ordem alfabética
             case "GET_MOVIES_WITH_ACTOR_CONTAINING":
-                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 2, 4, resultado)) {
-                    break;
-                }
-
-                nomeAtor = retornaNomeParametro(comandoPorPartes, 1);
-                filmes = new HashSet<>();
+                nome = retornaNomeParametro(comandoPorPartes, 1);
+                filmes = new ArrayList<>();
+                HashSet<Integer> actorsId = new HashSet<>();
 
                 for (Ator ator : listaAtores) {
-                    if (ator.getActorFirstName().equals(nomeAtor)) {
-                        for (Filme filme : listaFilmes) {
-                            if (ator.getMovieId() == filme.getMovieId()) {
-                                filmes.add(filme.getMovieName());
-                            }
+                    if (ator.getActorFirstName().equals(nome)) {
+                        actorsId.add(ator.getActorId());
+                    }
+                }
+
+                System.out.println(actorsId);
+
+                for (Filme filme : listaFilmes) {
+                    for (int currentActorId : actorsId) {
+                        if (filme.getAllActorsId().contains(currentActorId)) {
+                            filmes.add(filme.getMovieName());
                         }
                     }
                 }
 
-                resultado.comandoCorreto(filmes);
+                System.out.println(filmes);
+
+                if (filmes.isEmpty()) {
+                    resultado.comandoNaoEncontrouResultado();
+                } else {
+                    Collections.sort(filmes);
+
+                    resultado.comandoCorreto(filmes);
+                }
                 break;
 
 
             // Retorna quais os 4 anos (no máximo) em que foram realizados os filmes cujo título contenha uma certa string passada pelo parâmetro
-            // Ordenado pelo n.º de ocorrencias, do maior ao menor (ou, se houver empate, pelo ano menor até ao maior) TODO
+            // Ordenado pelo n.º de ocorrências, do maior ao menor (ou, se houver empate, pelo ano menor até ao maior)
             case "GET_TOP_4_YEARS_WITH_MOVIES_CONTAINING":
-                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 2, resultado)) {
-                    break;
-                }
-
-                String stringAlvo = comandoPorPartes[1].trim();
+                String stringAlvo = comandoPorPartes[1];
                 int valor;
-                HashMap<String, Integer> anoFilme = new HashMap<>();
+                HashMap<String, Integer> anoOcorrencia = new HashMap<>();
+                ArrayList<String> anos = new ArrayList<>();
 
                 for (Filme filme : listaFilmes) {
                     if (filme.getMovieName().toLowerCase().contains(stringAlvo)) {
                         ano = filme.getMovieReleaseOnlyYear();
-                        if (anoFilme.containsKey(ano)) {
-                            valor = anoFilme.get(ano);
+                        if (anoOcorrencia.containsKey(ano)) {
+                            valor = anoOcorrencia.get(ano);
                             valor++;
-                            anoFilme.put(ano, valor);
+                            anoOcorrencia.put(ano, valor);
+                            for (int i = 0; i < anos.size(); i++) {
+                                if (ano.equals(anos.get(i).substring(0,4))) {
+                                    anos.set(i, ano+":"+valor);
+                                    break;
+                                }
+                            }
                         } else {
-                            anoFilme.put(ano, 1);
+                            anoOcorrencia.put(ano, 1);
+                            anos.add(ano+":"+1);
                         }
                     }
                 }
 
-                if (anoFilme.isEmpty()) {
+                // Ordenando os anos a partir dos anos em forma crescente
+                if (anos.isEmpty()) {
                     resultado.comandoNaoEncontrouResultado();
                 } else {
-                    resultado.comandoCorreto(anoFilme);
+                    int j;
+                    String temp;
+                    for (int i = 0; i < anos.size(); i++) {
+                        j = i + 1;
+                        if (j < anos.size()) {
+                            if (anos.get(i).charAt(5) == anos.get(j).charAt(5)) {
+                                if (Integer.parseInt(anos.get(i).substring(0,4)) > Integer.parseInt(anos.get(j).substring(0,4))) {
+                                    temp = anos.get(i);
+                                    anos.set(i,anos.get(j));
+                                    anos.set(j,temp);
+                                }
+                            }
+                        }
+                    }
+
+                    if (anos.size() > 4) {
+                        ArrayList<String> primeirosQuatroAnos = new ArrayList<>();
+
+                        primeirosQuatroAnos.add(anos.get(0));
+                        primeirosQuatroAnos.add(anos.get(1));
+                        primeirosQuatroAnos.add(anos.get(2));
+                        primeirosQuatroAnos.add(anos.get(3));
+
+                        resultado.comandoCorreto(primeirosQuatroAnos);
+                        break;
+                    }
+
+                    resultado.comandoCorreto(anos);
                 }
                 break;
 
 
-            // Retorna todos os atores que trabalharam n (num) vezes ou mais com o diretor.
+            // Retorna todos os atores que trabalharam n ou mais vezes com um diretor.
+            // Ordenação é indiferente
             case "GET_ACTORS_BY_DIRECTOR":
-                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 3, 5, resultado)) {
-                    break;
-                }
-
-                HashMap<String, Integer> atorNumVezes = new HashMap<>();
-                int numVezes = Integer.parseInt(comandoPorPartes[1].trim());
+                int numVezes = Integer.parseInt(comandoPorPartes[1]);
                 nomeDiretor = retornaNomeParametro(comandoPorPartes, 2);
+                HashMap<String, Integer> nomeAtorOcorrencias = new HashMap<>();
 
-                for (Diretor diretor : listaDiretores) {
-                    if (diretor.getDirectorName().equals(nomeDiretor)) {
-                        for (Ator ator : listaAtores) {
-                            if (ator.getMovieId() == diretor.getMovieId()) {
-                                nomeAtor = ator.getActorFullName();
-                                if (atorNumVezes.containsKey(nomeAtor)) {
-                                    valor = atorNumVezes.get(nomeAtor);
-                                    valor++;
-                                    atorNumVezes.put(nomeAtor, valor);
-                                } else {
-                                    atorNumVezes.put(nomeAtor, 1);
-                                }
+                for (Filme filme : listaFilmes) {
+                    if (filme.getAllDirectorsName().contains(nomeDiretor)) {
+                        for (String string : filme.getAllActorsName()) {
+                            if (nomeAtorOcorrencias.containsKey(string)) {
+                                valor = nomeAtorOcorrencias.get(string);
+                                valor++;
+                                nomeAtorOcorrencias.put(string, valor);
+                            } else {
+                                nomeAtorOcorrencias.put(string, 1);
                             }
                         }
                     }
                 }
 
-                if (atorNumVezes.isEmpty()) {
+                if (nomeAtorOcorrencias.isEmpty()) {
                     resultado.comandoNaoEncontrouResultado();
                 } else {
-                    HashMap<String, Integer> auxiliar = new HashMap<>();
+                    ArrayList<String> atores = new ArrayList<>();
 
-                    for (Map.Entry<String, Integer> map : atorNumVezes.entrySet()) {
+                    for (Map.Entry<String, Integer>  map : nomeAtorOcorrencias.entrySet()) {
                         if (map.getValue() >= numVezes) {
-                            auxiliar.put(map.getKey(), map.getValue());
+                            atores.add(map.getKey()+":"+map.getValue());
                         }
                     }
 
-                    resultado.comandoCorreto(auxiliar);
+                    resultado.comandoCorreto(atores);
                 }
                 break;
 
 
             // Retorna qual o mês com mais filmes no ano.
             case "TOP_MONTH_MOVIE_COUNT":
-                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 2, resultado)) {
-                    break;
-                }
-
-                HashMap<String, Integer> mesValor = new HashMap<>();
-                ano = comandoPorPartes[1].trim();
+                ano = comandoPorPartes[1];
+                HashMap<String, Integer> mesOcorrencias = new HashMap<>();
 
                 for (Filme filme : listaFilmes) {
                     if (filme.getMovieReleaseOnlyYear().equals(ano)) {
-                        mes = filme.getMovieReleaseMonth();
-                        if (mesValor.containsKey(mes)) {
-                            valor = mesValor.get(mes);
+                        mes = filme.getMovieReleaseOnlyMonth();
+                        if (mesOcorrencias.containsKey(mes)) {
+                            valor = mesOcorrencias.get(mes);
                             valor++;
-                            mesValor.put(mes, valor);
+                            mesOcorrencias.put(mes, valor);
                         } else {
-                            mesValor.put(mes, 1);
+                            mesOcorrencias.put(mes, 1);
                         }
                     }
                 }
 
-                if (mesValor.isEmpty()) {
+                if (mesOcorrencias.isEmpty()) {
                     resultado.comandoNaoEncontrouResultado();
                 } else {
                     String string = "";
                     int maior = 0;
                     int mapValor;
 
-                    for (Map.Entry<String, Integer> map : mesValor.entrySet()) {
+                    // Procuro pelo hashmap com maior value
+                    for (Map.Entry<String, Integer> map : mesOcorrencias.entrySet()) {
                         mapValor = map.getValue();
                         if (mapValor > maior) {
                             maior = mapValor;
@@ -698,7 +712,54 @@ public class Main {
                 }
                 break;
 
-                
+
+            // Retorna os atores com maior classificação no ano de um filme, juntamente com a avaliação/classificação desse mesmo filme.
+            // O parâmetro num indica o número máximo de resultado.
+            // Ordenado pelo valor de classificação (se houver empate não importa a ordem dos atores). TODO
+            case "TOP_VOTED_ACTORS":
+                int num = Integer.parseInt(comandoPorPartes[1]);
+                ano = comandoPorPartes[2];
+                HashMap<String, Float> nomeAtorVoto = new HashMap<>();
+
+                for (Filme filme : listaFilmes) {
+                    if (filme.getMovieReleaseOnlyYear().equals(ano)) {
+                        for (VotosFilme votosFilme : listaVotosFilmes) {
+                            if (filme.getMovieId() == votosFilme.getMovieId()) {
+                                for (Ator ator : listaAtores) {
+                                    if (filme.getMovieId() == ator.getMovieId()) {
+                                        nomeAtorVoto.put(ator.getActorFullName(), votosFilme.getMovieRating());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (nomeAtorVoto.isEmpty()) {
+                    resultado.comandoNaoEncontrouResultado();
+                } else {
+                    for (int i = 0; i < num; i++) {
+                        System.out.println(nomeAtorVoto);
+                    }
+                }
+                break;
+
+
+            // Retorna os filmes do ano indicado com mais atores do gênero indicado.
+            // O parâmetro num indica o número máximo de resultado.
+            // Ordenado pelo número de atores de forma descrevente (se houver empate, os filmes devem ser ordenados de forma alfabética).
+            case "TOP_MOVIES_WITH_MORE_GENDER":
+                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 4, resultado)) {
+                    break;
+                }
+
+                num = Integer.parseInt(comandoPorPartes[1].trim());
+                ano = comandoPorPartes[2].trim();
+                String genero = comandoPorPartes[3].trim();
+
+                break;
+
+
             // Mostra todos os comandos existentes.
             case "HELP":
                 if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 1, resultado)) {
@@ -735,6 +796,54 @@ public class Main {
         return resultado;
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+
+    private static void quickSort(int[] array, int inicio, int fim) {
+        if (inicio < fim) {
+            int posicaoPivot = partition(array, inicio, fim - 1);
+
+            // Ordena as duas metades
+            quickSort(array, inicio, posicaoPivot);
+            quickSort(array, posicaoPivot + 1, fim);
+        }
+    }
+
+    private static int partition(int[] numeros, int inicio, int fim) {
+        // vamos escolher o pivot como sendo o elemento mais à direita
+        int pivot = numeros[fim];
+        int inicioIndex = inicio;
+        int fimIndex = fim - 1; // excluir o pivot
+        int temp;
+
+        while (inicioIndex <= fimIndex) {
+            // se o inicio for maior que o pivot e o fim fôr menor que o pivot, então troca
+            if (numeros[inicioIndex] > pivot && numeros[fimIndex] < pivot) {
+                temp = numeros[inicioIndex];
+                numeros[inicioIndex] = numeros[fimIndex];
+                numeros[fimIndex] = temp;
+
+                inicioIndex++;
+                fimIndex--;
+            } else {
+                // se o inicio for menor que o pivot, avança
+                if (numeros[inicioIndex] <= pivot) {
+                    inicioIndex++;
+                }
+                // se o fim for maior que o pivot, recua
+                if (numeros[fimIndex] >= pivot) {
+                    fimIndex--;
+                }
+            }
+        }
+
+        // troca pivot com inicio
+        numeros[fim] = numeros[inicioIndex];
+        numeros[inicioIndex] = pivot;
+
+        return inicioIndex;
+    }
+
 
 
 
@@ -778,9 +887,9 @@ public class Main {
     // index começa no index do comandoPorPartes onde tem o nome.
     private static String retornaNomeParametro(String[] nome, int index) {
         return switch (nome.length - index) {
-            case 1 -> nome[index].trim();
-            case 2 -> nome[index].trim() + " " + nome[index + 1].trim();
-            case 3 -> nome[index].trim() + " " + nome[index + 1].trim() + " " + nome[index + 2].trim();
+            case 1 -> nome[index];
+            case 2 -> nome[index] + " " + nome[index + 1];
+            case 3 -> nome[index] + " " + nome[index + 1] + " " + nome[index + 2];
             default -> "";
         };
     }

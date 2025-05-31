@@ -1,9 +1,9 @@
 package pt.ulusofona.aed.deisimdb;
 
 public class Diretor {
-    private final int directorId;
-    private final String directorName;
-    private final int movieId;
+    public final int directorId;
+    public final String directorName;
+    public final int movieId;
 
 
 

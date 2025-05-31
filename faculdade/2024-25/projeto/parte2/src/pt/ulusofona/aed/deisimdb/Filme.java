@@ -1,5 +1,6 @@
 package pt.ulusofona.aed.deisimdb;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class Filme {
@@ -8,9 +9,17 @@ public class Filme {
     private final float movieDuration;
     private final long movieBudget;
     private final String movieReleaseDate;
+    // - - -
+    private final String day;
+    private final String month;
+    private final String year;
+    // - - -
     private String toString;
-    private int numAtoresMasculino = 0;
-    private int numAtoresFeminino = 0;
+    // - - -
+    private int numAtoresMasculino;
+    private int numAtoresFeminino;
+    // - - -
+    private HashMap<Integer, String> idNomesAtoresAssociados;
     private final HashSet<String> generosAssociados;
     private final HashSet<String> diretoresAssociados;
 
@@ -22,19 +31,21 @@ public class Filme {
         this.movieDuration = movieDuration;
         this.movieBudget = movieBudget;
         this.movieReleaseDate = movieReleaseDate;
+
+        this.idNomesAtoresAssociados = new HashMap<>();
         this.generosAssociados = new HashSet<>();
         this.diretoresAssociados = new HashSet<>();
+
+        numAtoresMasculino = 0;
+        numAtoresFeminino = 0;
+
+        String[] separaData = this.movieReleaseDate.split("-");
+        day = separaData[0];
+        month = separaData[1];
+        year = separaData[2];
     }
 
 
-
-    public void accNumAtoresEnvolvidos(String actorGender) {
-        if (actorGender.equals("Masculino")) {
-            numAtoresMasculino++;
-        } else {
-            numAtoresFeminino++;
-        }
-    }
 
     public void accGenerosAssociados(String genero) {
         generosAssociados.add(genero);
@@ -45,7 +56,6 @@ public class Filme {
     }
 
     public void verificarIdMaior1000() {
-        String[] movieReleaseDate = this.movieReleaseDate.split("-"); // Serve para inverter, ou seja, antes estava dia-mes-ano, porém, agora vou retornar como ano-mes-dia
         String generos, diretores;
 
         if (movieId < 1000) {
@@ -56,10 +66,13 @@ public class Filme {
             diretores = diretoresAssociados.size() + "";
         }
 
-        toString = movieId + " | " + movieName + " | " + movieReleaseDate[2] + "-" + movieReleaseDate[1] + "-" + movieReleaseDate[0] + " | " + generos + " | " + diretores + " | " + numAtoresMasculino + " | " + numAtoresFeminino;
+        toString = movieId + " | " + movieName + " | " + year + "-" + month + "-" + day + " | " + generos + " | " + diretores + " | " + numAtoresMasculino + " | " + numAtoresFeminino;
     }
 
 
+    public void setIdNomesAtoresAssociados(HashMap<Integer, String> allActorId) {
+        this.idNomesAtoresAssociados = allActorId;
+    }
 
     public int getMovieId() {
         return movieId;
@@ -81,35 +94,33 @@ public class Filme {
         return movieReleaseDate;
     }
 
+    public String getMovieReleaseOnlyDay() {
+        return day;
+    }
+
+    public String getMovieReleaseOnlyMonth() {
+        return month;
+    }
+
     public String getMovieReleaseOnlyYear() {
-        return movieReleaseDate.substring(6, 10);
+        return year;
     }
 
-    public int getMovieReleaseOnlyYearInt() {
-        return Integer.parseInt(movieReleaseDate.substring(6,10));
+    public HashSet<Integer> getAllActorsId() {
+        return new HashSet<>(idNomesAtoresAssociados.keySet());
     }
 
-    // O bloco if serve para devolver, por exemplo, o mês no formato 9 e não 09
-    public String getMovieReleaseMonth() {
-        String string = movieReleaseDate.substring(3,5);
-
-        if (string.charAt(0) == '0') {
-            string = string.charAt(1)+"";
-        }
-
-        return string;
+    public HashSet<String> getAllActorsName() {
+        return new HashSet<>(idNomesAtoresAssociados.values());
     }
 
-    // substring(3,10) fica no formato: mes-ano (por exemplo, 12-3456)
-    public String getMovieReleaseOnlyMonthAndYear() {
-        return movieReleaseDate.substring(3,10);
+    public int getQuantAllActors() {
+        return idNomesAtoresAssociados.size();
     }
 
-    public int getAllActors() {
-        return (numAtoresMasculino + numAtoresFeminino);
+    public HashSet<String> getAllDirectorsName() {
+        return diretoresAssociados;
     }
-
-
 
     @Override
     public String toString() {

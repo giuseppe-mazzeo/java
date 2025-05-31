@@ -1,5 +1,6 @@
 package pt.ulusofona.aed.deisimdb;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class Result {
         comandoCorreto(resultado + "");
     }
 
-    public void comandoCorreto(HashSet<String> resultado) {
+    public void comandoCorreto(ArrayList<String> resultado) {
         comandoCorreto(String.join("\n", resultado));
     }
 

@@ -5,6 +5,8 @@ public class Ator {
     private final String actorFullName;
     private final String actorGender;
     private final int movieId;
+    // - - -
+    private String actorFirstName;
 
 
 
@@ -13,6 +15,8 @@ public class Ator {
         this.actorFullName = actorName;
         this.actorGender = (actorGender.equals("M")) ? "Masculino" : "Feminino";
         this.movieId = movieId;
+
+        actorFirstName = actorFullName.split(" ")[0];
     }
 
 
@@ -34,7 +38,7 @@ public class Ator {
     }
 
     public String getActorFirstName() {
-        return actorFullName.split(" ")[0];
+        return actorFirstName;
     }
 
 
