@@ -577,14 +577,15 @@ public class Main {
 
             // Retorna todos os nomes dos filmes de um certo ano em que participa o ator.
             // Filmes ordenados por ordem de lançamento
-            case "GET_MOVIES_ACTOR_YEAR":
+            case "GET_MOVIES_ACTOR_YEAR": // <year> <full-name>
+                // GET_MOVIES_ACTOR_YEAR 2014 Abby Elliott
                 ano = comandoPorPartes[1];
                 String nome = retornaNomeParametro(comandoPorPartes, 2);
                 int actorId = -1;
                 ArrayList<String> filmes = new ArrayList<>();
 
                 for (Ator ator : listaAtores) {
-                    if (ator.getActorFullName().equals(nome)) {
+                    if (ator.getActorName().equals(nome)) {
                         actorId = ator.getActorId();
                         break;
                     }
@@ -593,7 +594,7 @@ public class Main {
                 for (Filme filme : listaFilmes) {
                     if (filme.getMovieReleaseOnlyYear().equals(ano)) {
                         if (filme.getAllActorsId().contains(actorId)) {
-                            filmes.add(filme.getMovieReleaseOnlyDay() + filme.getMovieReleaseOnlyMonth() + "-" + filme.getMovieName());
+                            filmes.add(filme.getMovieReleaseOnlyMonth() + filme.getMovieReleaseOnlyDay() + "-" + filme.getMovieName());
                         }
                     }
                 }
@@ -619,7 +620,7 @@ public class Main {
                 HashSet<Integer> actorsId = new HashSet<>();
 
                 for (Ator ator : listaAtores) {
-                    if (ator.getActorFullName().contains(nome)) {
+                    if (ator.getActorName().contains(nome)) {
                         actorsId.add(ator.getActorId());
                     }
                 }
@@ -781,12 +782,20 @@ public class Main {
                     int maior = 0;
                     int mapValor;
 
+                    System.out.println(mesOcorrencias);
+
                     // Procuro pelo hashmap com maior value
                     for (Map.Entry<String, Integer> map : mesOcorrencias.entrySet()) {
                         mapValor = map.getValue();
+
                         if (mapValor > maior) {
                             maior = mapValor;
-                            topMovie = map.getKey() + ":" + mapValor;
+                            topMovie = map.getKey()+":"+mapValor;
+                        } else if (mapValor == maior) {
+                            // Escolho pelo menor mês. Ou seja, entre o mês 8 e o 11, irei guarda o mês 8.
+                            if (Integer.parseInt(map.getKey()) < Integer.parseInt(topMovie.split(":")[0])) {
+                                topMovie = map.getKey()+":"+mapValor;
+                            }
                         }
                     }
 
@@ -876,7 +885,7 @@ public class Main {
             // O parâmetro num indica o número máximo de resultado.
             // O parâmetro gender pode ser M ou F.
             // Ordenado pelo número de atores de forma decrescente (se houver empate, os filmes devem ser ordenados de forma alfabética).
-            case "TOP_MOVIES_WITH_MORE_GENDER":
+            case "TOP_MOVIES_WITH_MORE_GENDER": // <num> <year> <gender>
                 num = Integer.parseInt(comandoPorPartes[1]);
                 ano = comandoPorPartes[2];
                 char genero = comandoPorPartes[3].charAt(0);
@@ -895,6 +904,8 @@ public class Main {
                     }
                 }
 
+                System.out.println(nomeFilmeOcorrencias);
+
                 if (nomeFilmeOcorrencias.isEmpty()) {
                     resultado.comandoNaoEncontrouResultado();
                 } else {
@@ -912,8 +923,16 @@ public class Main {
                         while (esquerda < direita) {
                             meio = (esquerda + direita) / 2;
                             String[] partes = todosFilmes.get(meio).split(":");
-                            String filme = partes[0];
-                            int ocorrencia = Integer.parseInt(partes[1]);
+                            String filme = "";
+                            // Para guarda o nome completo do filme, mesmo se tenha o caracter ':'.
+                            // Ou seja, se aparecer o filme Dark Angel: The Ascent, será guardado o nome completo do filme.
+                            for (int i = 0; i < partes.length - 1; i++) {
+                                filme += partes[i];
+                                if (i == partes.length - 3) {
+                                    filme += ":";
+                                }
+                            }
+                            int ocorrencia = Integer.parseInt(partes[partes.length - 1]);
 
                             if (ocorrencia > map.getValue()) {
                                 esquerda = meio + 1;
@@ -1021,7 +1040,8 @@ public class Main {
             // Procura por todos os filmes contidos no intervalo de dois anos (inclusive).
             // Para cada filme, será analisado se têm 2 ou mais diretores com o mesmo apelido/sobrenome (último nome). Assim sendo, assumimos que são da mesma família.
             // Ordernado pelo número de ocorrência, quantos filmes os diretores fizeram juntos (se houver empate é irrelevante a ordem).
-            case "TOP_6_DIRECTORS_WITHIN_FAMILY":
+            case "TOP_6_DIRECTORS_WITHIN_FAMILY": // <year-start> <year-end>
+                // TOP_6_DIRECTORS_WITHIN_FAMILY 1970 1990
                 anoInicio = Integer.parseInt(comandoPorPartes[1]);
                 anoFim = Integer.parseInt(comandoPorPartes[2]);
                 HashMap<String, Integer> nomeDiretorOcorrencias = new HashMap<>();
@@ -1185,22 +1205,65 @@ public class Main {
 
             // Retorna a distância que entre dois atores que participaram no mesmo filme ou que trabalharam com atores que, por sua vez, trabalharam com outros atores.
             // Ou seja, retorna a distância que o ator1 tem para o ator2.
-            // Distância 1 ⇾ tem um ator em que já trabalharam em comum.
             // Distância 0 ⇾ trabalharam juntos no mesmo filme.
+            // Distância 1 ⇾ tem um ator em que já trabalharam em comum.
             // No result ⇾ Não tem ligação nenhuma ou licações muito próximas.
             case "DISTANCE_BETWEEN_ACTORS": // <actor-1> <actor-2>
                 // DISTANCE_BETWEEN_ACTORS John Travolta,Samuel L. Jackson
+                // DISTANCE_BETWEEN_ACTORS John Travolta,Morgan Freeman
                 int maximaDistancia = 1;
-                int distancia;
+                int distancia = -1;
                 String ator1 = comandoPorPartes[1].trim();
                 String ator2 = comandoPorPartes[2].trim();
+                HashSet<String> todosAtoresFilme = new HashSet<>();
 
                 for (Filme filme : listaFilmes) {
                     if (filme.getAllActorsName().contains(ator1) && filme.getAllActorsName().contains(ator2)) {
                         distancia = 0;
                         break;
                     }
-                    
+
+                    if (filme.getAllActorsName().contains(ator1)) {
+                        todosAtoresFilme.addAll(filme.getAllActorsName());
+                        todosAtoresFilme.remove(ator1);
+
+                        for (Filme filmeee : listaFilmes) {
+                            if (filme.getMovieId() == filmeee.getMovieId()) {
+                                continue;
+                            }
+
+                            for (String ator : todosAtoresFilme) {
+                                if (filmeee.getAllActorsName().contains(ator)) {
+                                    distancia = 1;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (filme.getAllActorsName().contains(ator2)) {
+                        todosAtoresFilme.addAll(filme.getAllActorsName());
+                        todosAtoresFilme.remove(ator2);
+
+                        for (Filme filmeee : listaFilmes) {
+                            if (filme.getMovieId() == filmeee.getMovieId()) {
+                                continue;
+                            }
+
+                            for (String ator : todosAtoresFilme) {
+                                if (filmeee.getAllActorsName().contains(ator)) {
+                                    distancia = 1;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (distancia == -1) {
+                    resultado.comandoNaoEncontrouResultado();
+                } else {
+                    resultado.comandoCorreto(distancia);
                 }
 
                 break;
@@ -1241,12 +1304,18 @@ public class Main {
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
+
+
+
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     // Corrigindo, deve ficar 06, por exemplo.
     private static String retornaMesCom2Digitos(String mes) {
         return (mes.length() == 1) ? ("0" + mes) : mes;
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+
 
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -1262,6 +1331,9 @@ public class Main {
         };
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+
 
 
     public static void main(String[] args) {

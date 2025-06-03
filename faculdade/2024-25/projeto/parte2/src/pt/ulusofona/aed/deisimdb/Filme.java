@@ -1,32 +1,37 @@
 package pt.ulusofona.aed.deisimdb;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class Filme {
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Dados obtidos no ficheiro director.csv
     private final int movieId;
     private final String movieName;
     private final float movieDuration;
     private final long movieBudget;
     private final String movieReleaseDate;
-    // - - -
-    private float movieVote;
-    // - - -
-    private final String day;
-    private final String month;
-    private final String year;
-    // - - -
-    private String toString;
-    // - - -
-    private int numAtoresMasculino;
-    private int numAtoresFeminino;
-    // - - -
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Dados obtidos em outros ficheiros
     private HashMap<Integer, String> idNomesAtores; // key - actorId ; value - actorName
     private HashMap<Integer, String> idNomesDiretores; // key - directorId ; value - directorName
     private final ArrayList<String> generosAssociados;
+    private float movieVote;
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Guarda os dados separados no movieReleaseDate
+    private final String day;
+    private final String month;
+    private final String year;
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Guarda uma String para ser usada na função toString
+    private String toString;
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Guarda a informação de quantos atores masculinos e femininos têm no filme
+    private int numAtoresMasculino;
+    private int numAtoresFeminino;
+    // - - - - - - - - - - - - - - - - - - - - - - -
 
 
 
@@ -37,14 +42,13 @@ public class Filme {
         this.movieBudget = movieBudget;
         this.movieReleaseDate = movieReleaseDate;
 
-        this.idNomesAtores = new HashMap<>();
-        this.idNomesDiretores = new HashMap<>();
-        this.generosAssociados = new ArrayList<>();
+        idNomesAtores = new HashMap<>();
+        idNomesDiretores = new HashMap<>();
+        generosAssociados = new ArrayList<>();
+        movieVote = 0;
 
         numAtoresMasculino = 0;
         numAtoresFeminino = 0;
-
-        movieVote = 0;
 
         String[] separaData = this.movieReleaseDate.split("-");
         day = separaData[0];
@@ -54,104 +58,14 @@ public class Filme {
 
 
 
-    public void verificarIdMaior1000() {
-        String generos, diretores;
-        ArrayList<String> nomesDiretores = new ArrayList<>();
-
-        if (movieId < 1000) {
-            Collections.sort(generosAssociados);
-            generos = String.join(",", generosAssociados);
-
-            nomesDiretores.addAll(idNomesDiretores.values());
-            Collections.sort(nomesDiretores);
-            diretores = String.join(",", nomesDiretores);
-        } else {
-            generos = generosAssociados.size() + "";
-            diretores = idNomesDiretores.size() + "";
-        }
-
-        toString = movieId + " | " + movieName + " | " + year + "-" + month + "-" + day + " | " + generos + " | " + diretores + " | " + numAtoresMasculino + " | " + numAtoresFeminino;
-    }
-
-    public void setAtoresAssociados(HashSet<Ator> atores) {
-        int numMasculino = 0;
-        int numFeminino = 0;
-        HashMap<Integer, String> idNomesAtores = new HashMap<>();
-
-        for (Ator ator : atores) {
-            idNomesAtores.put(ator.getActorId(), ator.getActorFullName());
-
-            if (ator.getActorGender().equals("Masculino")) {
-                numMasculino++;
-            } else {
-                numFeminino++;
-            }
-        }
-
-        this.numAtoresMasculino = numMasculino;
-        this.numAtoresFeminino = numFeminino;
-        this.idNomesAtores = idNomesAtores;
-    }
-
-    public void setDiretoresAssociados(HashSet<Diretor> diretores) {
-        HashMap<Integer, String> idNomesDiretores = new HashMap<>();
-
-        for (Diretor diretor : diretores) {
-            idNomesDiretores.put(diretor.getDirectorId(), diretor.getDirectorName());
-        }
-
-        this.idNomesDiretores = idNomesDiretores;
-    }
-
-    public void setGenerosAssociados(HashSet<String> generos) {
-        this.generosAssociados.addAll(generos);
-    }
-
-    public void setMovieVote(Float movieVote) {
-        this.movieVote = movieVote;
-    }
-
-    public void setNumAtoresMasculinoEFeminino(int numAtoresMasculino, int numAtoresFeminino) {
-        this.numAtoresMasculino = numAtoresMasculino;
-        this.numAtoresFeminino = numAtoresFeminino;
-    }
-
-    public void adicionarNovoAtor(int actorId, String actorName, String genderActor) {
-        idNomesAtores.put(actorId, actorName);
-
-        if (genderActor.equals("M")) {
-            numAtoresMasculino++;
-        } else {
-            numAtoresFeminino++;
-        }
-
-        verificarIdMaior1000();
-    }
-
-    public void adicionarNovoDiretor(int directorId, String directorName) {
-        idNomesDiretores.put(directorId, directorName);
-
-        verificarIdMaior1000();
-    }
-
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Funções getters
     public int getMovieId() {
         return movieId;
     }
 
     public String getMovieName() {
         return movieName;
-    }
-
-    public float getMovieDuration() {
-        return movieDuration;
-    }
-
-    public long getMovieBudget() {
-        return movieBudget;
-    }
-
-    public String getMovieReleaseDate() {
-        return movieReleaseDate;
     }
 
     public String getMovieReleaseOnlyDay() {
@@ -193,6 +107,100 @@ public class Filme {
     public HashSet<String> getAllDirectorsName() {
         return new HashSet<>(idNomesDiretores.values());
     }
+    // - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Funções setters
+    public void setAtoresAssociados(HashSet<Ator> atores) {
+        int numMasculino = 0;
+        int numFeminino = 0;
+        HashMap<Integer, String> idNomesAtores = new HashMap<>();
+
+        for (Ator ator : atores) {
+            idNomesAtores.put(ator.getActorId(), ator.getActorName());
+
+            if (ator.getActorGender().equals("Masculino")) {
+                numMasculino++;
+            } else {
+                numFeminino++;
+            }
+        }
+
+        this.numAtoresMasculino = numMasculino;
+        this.numAtoresFeminino = numFeminino;
+        this.idNomesAtores = idNomesAtores;
+    }
+
+    public void setDiretoresAssociados(HashSet<Diretor> diretores) {
+        HashMap<Integer, String> idNomesDiretores = new HashMap<>();
+
+        for (Diretor diretor : diretores) {
+            idNomesDiretores.put(diretor.getDirectorId(), diretor.getDirectorName());
+        }
+
+        this.idNomesDiretores = idNomesDiretores;
+    }
+
+    public void setGenerosAssociados(HashSet<String> generos) {
+        this.generosAssociados.addAll(generos);
+    }
+
+    public void setMovieVote(Float movieVote) {
+        this.movieVote = movieVote;
+    }
+    // - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Verifica quando o movieId é maior do que 1000
+    public void verificarIdMaior1000() {
+        String generos, diretores;
+        ArrayList<String> nomesDiretores = new ArrayList<>();
+
+        if (movieId < 1000) {
+            Collections.sort(generosAssociados);
+            generos = String.join(",", generosAssociados);
+
+            nomesDiretores.addAll(idNomesDiretores.values());
+            Collections.sort(nomesDiretores);
+            diretores = String.join(",", nomesDiretores);
+        } else {
+            generos = generosAssociados.size() + "";
+            diretores = idNomesDiretores.size() + "";
+        }
+
+        toString = movieId + " | " + movieName + " | " + year + "-" + month + "-" + day + " | " + generos + " | " + diretores + " | " + numAtoresMasculino + " | " + numAtoresFeminino;
+    }
+    // - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Funções que adicionam novos elementos (autores ou diretores)
+    // São usadas no comando de INSERT_ACTOR e INSERT_DIRECTOR
+    public void adicionarNovoAtor(int actorId, String actorName, String genderActor) {
+        idNomesAtores.put(actorId, actorName);
+
+        if (genderActor.equals("M")) {
+            numAtoresMasculino++;
+        } else {
+            numAtoresFeminino++;
+        }
+
+        verificarIdMaior1000();
+    }
+
+    public void adicionarNovoDiretor(int directorId, String directorName) {
+        idNomesDiretores.put(directorId, directorName);
+
+        verificarIdMaior1000();
+    }
+    // - - - - - - - - - - - - - - - - - - - - - - -
+
+
 
     @Override
     public String toString() {

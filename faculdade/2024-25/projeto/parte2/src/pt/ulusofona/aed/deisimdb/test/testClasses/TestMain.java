@@ -1,4 +1,4 @@
-package pt.ulusofona.aed.deisimdb.testClasses;
+package pt.ulusofona.aed.deisimdb.test.testClasses;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

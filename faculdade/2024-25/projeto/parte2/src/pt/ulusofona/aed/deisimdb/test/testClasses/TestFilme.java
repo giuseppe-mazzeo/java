@@ -1,4 +1,4 @@
-package pt.ulusofona.aed.deisimdb.testClasses;
+package pt.ulusofona.aed.deisimdb.test.testClasses;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,17 +18,6 @@ public class TestFilme {
             Assertions.fail("\n\nErro ao testar getMovieName()");
         }
 
-        if (filme1000.getMovieDuration() != 1.0f && filme500.getMovieDuration() != 1.0f) {
-            Assertions.fail("\n\nErro ao testar getMovieDuration()");
-        }
-
-        if (filme1000.getMovieBudget() != 10 && filme500.getMovieBudget() != 10) {
-            Assertions.fail("\n\nErro ao testar getMovieBudget()");
-        }
-
-        if (!filme1000.getMovieReleaseDate().equals("11-22-3333") && !filme500.getMovieReleaseDate().equals("11-22-3333")) {
-            Assertions.fail("\n\nErro ao testar getMovieReleaseDate()");
-        }
     }
 
 

@@ -1,9 +1,12 @@
 package pt.ulusofona.aed.deisimdb;
 
 public class Diretor {
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Dados obtidos no ficheiro director.csv
     private final int directorId;
     private final String directorName;
     private final int movieId;
+    // - - - - - - - - - - - - - - - - - - - - - - -
 
 
 
@@ -15,6 +18,8 @@ public class Diretor {
 
 
 
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Funções getters
     public int getDirectorId() {
         return directorId;
     }
@@ -22,10 +27,7 @@ public class Diretor {
     public String getDirectorName() {
         return directorName;
     }
-
-    public int getMovieId() {
-        return movieId;
-    }
+    // - - - - - - - - - - - - - - - - - - - - - - -
 
 
 

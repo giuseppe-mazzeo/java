@@ -1,8 +1,11 @@
 package pt.ulusofona.aed.deisimdb;
 
 public class GeneroFilme {
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Dados obtidos no ficheiro genres_movies.csv
     private final int genreId;
     private final int movieId;
+    // - - - - - - - - - - - - - - - - - - - - - - -
     private final String genreName;
 
 
@@ -11,20 +14,6 @@ public class GeneroFilme {
         this.genreId = genreId;
         this.movieId = movieId;
         this.genreName = genreName;
-    }
-
-
-
-    public int getGenreId() {
-        return genreId;
-    }
-
-    public int getMovieId() {
-        return movieId;
-    }
-
-    public String getGenreName() {
-        return genreName;
     }
 
 

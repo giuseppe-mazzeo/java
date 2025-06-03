@@ -1,50 +1,44 @@
 package pt.ulusofona.aed.deisimdb;
 
 public class Ator {
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Dados obtidos no ficheiro actors.csv
     private final int actorId;
-    private final String actorFullName;
+    private final String actorName;
     private final String actorGender;
     private final int movieId;
-    // - - -
-    private String actorFirstName;
+    // - - - - - - - - - - - - - - - - - - - - - - -
 
 
 
     public Ator(int actorId, String actorName, String actorGender, int movieId) {
         this.actorId = actorId;
-        this.actorFullName = actorName;
+        this.actorName = actorName;
         this.actorGender = (actorGender.equals("M")) ? "Masculino" : "Feminino";
         this.movieId = movieId;
-
-        actorFirstName = actorFullName.split(" ")[0];
     }
 
 
 
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    // Funções getters
     public int getActorId() {
         return actorId;
     }
 
-    public String getActorFirstName() {
-        return actorFirstName;
-    }
-
-    public String getActorFullName() {
-        return actorFullName;
+    public String getActorName() {
+        return actorName;
     }
 
     public String getActorGender() {
         return actorGender;
     }
-
-    public int getMovieId() {
-        return movieId;
-    }
+    // - - - - - - - - - - - - - - - - - - - - - - -
 
 
 
     @Override
     public String toString() {
-        return actorId + " | " + actorFullName + " | " + actorGender + " | " + movieId;
+        return actorId + " | " + actorName + " | " + actorGender + " | " + movieId;
     }
 }
