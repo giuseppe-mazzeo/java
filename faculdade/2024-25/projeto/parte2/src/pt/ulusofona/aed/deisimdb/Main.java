@@ -1038,10 +1038,10 @@ public class Main {
 
             // Retorna 6 nomes de diretores.
             // Procura por todos os filmes contidos no intervalo de dois anos (inclusive).
-            // Para cada filme, será analisado se têm 2 ou mais diretores com o mesmo apelido/sobrenome (último nome). Assim sendo, assumimos que são da mesma família.
+            // Para cada filme, será analisado se têm 2 ou mais diretores com o mesmo apelido/sobrenome (último nome). Assumimos, assim, que são da mesma família.
             // Ordernado pelo número de ocorrência, quantos filmes os diretores fizeram juntos (se houver empate é irrelevante a ordem).
             case "TOP_6_DIRECTORS_WITHIN_FAMILY": // <year-start> <year-end>
-                // TOP_6_DIRECTORS_WITHIN_FAMILY 1970 1990
+                // TOP_6_DIRECTORS_WITHIN_FAMILY 1970 1994
                 anoInicio = Integer.parseInt(comandoPorPartes[1]);
                 anoFim = Integer.parseInt(comandoPorPartes[2]);
                 HashMap<String, Integer> nomeDiretorOcorrencias = new HashMap<>();
@@ -1049,12 +1049,12 @@ public class Main {
                 int an0;
 
                 for (Filme filme : listaFilmes) {
+                    if (filme.getAllDirectorsName().size() < 2) {
+                        continue;
+                    }
+
                     an0 = Integer.parseInt(filme.getMovieReleaseOnlyYear());
                     if (anoInicio <= an0 && an0 <= anoFim) {
-                        if (filme.getAllDirectorsName().size() < 2) {
-                            continue;
-                        }
-
                         for (String nomeDiretorr : filme.getAllDirectorsName()) {
                             String[] nomePartes = nomeDiretorr.split(" ");
                             String ultimoNome = nomePartes[nomePartes.length - 1];
@@ -1205,17 +1205,32 @@ public class Main {
 
             // Retorna a distância que entre dois atores que participaram no mesmo filme ou que trabalharam com atores que, por sua vez, trabalharam com outros atores.
             // Ou seja, retorna a distância que o ator1 tem para o ator2.
-            // Distância 0 ⇾ trabalharam juntos no mesmo filme.
-            // Distância 1 ⇾ tem um ator em que já trabalharam em comum.
+            // Distância 0 ⇾ trabalharam juntos no mesmo filme. Ou seja, se X atuou com Y no mesmo filme.
+            // Distância 1 ⇾ tem um ator em que já trabalharam em comum. Ou seja, se X atuou com Y num filme e Y atuou com Z num outro filme.
             // No result ⇾ Não tem ligação nenhuma ou licações muito próximas.
             case "DISTANCE_BETWEEN_ACTORS": // <actor-1> <actor-2>
                 // DISTANCE_BETWEEN_ACTORS John Travolta,Samuel L. Jackson
                 // DISTANCE_BETWEEN_ACTORS John Travolta,Morgan Freeman
-                int maximaDistancia = 1;
                 int distancia = -1;
                 String ator1 = comandoPorPartes[1].trim();
                 String ator2 = comandoPorPartes[2].trim();
+                boolean existeAtor1 = false;
+                boolean existeAtor2 = false;
                 HashSet<String> todosAtoresFilme = new HashSet<>();
+
+                for (Ator ator : listaAtores) {
+                    if (ator.getActorName().equals(ator1)) {
+                        existeAtor1 = true;
+                    }
+                    if (ator.getActorName().equals(ator2)) {
+                        existeAtor2 = true;
+                    }
+                }
+
+                if (!existeAtor1 || !existeAtor2) {
+                    resultado.comandoNaoEncontrouResultado();
+                    break;
+                }
 
                 for (Filme filme : listaFilmes) {
                     if (filme.getAllActorsName().contains(ator1) && filme.getAllActorsName().contains(ator2)) {
@@ -1224,6 +1239,7 @@ public class Main {
                     }
 
                     if (filme.getAllActorsName().contains(ator1)) {
+                        todosAtoresFilme.clear();
                         todosAtoresFilme.addAll(filme.getAllActorsName());
                         todosAtoresFilme.remove(ator1);
 
@@ -1233,7 +1249,7 @@ public class Main {
                             }
 
                             for (String ator : todosAtoresFilme) {
-                                if (filmeee.getAllActorsName().contains(ator)) {
+                                if (filmeee.getAllActorsName().contains(ator) && filmeee.getAllActorsName().contains(ator2)) {
                                     distancia = 1;
                                     break;
                                 }
@@ -1242,6 +1258,7 @@ public class Main {
                     }
 
                     if (filme.getAllActorsName().contains(ator2)) {
+                        todosAtoresFilme.clear();
                         todosAtoresFilme.addAll(filme.getAllActorsName());
                         todosAtoresFilme.remove(ator2);
 
@@ -1251,7 +1268,7 @@ public class Main {
                             }
 
                             for (String ator : todosAtoresFilme) {
-                                if (filmeee.getAllActorsName().contains(ator)) {
+                                if (filmeee.getAllActorsName().contains(ator) && filmeee.getAllActorsName().contains(ator1)) {
                                     distancia = 1;
                                     break;
                                 }
