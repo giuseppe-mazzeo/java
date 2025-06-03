@@ -36,26 +36,22 @@ public class Result {
         comandoCorreto(String.join("\n", resultado));
     }
 
-    public void comandoCorreto(HashMap<String, Integer> resultado) {
-        StringBuilder string = new StringBuilder();
-        int contador = 0;
-
-        for (Map.Entry<String, Integer> anoFilmes : resultado.entrySet()) {
-            string.append(anoFilmes.getKey()).append(":").append(anoFilmes.getValue());
-
-            contador++;
-            if (contador < resultado.size()) {
-                string.append("\n");
-            }
-        }
-
-        comandoCorreto(string.toString());
-    }
-
     public void comandoNaoEncontrouResultado() {
         success = true;
         error = null;
         result = "No results";
+    }
+
+    public void comandoInsercaoCorreto() {
+        success = true;
+        error = null;
+        result = "OK";
+    }
+
+    public void comandoInsercaoInvalido() {
+        success = false;
+        error = null;
+        result = "Erro";
     }
 
 

@@ -30,6 +30,7 @@ Todas as interações com LLMs a seguir foram feitas com o ChatGPT
 
 
 
+
 |>>>Prompt: Existe uma forma para separar string com base num caracter que gaste menos tempo e que seja mais prática do que fazer split?
 |>>>Resposta:
 |Excelente pergunta! A função split() em Java é prática, mas não é a mais performática — principalmente quando você a usa com um caractere simples, como vírgula, dois-pontos ou ponto e vírgula.
@@ -81,6 +82,8 @@ Todas as interações com LLMs a seguir foram feitas com o ChatGPT
 
 
 
+
+
 |>>>Prompt: No hashmap, como eu percorro de um elemento para o outro?
 |>>>Resposta:
 |Ótima pergunta! Para percorrer (iterar) os elementos de um HashMap<K, V> em Java, você pode usar várias formas, dependendo do que você quer acessar: as chaves, os valores ou os pares chave–valor.
@@ -111,6 +114,94 @@ Todas as interações com LLMs a seguir foram feitas com o ChatGPT
 |}
 |
 |>>>Análise crítica: Como o meu objetivo é pegar chave e valor ao mesmo tempo, optei a opção 1.
+
+
+
+
+
+|>>>Prompt: Olá, qual é a melhor opção para calcular uma porcentagem entre dois valores?
+|>>>Resposta:
+|Olá! A melhor forma de calcular uma porcentagem entre dois valores depende do que você quer descobrir. Aqui vão as opções mais comuns e corretas com exemplos claros:
+|
+|1. Porcentagem que um valor representa do total
+|Situação:
+|Você quer saber quantos % um valor A representa de um total T.
+|
+|Fórmula:
+|porcentagem = (valor * 100.0) / total;
+|
+|Exemplo:
+|int homens = 40;
+|int total = 100;
+|double porcentagemHomens = (homens * 100.0) / total; // 40.0%
+|
+|2. Porcentagem de diferença entre dois valores
+|Situação:
+|Você quer saber quanto um valor é maior ou menor que outro em porcentagem.
+|
+|Fórmula:
+|porcentagem = ((valor1 - valor2) * 100.0) / valor2;
+|
+|Ou, se quiser a diferença percentual absoluta:
+|porcentagem = (Math.abs(valor1 - valor2) * 100.0) / Math.max(valor1, valor2);
+|
+|Exemplo:
+|int homens = 120;
+|int mulheres = 100;
+|double diferenca = ((homens - mulheres) * 100.0) / mulheres; // 20.0%
+|
+|Dica importante:
+|Use 100.0 e não 100 para garantir divisão com casas decimais (double).
+|
+|Se você usar apenas inteiros (int / int), a divisão truncará os decimais, o que dá resultado incorreto em muitos casos.
+|
+|>>>Análise crítica: Irei utilizar a fórmula matemática: double diferencaPercentual = Math.abs(numMasculino - numFeminino) * 100.0 / Math.max(numMasculino, numFeminino);
+
+
+
+
+
+|>>>Prompt:
+|O que esse erro significa?
+|
+|java.lang.ClassCastException: class java.util.HashMap$Values cannot be cast to class java.util.HashSet (java.util.HashMap$Values and java.util.HashSet are in module java.base of loader 'bootstrap')
+|>>>Resposta:
+|Esse erro:
+|
+|java.lang.ClassCastException: class java.util.HashMap$Values cannot be cast to class java.util.HashSet
+|significa que você tentou forçar (cast) um objeto do tipo HashMap.Values para o tipo HashSet, o que não é permitido, porque eles são tipos completamente diferentes, mesmo que ambos estejam relacionados a coleções.
+|
+|Causa comum:
+|Você provavelmente tentou fazer algo assim:
+|
+|HashMap<String, Integer> mapa = new HashMap<>();
+|// ...
+|HashSet<Integer> conjunto = (HashSet<Integer>) mapa.values(); // ERRO AQUI
+|
+|mapa.values() retorna um objeto do tipo Collection<V>, mais precisamente uma instância de HashMap.Values, não um HashSet.
+|
+|Não é possível fazer cast direto entre esses tipos.
+|
+|Como corrigir:
+|Se você quer transformar os valores do HashMap em um HashSet, faça assim:
+|
+|HashSet<Integer> conjunto = new HashSet<>(mapa.values());
+|Isso cria um HashSet contendo todos os valores do mapa.
+|
+|Exemplo completo:
+|HashMap<String, Integer> mapa = new HashMap<>();
+|mapa.put("a", 1);
+|mapa.put("b", 2);
+|mapa.put("c", 3);
+|
+|// Correto:
+|HashSet<Integer> valoresUnicos = new HashSet<>(mapa.values());
+|
+|System.out.println(valoresUnicos); // [1, 2, 3]
+|
+|>>>Análise crítica: Deixarei de usar cast e fazer como o ChatGPT me recomendou, fazer um novo HashSet (new Hashset<>()).
+
+
 
 
 

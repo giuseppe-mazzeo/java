@@ -25,6 +25,10 @@ public class Ator {
         return actorId;
     }
 
+    public String getActorFirstName() {
+        return actorFirstName;
+    }
+
     public String getActorFullName() {
         return actorFullName;
     }
@@ -35,10 +39,6 @@ public class Ator {
 
     public int getMovieId() {
         return movieId;
-    }
-
-    public String getActorFirstName() {
-        return actorFirstName;
     }
 
 

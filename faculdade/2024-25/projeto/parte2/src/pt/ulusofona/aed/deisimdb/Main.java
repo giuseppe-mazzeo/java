@@ -22,7 +22,6 @@ public class Main {
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
-
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     // Função que lê ficheiros numa pasta e guarda as informações.
     // Retornou false ⇾ Pasta não foi encontrado, pasta vazia ou não existe nenhum ficheiro necessário para este Projeto.
@@ -34,14 +33,23 @@ public class Main {
             return false;
         }
 
+
+        //long start = System.currentTimeMillis();
+        //long end = System.currentTimeMillis();
         linhaOK = new int[6];
         linhaNOK = new int[6];
-        primeiraLinhaErrada = new int[] {-1, -1, -1, -1, -1, -1};
+        primeiraLinhaErrada = new int[]{-1, -1, -1, -1, -1, -1};
         String linha;
         String[] dataLinha;
         BufferedReader reader;
-        HashMap<Integer, HashMap<Integer, String>> movieIdActorId = new HashMap<>();
+        HashMap<Integer, HashSet<Ator>> movieIdActor = new HashMap<>(); // key - movieId ; value - atores relacionados ao filme
+        HashMap<Integer, HashSet<Diretor>> movieIdDirector = new HashMap<>(); // key - movieId ; value - diretores relacionados ao filme
+        HashMap<Integer, String> genreIdGenreName = new HashMap<>(); // key - genreId ; value - genreName
+        HashMap<Integer, HashSet<String>> movieIdGenreName = new HashMap<>(); // key - movieId ; value - gêneros relacionados ao filme
+        HashMap<Integer, Float> movieIdMovieVote = new HashMap<>(); // key - movieId ; value - movieVote
 
+
+        //start = System.currentTimeMillis();
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> actors
         File ficheiroActors = new File(pasta, "actors.csv");
@@ -60,7 +68,8 @@ public class Main {
             while ((linha = reader.readLine()) != null) {
                 dataLinha = linha.split(",");
 
-                if (dataLinha.length != 4) { // Tem mais ou menos informações do que deveria
+                // Tem mais ou menos informações do que deveria
+                if (dataLinha.length != 4) {
                     acrescentarLinhaNOK(0);
                     continue;
                 }
@@ -74,12 +83,12 @@ public class Main {
                 // Novo código da parte 2.
                 // - - -
                 // Verifico se já foi "encontrado" um movieId.
-                // Se sim ⇾ adiociono um novo ActorId relacionado com o movieId.
-                // Se não ⇾ crio um novo elemento com o movieId e já relaciono a um ActorId.
-                if (!movieIdActorId.containsKey(movieId)) {
-                    movieIdActorId.put(movieId, new HashMap<>());
+                // Se sim ⇾ adiociono um novo Ator relacionado com o movieId.
+                // Se não ⇾ crio um novo elemento com o movieId.
+                if (!movieIdActor.containsKey(movieId)) {
+                    movieIdActor.put(movieId, new HashSet<>());
                 }
-                movieIdActorId.get(movieId).put(actorId, actorName);
+                movieIdActor.get(movieId).add(novoAtor);
                 // - - -
 
                 listaAtores.add(novoAtor);
@@ -95,8 +104,11 @@ public class Main {
             return false;
         }
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        //end = System.currentTimeMillis();
+        //System.out.println("Ficheiro Atores " + (end - start) + "ms");
 
 
+        //start = System.currentTimeMillis();
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> directors
         File ficheiroDirectors = new File(pasta, "directors.csv");
@@ -114,7 +126,8 @@ public class Main {
             while ((linha = reader.readLine()) != null) {
                 dataLinha = linha.split(",");
 
-                if (dataLinha.length != 3) { // Tem mais ou menos informações do que deveria
+                // Tem mais ou menos informações do que deveria
+                if (dataLinha.length != 3) {
                     acrescentarLinhaNOK(1);
                     continue;
                 }
@@ -123,7 +136,18 @@ public class Main {
                 directorName = dataLinha[1].trim();
                 movieId = Integer.parseInt(dataLinha[2].trim());
                 novoDiretor = new Diretor(directorId, directorName, movieId);
-                
+
+                // Novo código da parte 2.
+                // - - -
+                // Verifico se já foi "encontrado" um movieId.
+                // Se sim ⇾ adiociono um novo Diretor relacionado com o movieId.
+                // Se não ⇾ crio um novo elemento com o movieId.
+                if (!movieIdDirector.containsKey(movieId)) {
+                    movieIdDirector.put(movieId, new HashSet<>());
+                }
+                movieIdDirector.get(movieId).add(novoDiretor);
+                // - - -
+
                 listaDiretores.add(novoDiretor);
                 linhaOK[1]++;
             }
@@ -137,8 +161,11 @@ public class Main {
             return false;
         }
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        //end = System.currentTimeMillis();
+        //System.out.println("Ficheiro Diretores " + (end - start) + "ms");
 
 
+        //start = System.currentTimeMillis();
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> genres
         File ficheiroGenero = new File(pasta, "genres.csv");
@@ -155,7 +182,8 @@ public class Main {
             while ((linha = reader.readLine()) != null) {
                 dataLinha = linha.split(",");
 
-                if (dataLinha.length != 2) { // Tem mais ou menos informações do que deveria
+                // Tem mais ou menos informações do que deveria
+                if (dataLinha.length != 2) {
                     acrescentarLinhaNOK(3);
                     continue;
                 }
@@ -163,6 +191,15 @@ public class Main {
                 genreId = Integer.parseInt(dataLinha[0].trim());
                 genreName = dataLinha[1].trim();
                 novoGenero = new Genero(genreId, genreName);
+
+                // Novo código da parte 2.
+                // - - -
+                // Verifico se já foi "encontrado" um genreId.
+                // Se não ⇾ adiociono um novo genreName relacionado com o genreId.
+                if (!genreIdGenreName.containsKey(genreId)) {
+                    genreIdGenreName.put(genreId, genreName);
+                }
+                // - - -
 
                 listaGeneros.add(novoGenero);
                 linhaOK[3]++;
@@ -177,7 +214,11 @@ public class Main {
             return false;
         }
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        //end = System.currentTimeMillis();
+        //System.out.println("Ficheiro Generos " + (end - start) + "ms");
 
+
+        //start = System.currentTimeMillis();
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> genres_movies
         File ficheiroGenerosFilme = new File(pasta, "genres_movies.csv");
@@ -195,7 +236,8 @@ public class Main {
             while ((linha = reader.readLine()) != null) {
                 dataLinha = linha.split(",");
 
-                if (dataLinha.length != 2) { // Tem mais ou menos informações do que deveria
+                // Tem mais ou menos informações do que deveria
+                if (dataLinha.length != 2) {
                     acrescentarLinhaNOK(2);
                     continue;
                 }
@@ -203,12 +245,17 @@ public class Main {
                 genreId = Integer.parseInt(dataLinha[0].trim());
                 movieId = Integer.parseInt(dataLinha[1].trim());
 
-                for (Genero genero : listaGeneros) {
-                    if (genero.getGenreId() == genreId) {
-                        genreName = genero.getGenreName();
-                        break;
-                    }
+                // Novo código da parte 2.
+                // - - -
+                genreName = genreIdGenreName.get(genreId);
+                // Verifico se já foi "encontrado" um movieId.
+                // Se não ⇾ adiociono um novo genreName relacionado com o movieId.
+                // Se não ⇾ crio um novo elemento com o movieId.
+                if (!movieIdGenreName.containsKey(movieId)) {
+                    movieIdGenreName.put(movieId, new HashSet<>());
                 }
+                movieIdGenreName.get(movieId).add(genreName);
+                // - - -
 
                 novoGeneroFilme = new GeneroFilme(genreId, movieId, genreName);
 
@@ -225,8 +272,11 @@ public class Main {
             return false;
         }
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        //end = System.currentTimeMillis();
+        //System.out.println("Ficheiro Generos Filme " + (end - start) + "ms");
 
 
+        //start = System.currentTimeMillis();
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> movie_votes
         File ficheiroVotosFilmes = new File(pasta, "movie_votes.csv");
@@ -244,7 +294,8 @@ public class Main {
             while ((linha = reader.readLine()) != null) {
                 dataLinha = linha.split(",");
 
-                if (dataLinha.length != 3) { // Tem mais ou menos informações do que deveria
+                // Tem mais ou menos informações do que deveria
+                if (dataLinha.length != 3) {
                     acrescentarLinhaNOK(4);
                     continue;
                 }
@@ -253,6 +304,15 @@ public class Main {
                 movieRating = Float.parseFloat(dataLinha[1].trim());
                 movieRatingCount = Integer.parseInt(dataLinha[2].trim());
                 novoVotosFilme = new VotosFilme(movieId, movieRating, movieRatingCount);
+
+                // Novo código da parte 2.
+                // - - -
+                // Verifico se já foi "encontrado" um movieId.
+                // Se não ⇾ crio um novo elemento com o movieId e já relaciono a um movieVote.
+                if (!movieIdMovieVote.containsKey(movieId)) {
+                    movieIdMovieVote.put(movieId, movieRating);
+                }
+                // - - -
 
                 listaVotosFilmes.add(novoVotosFilme);
                 linhaOK[4]++;
@@ -267,8 +327,11 @@ public class Main {
             return false;
         }
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        //end = System.currentTimeMillis();
+        //System.out.println("Ficheiro Votos Filme " + (end - start) + "ms");
 
 
+        //start = System.currentTimeMillis();
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Ficheiro -> movies
         File ficheiroFilmes = new File(pasta, "movies.csv");
@@ -291,7 +354,8 @@ public class Main {
             while ((linha = reader.readLine()) != null) {
                 dataLinha = linha.split(",");
 
-                if (dataLinha.length != 5) { // Tem mais ou menos informações do que deveria
+                // Tem mais ou menos informações do que deveria
+                if (dataLinha.length != 5) {
                     acrescentarLinhaNOK(5);
                     continue;
                 }
@@ -310,31 +374,26 @@ public class Main {
 
                     // Novo código parte2.
                     // - - -
-                    // Grava todos os ActorId no respectivo movieId.
-                    // Ou seja, relaciona todos os ActorsId no filme correspondente.
-                    if (movieIdActorId.containsKey(movieId)) {
-                        novoFilme.setIdNomesAtoresAssociados(movieIdActorId.get(movieId));
+                    // Grava todos os Atores no respectivo movieId.
+                    if (movieIdActor.containsKey(movieId)) {
+                        novoFilme.setAtoresAssociados(movieIdActor.get(movieId));
+                    }
+
+                    // Faz o mesmo com os Diretores.
+                    if (movieIdDirector.containsKey(movieId)) {
+                        novoFilme.setDiretoresAssociados(movieIdDirector.get(movieId));
+                    }
+
+                    // Faz o mesmo com o movieVote.
+                    if (movieIdMovieVote.containsKey(movieId)) {
+                        novoFilme.setMovieVote(movieIdMovieVote.get(movieId));
+                    }
+
+                    // Faz o mesmo com o genreName.
+                    if (movieIdGenreName.containsKey(movieId)) {
+                        novoFilme.setGenerosAssociados(movieIdGenreName.get(movieId));
                     }
                     // - - -
-
-                    // Grava o(os) género(os) cinematográfico(os) desse filme.
-                    for (GeneroFilme generoFilme : listaGeneroFilmes) {
-                        if (generoFilme.getMovieId() == movieId) {
-                            for (Genero genero : listaGeneros) {
-                                if (genero.getGenreId() == generoFilme.getGenreId()) {
-                                    novoFilme.accGenerosAssociados(genero.getGenreName());
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    // Grava o(os) diretor(es) dessse filme.
-                    for (Diretor diretor : listaDiretores) {
-                        if (diretor.getMovieId() == movieId) {
-                            novoFilme.accDiretoresAssociados(diretor.getDirectorName());
-                        }
-                    }
 
                     novoFilme.verificarIdMaior1000();
                     listaFilmes.add(novoFilme);
@@ -353,11 +412,12 @@ public class Main {
             return false;
         }
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        //end = System.currentTimeMillis();
+        //System.out.println("Ficheiro Filmes " + (end - start) + "ms");
 
         return true; // Ficheiros da pasta lidos com sucesso!
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
 
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -370,7 +430,6 @@ public class Main {
         linhaNOK[posAtual]++;
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
 
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -389,7 +448,6 @@ public class Main {
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
-
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     // Retorna a String como se deve ser para o comando INPUT_INVALIDO
     private static ArrayList<String> obterStringInputInvalido() {
@@ -406,7 +464,6 @@ public class Main {
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
-
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     // Função que serve para receber inputs, que no nosso caso são comandos.
     // Só obtemos falha (ou seja, sucesso = false) quando é introduzido um comando errado.
@@ -416,7 +473,23 @@ public class Main {
         Result resultado = new Result();
         String[] comandoPorPartes = comando.split(" ");
 
-        System.out.println(Arrays.toString(comandoPorPartes));
+        // Gambiarras... 🥲
+        if (comandoPorPartes[0].equals("INSERT_ACTOR") || comandoPorPartes[0].equals("INSERT_DIRECTOR")) {
+            String dadosNovoElemento = "";
+            for (int i = 1; i < comandoPorPartes.length; i++) {
+                dadosNovoElemento += " " + comandoPorPartes[i];
+            }
+            comandoPorPartes[1] = dadosNovoElemento;
+        }
+
+        if (comandoPorPartes[0].equals("DISTANCE_BETWEEN_ACTORS")) {
+            String atores = "";
+            for (int i = 1; i < comandoPorPartes.length; i++) {
+                atores += comandoPorPartes[i] + " ";
+            }
+            comandoPorPartes[1] = atores.split(",")[0];
+            comandoPorPartes[2] = atores.split(",")[1];
+        }
 
         switch (comandoPorPartes[0]) {
             // Conta quantos filmes foram feitos no mês e ano passado no parâmetro.
@@ -437,7 +510,7 @@ public class Main {
 
             // Conta quantos filmes o diretor fez.
             case "COUNT_MOVIES_DIRECTOR":
-                String nomeDiretor = retornaNomeParametro(comandoPorPartes,1);
+                String nomeDiretor = retornaNomeParametro(comandoPorPartes, 1);
                 contador = 0;
 
                 for (Diretor diretor : listaDiretores) {
@@ -504,7 +577,7 @@ public class Main {
 
             // Retorna todos os nomes dos filmes de um certo ano em que participa o ator.
             // Filmes ordenados por ordem de lançamento
-            case "GET_MOVIES_ACTORS_YEAR":
+            case "GET_MOVIES_ACTOR_YEAR":
                 ano = comandoPorPartes[1];
                 String nome = retornaNomeParametro(comandoPorPartes, 2);
                 int actorId = -1;
@@ -538,30 +611,26 @@ public class Main {
                 break;
 
 
-            // Retorna todos os filmes cujo nome dos atores estão envolvidos.
-            // Filmes ordenados por ordem alfabética
-            case "GET_MOVIES_WITH_ACTOR_CONTAINING":
+            // Retorna todos os filmes cujo nome ou apelidos, ou até letras que pertençam ao nome e/ou apelido, dos atores estão envolvidos.
+            // Filmes ordenados por ordem alfabética.
+            case "GET_MOVIES_WITH_ACTOR_CONTAINING": // <name>
                 nome = retornaNomeParametro(comandoPorPartes, 1);
                 filmes = new ArrayList<>();
                 HashSet<Integer> actorsId = new HashSet<>();
 
                 for (Ator ator : listaAtores) {
-                    if (ator.getActorFirstName().equals(nome)) {
+                    if (ator.getActorFullName().contains(nome)) {
                         actorsId.add(ator.getActorId());
                     }
                 }
 
-                System.out.println(actorsId);
-
                 for (Filme filme : listaFilmes) {
                     for (int currentActorId : actorsId) {
-                        if (filme.getAllActorsId().contains(currentActorId)) {
+                        if (filme.getAllActorsId().contains(currentActorId) && !filmes.contains(filme.getMovieName())) {
                             filmes.add(filme.getMovieName());
                         }
                     }
                 }
-
-                System.out.println(filmes);
 
                 if (filmes.isEmpty()) {
                     resultado.comandoNaoEncontrouResultado();
@@ -574,59 +643,72 @@ public class Main {
 
 
             // Retorna quais os 4 anos (no máximo) em que foram realizados os filmes cujo título contenha uma certa string passada pelo parâmetro
-            // Ordenado pelo n.º de ocorrências, do maior ao menor (ou, se houver empate, pelo ano menor até ao maior)
-            case "GET_TOP_4_YEARS_WITH_MOVIES_CONTAINING":
+            // Ordenado pelo n.º de ocorrências, do maior ao menor (ou, se houver empate, pelo ano menor até ao maior).
+            case "GET_TOP_4_YEARS_WITH_MOVIES_CONTAINING": // <search-string>
                 String stringAlvo = comandoPorPartes[1];
                 int valor;
                 HashMap<String, Integer> anoOcorrencia = new HashMap<>();
                 ArrayList<String> anos = new ArrayList<>();
 
                 for (Filme filme : listaFilmes) {
-                    if (filme.getMovieName().toLowerCase().contains(stringAlvo)) {
+                    if (filme.getMovieName().contains(stringAlvo)) {
                         ano = filme.getMovieReleaseOnlyYear();
                         if (anoOcorrencia.containsKey(ano)) {
                             valor = anoOcorrencia.get(ano);
                             valor++;
                             anoOcorrencia.put(ano, valor);
-                            for (int i = 0; i < anos.size(); i++) {
-                                if (ano.equals(anos.get(i).substring(0,4))) {
-                                    anos.set(i, ano+":"+valor);
-                                    break;
-                                }
-                            }
                         } else {
                             anoOcorrencia.put(ano, 1);
-                            anos.add(ano+":"+1);
                         }
                     }
                 }
 
-                // Ordenando os anos a partir dos anos em forma crescente
-                if (anos.isEmpty()) {
+                if (anoOcorrencia.isEmpty()) {
                     resultado.comandoNaoEncontrouResultado();
                 } else {
-                    int j;
-                    String temp;
-                    for (int i = 0; i < anos.size(); i++) {
-                        j = i + 1;
-                        if (j < anos.size()) {
-                            if (anos.get(i).charAt(5) == anos.get(j).charAt(5)) {
-                                if (Integer.parseInt(anos.get(i).substring(0,4)) > Integer.parseInt(anos.get(j).substring(0,4))) {
-                                    temp = anos.get(i);
-                                    anos.set(i,anos.get(j));
-                                    anos.set(j,temp);
+                    int esquerda;
+                    int direita;
+                    int meio;
+
+                    // Ordenando os anos em forma crescente
+                    for (Map.Entry<String, Integer> map : anoOcorrencia.entrySet()) {
+                        if (anos.isEmpty()) {
+                            anos.add(map.getKey()+":"+map.getValue());
+                            continue;
+                        }
+
+                        esquerda = 0;
+                        direita = anos.size();
+
+                        // Ordenação usando a lógica da pesquisa binária
+                        while (esquerda < direita) {
+                            meio = (esquerda + direita) / 2;
+                            String[] partes = anos.get(meio).split(":");
+                            String filme = partes[0];
+                            int ocorrencia = Integer.parseInt(partes[1]);
+
+                            if (ocorrencia > map.getValue()) {
+                                esquerda = meio + 1;
+                            } else if (ocorrencia < map.getValue()) {
+                                direita = meio;
+                            } else {
+                                if (filme.compareTo(map.getKey()) < 0) {
+                                    esquerda = meio + 1;
+                                } else {
+                                    direita = meio;
                                 }
                             }
                         }
+
+                        anos.add(esquerda, map.getKey()+":"+map.getValue());
                     }
 
                     if (anos.size() > 4) {
                         ArrayList<String> primeirosQuatroAnos = new ArrayList<>();
 
-                        primeirosQuatroAnos.add(anos.get(0));
-                        primeirosQuatroAnos.add(anos.get(1));
-                        primeirosQuatroAnos.add(anos.get(2));
-                        primeirosQuatroAnos.add(anos.get(3));
+                        for (int i = 0; i < 4; i++) {
+                            primeirosQuatroAnos.add(anos.get(i));
+                        }
 
                         resultado.comandoCorreto(primeirosQuatroAnos);
                         break;
@@ -663,9 +745,9 @@ public class Main {
                 } else {
                     ArrayList<String> atores = new ArrayList<>();
 
-                    for (Map.Entry<String, Integer>  map : nomeAtorOcorrencias.entrySet()) {
+                    for (Map.Entry<String, Integer> map : nomeAtorOcorrencias.entrySet()) {
                         if (map.getValue() >= numVezes) {
-                            atores.add(map.getKey()+":"+map.getValue());
+                            atores.add(map.getKey() + ":" + map.getValue());
                         }
                     }
 
@@ -675,7 +757,7 @@ public class Main {
 
 
             // Retorna qual o mês com mais filmes no ano.
-            case "TOP_MONTH_MOVIE_COUNT":
+            case "TOP_MONTH_MOVIE_COUNT": // <year>
                 ano = comandoPorPartes[1];
                 HashMap<String, Integer> mesOcorrencias = new HashMap<>();
 
@@ -695,7 +777,7 @@ public class Main {
                 if (mesOcorrencias.isEmpty()) {
                     resultado.comandoNaoEncontrouResultado();
                 } else {
-                    String string = "";
+                    String topMovie = "";
                     int maior = 0;
                     int mapValor;
 
@@ -704,30 +786,274 @@ public class Main {
                         mapValor = map.getValue();
                         if (mapValor > maior) {
                             maior = mapValor;
-                            string = map.getKey() + ":" + mapValor;
+                            topMovie = map.getKey() + ":" + mapValor;
                         }
                     }
 
-                    resultado.comandoCorreto(string);
+                    // Remove o '0' no caso de for, por exemplo, 09:2.
+                    // Para devolver apenas 9:2.
+                    if (topMovie.charAt(0) == '0') {
+                        topMovie = topMovie.substring(1);
+                    }
+
+                    resultado.comandoCorreto(topMovie);
                 }
                 break;
 
 
-            // Retorna os atores com maior classificação no ano de um filme, juntamente com a avaliação/classificação desse mesmo filme.
-            // O parâmetro num indica o número máximo de resultado.
-            // Ordenado pelo valor de classificação (se houver empate não importa a ordem dos atores). TODO
-            case "TOP_VOTED_ACTORS":
+            // Retorna os atores com maior classificação do ano de um filme, juntamente com a avaliação/classificação desse mesmo filme.
+            // O parâmetro num indica o número máximo de resultados.
+            // Ordenado pelo valor de classificação (se houver empate não importa a ordem dos atores).
+            case "TOP_VOTED_ACTORS": // <num> <year>
                 int num = Integer.parseInt(comandoPorPartes[1]);
                 ano = comandoPorPartes[2];
-                HashMap<String, Float> nomeAtorVoto = new HashMap<>();
+                HashMap<String, Float> atoresVotos = new HashMap<>();
+                int esquerda;
+                int direita;
+                int meio;
+                float media;
 
                 for (Filme filme : listaFilmes) {
                     if (filme.getMovieReleaseOnlyYear().equals(ano)) {
-                        for (VotosFilme votosFilme : listaVotosFilmes) {
-                            if (filme.getMovieId() == votosFilme.getMovieId()) {
-                                for (Ator ator : listaAtores) {
-                                    if (filme.getMovieId() == ator.getMovieId()) {
-                                        nomeAtorVoto.put(ator.getActorFullName(), votosFilme.getMovieRating());
+                        for (String nomeAtor : filme.getAllActorsName()) {
+                            if (atoresVotos.containsKey(nomeAtor)) {
+                                media = atoresVotos.get(nomeAtor);
+                                media = (media + filme.getMovieVote()) / 2;
+                                atoresVotos.put(nomeAtor, media);
+                            } else {
+                                atoresVotos.put(nomeAtor, filme.getMovieVote());
+                            }
+                        }
+                    }
+                }
+
+                if (atoresVotos.isEmpty()) {
+                    resultado.comandoNaoEncontrouResultado();
+                } else {
+                    ArrayList<String> atores = new ArrayList<>();
+
+                    for (Map.Entry<String, Float> map : atoresVotos.entrySet()) {
+                        if (atores.isEmpty()) {
+                            atores.add(map.getKey()+":"+map.getValue());
+                            continue;
+                        }
+
+                        esquerda = 0;
+                        direita = atores.size();
+
+                        // Ordenação usando a lógica da pesquisa binária
+                        while (esquerda < direita) {
+                            meio = (esquerda + direita) / 2;
+
+                            if (Float.parseFloat(atores.get(meio).split(":")[1]) > map.getValue()) {
+                                esquerda = meio + 1;
+                            } else {
+                                direita = meio;
+                            }
+                        }
+
+                        atores.add(esquerda, map.getKey()+":"+map.getValue());
+                    }
+
+                    if (atores.size() > num) {
+                        ArrayList<String> maximoValores = new ArrayList<>();
+
+                        for (int i = 0; i < num; i++) {
+                            maximoValores.add(atores.get(i));
+                        }
+
+                        resultado.comandoCorreto(maximoValores);
+                        break;
+                    }
+
+                    resultado.comandoCorreto(atores);
+                }
+
+                break;
+
+
+            // Retorna os filmes do ano indicado com mais atores do gênero indicado.
+            // O parâmetro num indica o número máximo de resultado.
+            // O parâmetro gender pode ser M ou F.
+            // Ordenado pelo número de atores de forma decrescente (se houver empate, os filmes devem ser ordenados de forma alfabética).
+            case "TOP_MOVIES_WITH_MORE_GENDER":
+                num = Integer.parseInt(comandoPorPartes[1]);
+                ano = comandoPorPartes[2];
+                char genero = comandoPorPartes[3].charAt(0);
+                HashMap<String, Integer> nomeFilmeOcorrencias = new HashMap<>();
+                ArrayList<String> todosFilmes = new ArrayList<>();
+
+                for (Filme filme : listaFilmes) {
+                    if (filme.getMovieReleaseOnlyYear().equals(ano)) {
+                        if (genero == 'M') {
+                            nomeFilmeOcorrencias.put(filme.getMovieName(), filme.getNumMaleActors());
+                            //todosFilmes.add(filme.getMovieName() + ":" + filme.getNumMaleActors());
+                        } else {
+                            nomeFilmeOcorrencias.put(filme.getMovieName(), filme.getNumFemaleActors());
+                            //todosFilmes.add(filme.getMovieName() + ":" + filme.getNumFemaleActors());
+                        }
+                    }
+                }
+
+                if (nomeFilmeOcorrencias.isEmpty()) {
+                    resultado.comandoNaoEncontrouResultado();
+                } else {
+                    // Ordenando a partir do número dos gêneros dos(as) atores/atrizes
+                    for (Map.Entry<String, Integer> map : nomeFilmeOcorrencias.entrySet()) {
+                        if (todosFilmes.isEmpty()) {
+                            todosFilmes.add(map.getKey() + ":" + map.getValue());
+                            continue;
+                        }
+
+                        esquerda = 0;
+                        direita = todosFilmes.size();
+
+                        // Ordenação usando a lógica da pesquisa binária
+                        while (esquerda < direita) {
+                            meio = (esquerda + direita) / 2;
+                            String[] partes = todosFilmes.get(meio).split(":");
+                            String filme = partes[0];
+                            int ocorrencia = Integer.parseInt(partes[1]);
+
+                            if (ocorrencia > map.getValue()) {
+                                esquerda = meio + 1;
+                            } else if (ocorrencia < map.getValue()) {
+                                direita = meio;
+                            } else {
+                                if (filme.compareTo(map.getKey()) < 0) {
+                                    esquerda = meio + 1;
+                                } else {
+                                    direita = meio;
+                                }
+                            }
+                        }
+
+                        todosFilmes.add(esquerda, map.getKey() + ":" + map.getValue());
+                    }
+
+                    if (todosFilmes.size() > num) {
+                        ArrayList<String> maximoFilmes = new ArrayList<>();
+
+                        for (int i = 0; i < num; i++) {
+                            maximoFilmes.add(todosFilmes.get(i));
+                        }
+
+                        resultado.comandoCorreto(maximoFilmes);
+                        break;
+                    }
+
+                    resultado.comandoCorreto(todosFilmes);
+                }
+                break;
+
+
+            // Retorna os filmes do ano indicado que tem uma maior deferença entre os gêneros dos atores.
+            // São apenas consideredos filmes com 11 ou mais atores.
+            // Ordenado pela porcentagem de atores masculinos e femininos (ignorar empates).
+            // Porcentagem:
+            case "TOP_MOVIES_WITH_GENDER_BIAS": // <num> <year>
+                num = Integer.parseInt(comandoPorPartes[1]);
+                ano = comandoPorPartes[2];
+                ArrayList<String> generosPorcentagem = new ArrayList<>();
+                int numMasculino;
+                int numFeminino;
+                int porcentagem;
+
+                for (Filme filme : listaFilmes) {
+                    if (filme.getMovieReleaseOnlyYear().equals(ano)) {
+                        if (filme.getQuantAllActors() < 11) {
+                            continue;
+                        }
+
+                        numMasculino = filme.getNumMaleActors();
+                        numFeminino = filme.getNumFemaleActors();
+                        porcentagem = (int) Math.round((Math.max(numMasculino, numFeminino) * 100.0) / (numMasculino + numFeminino));
+
+                        if (numMasculino > numFeminino) {
+                            genero = 'M';
+                        } else {
+                            genero = 'F';
+                        }
+
+                        if (generosPorcentagem.isEmpty()) {
+                            generosPorcentagem.add(filme.getMovieName() + ":" + genero + ":" + (porcentagem));
+                            continue;
+                        }
+
+                        esquerda = 0;
+                        direita = generosPorcentagem.size();
+
+                        // Ordenação usando a lógica da pesquisa binária
+                        while (esquerda < direita) {
+                            meio = (esquerda + direita) / 2;
+
+                            if (Integer.parseInt(generosPorcentagem.get(meio).split(":")[2]) > porcentagem) {
+                                esquerda = meio + 1;
+                            } else {
+                                direita = meio;
+                            }
+                        }
+
+                        generosPorcentagem.add(esquerda, filme.getMovieName() + ":" + genero + ":" + (porcentagem));
+                    }
+                }
+
+                if (generosPorcentagem.isEmpty()) {
+                    resultado.comandoNaoEncontrouResultado();
+                } else {
+                    if (generosPorcentagem.size() > num) {
+                        ArrayList<String> maximoPorcentagem = new ArrayList<>();
+
+                        for (int i = 0; i < num; i++) {
+                            maximoPorcentagem.add(generosPorcentagem.get(i));
+                        }
+
+                        resultado.comandoCorreto(maximoPorcentagem);
+                        break;
+                    }
+
+                    resultado.comandoCorreto(generosPorcentagem);
+                }
+                break;
+
+
+            // Retorna 6 nomes de diretores.
+            // Procura por todos os filmes contidos no intervalo de dois anos (inclusive).
+            // Para cada filme, será analisado se têm 2 ou mais diretores com o mesmo apelido/sobrenome (último nome). Assim sendo, assumimos que são da mesma família.
+            // Ordernado pelo número de ocorrência, quantos filmes os diretores fizeram juntos (se houver empate é irrelevante a ordem).
+            case "TOP_6_DIRECTORS_WITHIN_FAMILY":
+                anoInicio = Integer.parseInt(comandoPorPartes[1]);
+                anoFim = Integer.parseInt(comandoPorPartes[2]);
+                HashMap<String, Integer> nomeDiretorOcorrencias = new HashMap<>();
+                ArrayList<String> nomesDiretores = new ArrayList<>();
+                int an0;
+
+                for (Filme filme : listaFilmes) {
+                    an0 = Integer.parseInt(filme.getMovieReleaseOnlyYear());
+                    if (anoInicio <= an0 && an0 <= anoFim) {
+                        if (filme.getAllDirectorsName().size() < 2) {
+                            continue;
+                        }
+
+                        for (String nomeDiretorr : filme.getAllDirectorsName()) {
+                            String[] nomePartes = nomeDiretorr.split(" ");
+                            String ultimoNome = nomePartes[nomePartes.length - 1];
+
+                            for (String nomeDiretoor : filme.getAllDirectorsName()) {
+                                String[] nomePartes2 = nomeDiretoor.split(" ");
+                                String ultimoNome2 = nomePartes2[nomePartes2.length - 1];
+
+                                if (nomeDiretoor.equals(nomeDiretorr)) {
+                                    continue;
+                                }
+
+                                if (ultimoNome.equals(ultimoNome2)) {
+                                    if (nomeDiretorOcorrencias.containsKey(nomeDiretoor)) {
+                                        valor = nomeDiretorOcorrencias.get(nomeDiretoor);
+                                        valor++;
+                                        nomeDiretorOcorrencias.put(nomeDiretoor, valor);
+                                    } else {
+                                        nomeDiretorOcorrencias.put(nomeDiretoor, 1);
                                     }
                                 }
                             }
@@ -735,37 +1061,153 @@ public class Main {
                     }
                 }
 
-                if (nomeAtorVoto.isEmpty()) {
+                for (Map.Entry<String, Integer> map : nomeDiretorOcorrencias.entrySet()) {
+                    if (nomesDiretores.isEmpty()) {
+                        nomesDiretores.add(map.getKey() + ":" + map.getValue());
+                        continue;
+                    }
+
+                    esquerda = 0;
+                    direita = nomesDiretores.size();
+
+                    // Ordenação usando a lógica da pesquisa binária
+                    while (esquerda < direita) {
+                        meio = (esquerda + direita) / 2;
+
+                        if (Integer.parseInt(nomesDiretores.get(meio).split(":")[1]) > map.getValue()) {
+                            esquerda = meio + 1;
+                        } else {
+                            direita = meio;
+                        }
+                    }
+
+                    nomesDiretores.add(esquerda, map.getKey() + ":" + map.getValue());
+                }
+
+                if (nomesDiretores.isEmpty()) {
                     resultado.comandoNaoEncontrouResultado();
                 } else {
-                    for (int i = 0; i < num; i++) {
-                        System.out.println(nomeAtorVoto);
+                    if (nomesDiretores.size() > 6) {
+                        ArrayList<String> maximoNomes = new ArrayList<>();
+
+                        for (int i = 0; i < 6; i++) {
+                            maximoNomes.add(nomesDiretores.get(i));
+                        }
+
+                        resultado.comandoCorreto(maximoNomes);
+                        break;
                     }
+
+                    resultado.comandoCorreto(nomesDiretores);
                 }
+
                 break;
 
 
-            // Retorna os filmes do ano indicado com mais atores do gênero indicado.
-            // O parâmetro num indica o número máximo de resultado.
-            // Ordenado pelo número de atores de forma descrevente (se houver empate, os filmes devem ser ordenados de forma alfabética).
-            case "TOP_MOVIES_WITH_MORE_GENDER":
-                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 4, resultado)) {
+            // O camando insert altera os dados de memória dos atores, mas não os ficheiros.
+            // Insere um novo ator na memória do programa (variável global).
+            // Não se pode adicionar ator com id existente.
+            // Caso a inserção do novo ator der certo, será mostrada uma mensagem 'OK'. Caso contrário, será mostrada 'Erro'.
+            // Os dados do ator passado no comando devem ser separados por ponto e vígula.
+            case "INSERT_ACTOR":
+                String[] dadosNovoAtor = comandoPorPartes[1].split(";");
+
+                int id = Integer.parseInt(dadosNovoAtor[0].trim());
+                String name = dadosNovoAtor[1];
+                String gender = dadosNovoAtor[2];
+                int movieId = Integer.parseInt(dadosNovoAtor[3]);
+                boolean dadosInvalidos = false;
+                Ator novoAtor = new Ator(id, name, gender, movieId);
+
+                for (Ator ator : listaAtores) {
+                    if (ator.getActorId() == id) {
+                        dadosInvalidos = true;
+                        break;
+                    }
+                }
+
+                if (dadosInvalidos) {
+                    resultado.comandoInsercaoInvalido();
                     break;
                 }
 
-                num = Integer.parseInt(comandoPorPartes[1].trim());
-                ano = comandoPorPartes[2].trim();
-                String genero = comandoPorPartes[3].trim();
+                listaAtores.add(novoAtor);
+
+                for (Filme filme : listaFilmes) {
+                    if (filme.getMovieId() == movieId) {
+                        filme.adicionarNovoAtor(id, name, gender);
+                        break;
+                    }
+                }
+
+                resultado.comandoInsercaoCorreto();
+                break;
+
+
+            // O camando insert altera os dados de memória dos atores, mas não os ficheiros.
+            // Insere um novo diretor na memória do programa (variável global).
+            // Não se pode adicionar diretor com id existente.
+            // Caso a inserção do novo diretor der certo, será mostrada uma mensagem 'OK'. Caso contrário, será mostrada 'Erro'.
+            // Os dados do diretor passado no comando devem ser separados por ponto e vígula.
+            case "INSERT_DIRECTOR":
+                String[] dadosNovoDiretor = comandoPorPartes[1].split(";");
+
+                id = Integer.parseInt(dadosNovoDiretor[0].trim());
+                name = dadosNovoDiretor[1];
+                movieId = Integer.parseInt(dadosNovoDiretor[2]);
+                dadosInvalidos = false;
+                Diretor novoDiretor = new Diretor(id, name, movieId);
+
+                for (Diretor diretor : listaDiretores) {
+                    if (diretor.getDirectorId() == id) {
+                        dadosInvalidos = true;
+                        break;
+                    }
+                }
+
+                if (dadosInvalidos) {
+                    resultado.comandoInsercaoInvalido();
+                    break;
+                }
+
+                listaDiretores.add(novoDiretor);
+
+                for (Filme filme : listaFilmes) {
+                    if (filme.getMovieId() == movieId) {
+                        filme.adicionarNovoDiretor(id, name);
+                        break;
+                    }
+                }
+
+                resultado.comandoInsercaoCorreto();
+                break;
+
+
+            // Retorna a distância que entre dois atores que participaram no mesmo filme ou que trabalharam com atores que, por sua vez, trabalharam com outros atores.
+            // Ou seja, retorna a distância que o ator1 tem para o ator2.
+            // Distância 1 ⇾ tem um ator em que já trabalharam em comum.
+            // Distância 0 ⇾ trabalharam juntos no mesmo filme.
+            // No result ⇾ Não tem ligação nenhuma ou licações muito próximas.
+            case "DISTANCE_BETWEEN_ACTORS": // <actor-1> <actor-2>
+                // DISTANCE_BETWEEN_ACTORS John Travolta,Samuel L. Jackson
+                int maximaDistancia = 1;
+                int distancia;
+                String ator1 = comandoPorPartes[1].trim();
+                String ator2 = comandoPorPartes[2].trim();
+
+                for (Filme filme : listaFilmes) {
+                    if (filme.getAllActorsName().contains(ator1) && filme.getAllActorsName().contains(ator2)) {
+                        distancia = 0;
+                        break;
+                    }
+                    
+                }
 
                 break;
 
 
             // Mostra todos os comandos existentes.
             case "HELP":
-                if (!quantidadeParametroComandoCorreta(comandoPorPartes.length, 1, resultado)) {
-                    break;
-                }
-
                 System.out.println("""
                         \
                         Comandos disponíveis:
@@ -791,85 +1233,12 @@ public class Main {
 
             default:
                 resultado.comandoInvalido();
+                break;
         }
 
         return resultado;
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-
-
-    private static void quickSort(int[] array, int inicio, int fim) {
-        if (inicio < fim) {
-            int posicaoPivot = partition(array, inicio, fim - 1);
-
-            // Ordena as duas metades
-            quickSort(array, inicio, posicaoPivot);
-            quickSort(array, posicaoPivot + 1, fim);
-        }
-    }
-
-    private static int partition(int[] numeros, int inicio, int fim) {
-        // vamos escolher o pivot como sendo o elemento mais à direita
-        int pivot = numeros[fim];
-        int inicioIndex = inicio;
-        int fimIndex = fim - 1; // excluir o pivot
-        int temp;
-
-        while (inicioIndex <= fimIndex) {
-            // se o inicio for maior que o pivot e o fim fôr menor que o pivot, então troca
-            if (numeros[inicioIndex] > pivot && numeros[fimIndex] < pivot) {
-                temp = numeros[inicioIndex];
-                numeros[inicioIndex] = numeros[fimIndex];
-                numeros[fimIndex] = temp;
-
-                inicioIndex++;
-                fimIndex--;
-            } else {
-                // se o inicio for menor que o pivot, avança
-                if (numeros[inicioIndex] <= pivot) {
-                    inicioIndex++;
-                }
-                // se o fim for maior que o pivot, recua
-                if (numeros[fimIndex] >= pivot) {
-                    fimIndex--;
-                }
-            }
-        }
-
-        // troca pivot com inicio
-        numeros[fim] = numeros[inicioIndex];
-        numeros[inicioIndex] = pivot;
-
-        return inicioIndex;
-    }
-
-
-
-
-    // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    // Verificar se a quantidade de parâmetro está certa (incluindo o nome do comando).
-    private static boolean quantidadeParametroComandoCorreta(int quantidadeParametroAtual, int quantidadeEsperada, Result resultado) {
-        if (quantidadeParametroAtual != quantidadeEsperada) {
-            resultado.comandoInvalido();
-            return false;
-        }
-        return true;
-    }
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // Usamos essa função a baixo quando é passado um nome pelo parâmetro do comando.
-    // Porque o nome pode ser um nome completo com dois ou três nomes, ou um nome simples com apenas um nome.
-    // Nome completo - Leonardo DiCaprio, Samuel L. Jackson
-    // Nome simples - Tom
-    private static boolean quantidadeParametroComandoCorreta(int quantidadeParametroAtual, int quantidadeEsperadaMin, int quantidadeEsperadaMax, Result resultado) {
-        if (!(quantidadeEsperadaMin <= quantidadeParametroAtual && quantidadeParametroAtual <= quantidadeEsperadaMax)) {
-            resultado.comandoInvalido();
-            return false;
-        }
-        return true;
-    }
-    // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
 
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -878,7 +1247,6 @@ public class Main {
         return (mes.length() == 1) ? ("0" + mes) : mes;
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
 
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -896,12 +1264,11 @@ public class Main {
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
-
     public static void main(String[] args) {
         String line;
         Scanner in = new Scanner(System.in);
-        Result resultado = execute("HELP");
         parseFiles(new File("test-files"));
+        Result resultado = execute("HELP");
 
         do {
             System.out.print("> ");
