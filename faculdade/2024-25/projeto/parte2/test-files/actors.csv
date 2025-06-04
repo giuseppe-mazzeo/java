@@ -1,5 +1,7 @@
 actorId, actorName, actorGender ,movield
 1,   John Travolta,        M, 680
+1,   John Travolta,        M, 278
+1,   John Travolta,        M, 13
 2,   Samuel L. Jackson,    M, 680
 3,   Uma Thurman,          F, 680
 3,   Uma Thurman,          F, 278

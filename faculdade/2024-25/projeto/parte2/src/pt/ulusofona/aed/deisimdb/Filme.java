@@ -24,6 +24,7 @@ public class Filme {
     private final String day;
     private final String month;
     private final String year;
+    private final int yearInt;
     // - - - - - - - - - - - - - - - - - - - - - - -
     // Guarda uma String para ser usada na função toString
     private String toString;
@@ -54,6 +55,7 @@ public class Filme {
         day = separaData[0];
         month = separaData[1];
         year = separaData[2];
+        yearInt = Integer.parseInt(year);
     }
 
 
@@ -80,6 +82,10 @@ public class Filme {
         return year;
     }
 
+    public int getMovieReleaseOnlyYearInt() {
+        return yearInt;
+    }
+
     public float getMovieVote() {
         return movieVote;
     }
@@ -93,7 +99,7 @@ public class Filme {
     }
 
     public int getQuantAllActors() {
-        return idNomesAtores.size();
+        return (numAtoresMasculino+numAtoresFeminino);
     }
 
     public int getNumMaleActors() {

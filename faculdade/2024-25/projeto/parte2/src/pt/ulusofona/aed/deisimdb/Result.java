@@ -16,6 +16,16 @@ public class Result {
 
 
 
+    public void verificarComando(ArrayList<String> conteudo) {
+        if (conteudo.isEmpty()) {
+            comandoNaoEncontrouResultado();
+        } else {
+            comandoCorreto(conteudo);
+        }
+    }
+
+
+
     public void comandoInvalido() {
         success = false;
         error = "Comando invalido";
