@@ -3,6 +3,7 @@ package pt.ulusofona.aed.deisimdb.test.testClasses;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import pt.ulusofona.aed.deisimdb.Ator;
+import pt.ulusofona.aed.deisimdb.Diretor;
 import pt.ulusofona.aed.deisimdb.Filme;
 
 import java.util.HashMap;
@@ -12,6 +13,25 @@ public class TestFilme {
     Filme filmeSonho = new Filme(1001, "O Sonho de um Programador", 60.0f, 1000, "31-02-1994");
     Filme filmePesadelo = new Filme(999, "O Pesadelo de um Programador", 30.0f, 100, "03-04-2005");
 
+
+
+    private HashSet<Diretor> gerarDiretores() {
+        filmeSonho = new Filme(1001, "O Sonho de um Programador", 60.0f, 1000, "31-02-1994");
+        filmePesadelo = new Filme(999, "O Pesadelo de um Programador", 30.0f, 100, "03-04-2005");
+        HashSet<Diretor> diretores = new HashSet<>();
+        diretores.add(new Diretor(1, "João", 10));
+        diretores.add(new Diretor(2, "Joana", 100));
+        diretores.add(new Diretor(3, "Ana", 20));
+        return diretores;
+    }
+
+    private HashSet<String> gerarNomesDiretores() {
+        HashSet<String> nomesDiretores = new HashSet<>();
+        nomesDiretores.add("João");
+        nomesDiretores.add("Joana");
+        nomesDiretores.add("Ana");
+        return nomesDiretores;
+    }
 
     private HashSet<Ator> gerarAtores() {
         filmeSonho = new Filme(1001, "O Sonho de um Programador", 60.0f, 1000, "31-02-1994");
@@ -40,8 +60,9 @@ public class TestFilme {
     }
 
 
+
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    // Testar getters
+    // Testar getters e setters
     //
     @Test
     public void testGetMovieId() {
@@ -75,6 +96,20 @@ public class TestFilme {
     public void testGetMovieReleaseOnlyYear() {
         if (!filmeSonho.getMovieReleaseOnlyYear().equals("1994") || !filmePesadelo.getMovieReleaseOnlyYear().equals("2005")) {
             Assertions.fail("\n\nErro ao testar getMovieReleaseOnlyYear()");
+        }
+    }
+
+    @Test
+    public void testGetMovieVoteESetMovieVote() {
+        if (filmeSonho.getMovieVote() != 0.0 || filmePesadelo.getMovieVote() != 0.0) {
+            Assertions.fail("\n\nErro ao testar getMovieVote()");
+        }
+
+        filmeSonho.setMovieVote(10.0f);
+        filmePesadelo.setMovieVote(0.5f);
+
+        if (filmeSonho.getMovieVote() != 10.0 || filmePesadelo.getMovieVote() != 0.5) {
+            Assertions.fail("\n\nErro ao testar setMovieVote()");
         }
     }
 
@@ -118,27 +153,66 @@ public class TestFilme {
             Assertions.fail("\n\nErro ao testar getQuantAllActors()");
         }
 
+        HashSet<Ator> atores = gerarAtores();
 
+        filmeSonho.setAtoresAssociados(atores);
+        filmePesadelo.setAtoresAssociados(atores);
+
+        if (filmeSonho.getQuantAllActors() != 3 || filmePesadelo.getQuantAllActors() != 3) {
+            Assertions.fail("\n\nErro ao testar setAtoresAssociados()");
+        }
     }
-    // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-
-
-    // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    // Testar getters e setters
     @Test
-    public void testGetMovieVoteESetMovieVote() {
-        if (filmeSonho.getMovieVote() != 0.0 || filmePesadelo.getMovieVote() != 0.0) {
-            Assertions.fail("\n\nErro ao testar getMovieVote()");
+    public void testGetNumMaleActors() {
+        if (filmeSonho.getNumMaleActors() != 0 || filmePesadelo.getNumMaleActors() != 0) {
+            Assertions.fail("\n\nErro ao testar getNumMaleActors()");
         }
 
-        filmeSonho.setMovieVote(10.0f);
-        filmePesadelo.setMovieVote(0.5f);
+        HashSet<Ator> atores = gerarAtores();
 
-        if (filmeSonho.getMovieVote() != 10.0 || filmePesadelo.getMovieVote() != 0.5) {
-            Assertions.fail("\n\nErro ao testar setMovieVote()");
+        filmeSonho.setAtoresAssociados(atores);
+        filmePesadelo.setAtoresAssociados(atores);
+
+        if (filmeSonho.getNumMaleActors() != 2 || filmePesadelo.getNumMaleActors() != 2) {
+            Assertions.fail("\n\nErro ao testar setAtoresAssociados()");
         }
     }
+
+    @Test
+    public void testGetNumFemaleActors() {
+        if (filmeSonho.getNumFemaleActors() != 0 || filmePesadelo.getNumFemaleActors() != 0) {
+            Assertions.fail("\n\nErro ao testar getNumFemaleActors()");
+        }
+
+        HashSet<Ator> atores = gerarAtores();
+
+        filmeSonho.setAtoresAssociados(atores);
+        filmePesadelo.setAtoresAssociados(atores);
+
+        if (filmeSonho.getNumFemaleActors() != 1 || filmePesadelo.getNumFemaleActors() != 1) {
+            Assertions.fail("\n\nErro ao testar setAtoresAssociados()");
+        }
+    }
+
+    @Test
+    public void testGetAllDirectorsName() {
+        if (!filmeSonho.getAllDirectorsName().isEmpty() || !filmePesadelo.getAllDirectorsName().isEmpty()) {
+            Assertions.fail("\n\nErro ao testar getAllDirectorsName()");
+        }
+
+        HashSet<Diretor> diretores = gerarDiretores();
+        HashSet<String> nomesDiretores = gerarNomesDiretores();
+
+        filmeSonho.setDiretoresAssociados(diretores);
+        filmePesadelo.setDiretoresAssociados(diretores);
+
+        if (!filmeSonho.getAllActorsName().containsAll(nomesDiretores) || !filmePesadelo.getAllActorsName().containsAll(nomesDiretores)) {
+            Assertions.fail("\n\nErro ao testar setDiretoresAssociados()");
+        }
+    }
+
+
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 

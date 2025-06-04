@@ -205,53 +205,6 @@ Todas as interações com LLMs a seguir foram feitas com o ChatGPT
 
 
 
-|>>>Prompt: Existe um comando para remover todos os elementos de um arraylist so deixando os primeiros 4 elemtnos?
-|>>>Resposta:
-|Sim, existe uma maneira muito simples e direta de fazer isso em Java. Se você quer manter apenas os 4 primeiros elementos de um ArrayList e remover o resto, use o método subList(...).
-|
-|Forma segura e prática:
-|
-|lista.subList(4, lista.size()).clear();
-|
-|Explicação:
-|lista.subList(4, lista.size()): cria uma visão da lista original contendo todos os elementos a partir do índice 4 até o final.
-|
-|.clear(): remove todos esses elementos da lista original.
-|
-|Importante:
-|Isso modifica diretamente a lista original.
-|
-|Índices começam do 0, então os 4 primeiros elementos são os de índices 0, 1, 2, 3.
-|
-|Exemplo completo:
-|
-|import java.util.ArrayList;
-|
-|public class Exemplo {
-|    public static void main(String[] args) {
-|        ArrayList<String> lista = new ArrayList<>();
-|        lista.add("um");
-|        lista.add("dois");
-|        lista.add("três");
-|        lista.add("quatro");
-|        lista.add("cinco");
-|        lista.add("seis");
-|
-|        // Mantém só os 4 primeiros
-|        if (lista.size() > 4) {
-|            lista.subList(4, lista.size()).clear();
-|        }
-|
-|        System.out.println(lista); // [um, dois, três, quatro]
-|    }
-|}
-|
-|>>>Análise crítica: Embora esse método não foi abordado nas aulas de AED, irei utilizá-lo, pois demonstra muito praticidade, evitando criar uma variável a mais para guardar os 4 primeiros elementos.
-
-
-
-
-
 |>>>Prompt:
 |>>>Resposta:
 |

@@ -24,6 +24,14 @@ public class Result {
         }
     }
 
+    public void verificarComando(String conteudo) {
+        if (conteudo.isEmpty()) {
+            comandoNaoEncontrouResultado();
+        } else {
+            comandoCorreto(conteudo);
+        }
+    }
+
 
 
     public void comandoInvalido() {

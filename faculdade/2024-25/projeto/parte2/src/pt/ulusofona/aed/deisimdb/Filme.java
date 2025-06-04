@@ -24,6 +24,7 @@ public class Filme {
     private final String day;
     private final String month;
     private final String year;
+    private final int monthInt;
     private final int yearInt;
     // - - - - - - - - - - - - - - - - - - - - - - -
     // Guarda uma String para ser usada na função toString
@@ -55,6 +56,7 @@ public class Filme {
         day = separaData[0];
         month = separaData[1];
         year = separaData[2];
+        monthInt = Integer.parseInt(month);
         yearInt = Integer.parseInt(year);
     }
 
@@ -76,6 +78,10 @@ public class Filme {
 
     public String getMovieReleaseOnlyMonth() {
         return month;
+    }
+
+    public int getMovieReleaseOnlyMonthInt() {
+        return monthInt;
     }
 
     public String getMovieReleaseOnlyYear() {
