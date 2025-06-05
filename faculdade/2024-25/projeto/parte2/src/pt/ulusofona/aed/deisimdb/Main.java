@@ -590,70 +590,8 @@ public class Main {
             // Retorna os filmes do ano indicado que tem uma maior deferença entre os gêneros dos atores.
             // São apenas consideredos filmes com 11 ou mais atores.
             // Ordenado pela porcentagem de atores masculinos e femininos (ignorar empates).
-            // Porcentagem:
             case "TOP_MOVIES_WITH_GENDER_BIAS": // <num> <year>
-                num = Integer.parseInt(comandoPorPartes[1]);
-                ano = comandoPorPartes[2];
-                ArrayList<String> generosPorcentagem = new ArrayList<>();
-                int numMasculino;
-                int numFeminino;
-                int porcentagem;
-
-                for (Filme filme : listaFilmes) {
-                    if (filme.getMovieReleaseOnlyYear().equals(ano)) {
-                        if (filme.getQuantAllActors() < 11) {
-                            continue;
-                        }
-
-                        numMasculino = filme.getNumMaleActors();
-                        numFeminino = filme.getNumFemaleActors();
-                        porcentagem = (int) Math.round((Math.max(numMasculino, numFeminino) * 100.0) / (numMasculino + numFeminino));
-
-                        if (numMasculino > numFeminino) {
-                            genero = 'M';
-                        } else {
-                            genero = 'F';
-                        }
-
-                        if (generosPorcentagem.isEmpty()) {
-                            generosPorcentagem.add(filme.getMovieName() + ":" + genero + ":" + (porcentagem));
-                            continue;
-                        }
-
-                        esquerda = 0;
-                        direita = generosPorcentagem.size();
-
-                        // Ordenação usando a lógica da pesquisa binária
-                        while (esquerda < direita) {
-                            meio = (esquerda + direita) / 2;
-
-                            if (Integer.parseInt(generosPorcentagem.get(meio).split(":")[2]) > porcentagem) {
-                                esquerda = meio + 1;
-                            } else {
-                                direita = meio;
-                            }
-                        }
-
-                        generosPorcentagem.add(esquerda, filme.getMovieName() + ":" + genero + ":" + (porcentagem));
-                    }
-                }
-
-                if (generosPorcentagem.isEmpty()) {
-                    resultado.comandoNaoEncontrouResultado();
-                } else {
-                    if (generosPorcentagem.size() > num) {
-                        ArrayList<String> maximoPorcentagem = new ArrayList<>();
-
-                        for (int i = 0; i < num; i++) {
-                            maximoPorcentagem.add(generosPorcentagem.get(i));
-                        }
-
-                        resultado.comandoCorreto(maximoPorcentagem);
-                        break;
-                    }
-
-                    resultado.comandoCorreto(generosPorcentagem);
-                }
+                resultado.verificarComando(topMoviesWithGenderBias(comandoPorPartes));
                 break;
 
 
@@ -663,85 +601,7 @@ public class Main {
             // Ordernado pelo número de ocorrência, quantos filmes os diretores fizeram juntos (se houver empate é irrelevante a ordem).
             case "TOP_6_DIRECTORS_WITHIN_FAMILY": // <year-start> <year-end>
                 // TOP_6_DIRECTORS_WITHIN_FAMILY 1970 1994
-                anoInicio = Integer.parseInt(comandoPorPartes[1]);
-                anoFim = Integer.parseInt(comandoPorPartes[2]);
-                HashMap<String, Integer> nomeDiretorOcorrencias = new HashMap<>();
-                ArrayList<String> nomesDiretores = new ArrayList<>();
-                int an0;
-
-                for (Filme filme : listaFilmes) {
-                    if (filme.getAllDirectorsName().size() < 2) {
-                        continue;
-                    }
-
-                    an0 = Integer.parseInt(filme.getMovieReleaseOnlyYear());
-                    if (anoInicio <= an0 && an0 <= anoFim) {
-                        for (String nomeDiretorr : filme.getAllDirectorsName()) {
-                            String[] nomePartes = nomeDiretorr.split(" ");
-                            String ultimoNome = nomePartes[nomePartes.length - 1];
-
-                            for (String nomeDiretoor : filme.getAllDirectorsName()) {
-                                String[] nomePartes2 = nomeDiretoor.split(" ");
-                                String ultimoNome2 = nomePartes2[nomePartes2.length - 1];
-
-                                if (nomeDiretoor.equals(nomeDiretorr)) {
-                                    continue;
-                                }
-
-                                if (ultimoNome.equals(ultimoNome2)) {
-                                    if (nomeDiretorOcorrencias.containsKey(nomeDiretoor)) {
-                                        valor = nomeDiretorOcorrencias.get(nomeDiretoor);
-                                        valor++;
-                                        nomeDiretorOcorrencias.put(nomeDiretoor, valor);
-                                    } else {
-                                        nomeDiretorOcorrencias.put(nomeDiretoor, 1);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                for (Map.Entry<String, Integer> map : nomeDiretorOcorrencias.entrySet()) {
-                    if (nomesDiretores.isEmpty()) {
-                        nomesDiretores.add(map.getKey() + ":" + map.getValue());
-                        continue;
-                    }
-
-                    esquerda = 0;
-                    direita = nomesDiretores.size();
-
-                    // Ordenação usando a lógica da pesquisa binária
-                    while (esquerda < direita) {
-                        meio = (esquerda + direita) / 2;
-
-                        if (Integer.parseInt(nomesDiretores.get(meio).split(":")[1]) > map.getValue()) {
-                            esquerda = meio + 1;
-                        } else {
-                            direita = meio;
-                        }
-                    }
-
-                    nomesDiretores.add(esquerda, map.getKey() + ":" + map.getValue());
-                }
-
-                if (nomesDiretores.isEmpty()) {
-                    resultado.comandoNaoEncontrouResultado();
-                } else {
-                    if (nomesDiretores.size() > 6) {
-                        ArrayList<String> maximoNomes = new ArrayList<>();
-
-                        for (int i = 0; i < 6; i++) {
-                            maximoNomes.add(nomesDiretores.get(i));
-                        }
-
-                        resultado.comandoCorreto(maximoNomes);
-                        break;
-                    }
-
-                    resultado.comandoCorreto(nomesDiretores);
-                }
-
+                resultado.verificarComando(top6DirectorsWithinFamily(comandoPorPartes));
                 break;
 
 
@@ -751,37 +611,7 @@ public class Main {
             // Caso a inserção do novo ator der certo, será mostrada uma mensagem 'OK'. Caso contrário, será mostrada 'Erro'.
             // Os dados do ator passado no comando devem ser separados por ponto e vígula.
             case "INSERT_ACTOR":
-                String[] dadosNovoAtor = comandoPorPartes[1].split(";");
-
-                int id = Integer.parseInt(dadosNovoAtor[0].trim());
-                String name = dadosNovoAtor[1];
-                String gender = dadosNovoAtor[2];
-                int movieId = Integer.parseInt(dadosNovoAtor[3]);
-                boolean dadosInvalidos = false;
-                Ator novoAtor = new Ator(id, name, gender, movieId);
-
-                for (Ator ator : listaAtores) {
-                    if (ator.getActorId() == id) {
-                        dadosInvalidos = true;
-                        break;
-                    }
-                }
-
-                if (dadosInvalidos) {
-                    resultado.comandoInsercaoInvalido();
-                    break;
-                }
-
-                listaAtores.add(novoAtor);
-
-                for (Filme filme : listaFilmes) {
-                    if (filme.getMovieId() == movieId) {
-                        filme.adicionarNovoAtor(id, name, gender);
-                        break;
-                    }
-                }
-
-                resultado.comandoInsercaoCorreto();
+                resultado.verificarComandoInsercao(insertActor(comandoPorPartes));
                 break;
 
 
@@ -791,36 +621,7 @@ public class Main {
             // Caso a inserção do novo diretor der certo, será mostrada uma mensagem 'OK'. Caso contrário, será mostrada 'Erro'.
             // Os dados do diretor passado no comando devem ser separados por ponto e vígula.
             case "INSERT_DIRECTOR":
-                String[] dadosNovoDiretor = comandoPorPartes[1].split(";");
-
-                id = Integer.parseInt(dadosNovoDiretor[0].trim());
-                name = dadosNovoDiretor[1];
-                movieId = Integer.parseInt(dadosNovoDiretor[2]);
-                dadosInvalidos = false;
-                Diretor novoDiretor = new Diretor(id, name, movieId);
-
-                for (Diretor diretor : listaDiretores) {
-                    if (diretor.getDirectorId() == id) {
-                        dadosInvalidos = true;
-                        break;
-                    }
-                }
-
-                if (dadosInvalidos) {
-                    resultado.comandoInsercaoInvalido();
-                    break;
-                }
-
-                listaDiretores.add(novoDiretor);
-
-                for (Filme filme : listaFilmes) {
-                    if (filme.getMovieId() == movieId) {
-                        filme.adicionarNovoDiretor(id, name);
-                        break;
-                    }
-                }
-
-                resultado.comandoInsercaoCorreto();
+                resultado.verificarComandoInsercao(insertDirector(comandoPorPartes));
                 break;
 
 
@@ -832,107 +633,18 @@ public class Main {
             case "DISTANCE_BETWEEN_ACTORS": // <actor-1> <actor-2>
                 // DISTANCE_BETWEEN_ACTORS John Travolta,Samuel L. Jackson
                 // DISTANCE_BETWEEN_ACTORS John Travolta,Morgan Freeman
-                int distancia = -1;
-                String ator1 = comandoPorPartes[1].trim();
-                String ator2 = comandoPorPartes[2].trim();
-                boolean existeAtor1 = false;
-                boolean existeAtor2 = false;
-                HashSet<String> todosAtoresFilme = new HashSet<>();
-
-                for (Ator ator : listaAtores) {
-                    if (ator.getActorName().equals(ator1)) {
-                        existeAtor1 = true;
-                    }
-                    if (ator.getActorName().equals(ator2)) {
-                        existeAtor2 = true;
-                    }
-                }
-
-                if (!existeAtor1 || !existeAtor2) {
-                    resultado.comandoNaoEncontrouResultado();
-                    break;
-                }
-
-                for (Filme filme : listaFilmes) {
-                    if (filme.getAllActorsName().contains(ator1) && filme.getAllActorsName().contains(ator2)) {
-                        distancia = 0;
-                        break;
-                    }
-
-                    if (filme.getAllActorsName().contains(ator1)) {
-                        todosAtoresFilme.clear();
-                        todosAtoresFilme.addAll(filme.getAllActorsName());
-                        todosAtoresFilme.remove(ator1);
-
-                        for (Filme filmeee : listaFilmes) {
-                            if (filme.getMovieId() == filmeee.getMovieId()) {
-                                continue;
-                            }
-
-                            for (String ator : todosAtoresFilme) {
-                                if (filmeee.getAllActorsName().contains(ator) && filmeee.getAllActorsName().contains(ator2)) {
-                                    distancia = 1;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    if (filme.getAllActorsName().contains(ator2)) {
-                        todosAtoresFilme.clear();
-                        todosAtoresFilme.addAll(filme.getAllActorsName());
-                        todosAtoresFilme.remove(ator2);
-
-                        for (Filme filmeee : listaFilmes) {
-                            if (filme.getMovieId() == filmeee.getMovieId()) {
-                                continue;
-                            }
-
-                            for (String ator : todosAtoresFilme) {
-                                if (filmeee.getAllActorsName().contains(ator) && filmeee.getAllActorsName().contains(ator1)) {
-                                    distancia = 1;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (distancia == -1) {
-                    resultado.comandoNaoEncontrouResultado();
-                } else {
-                    resultado.comandoCorreto(distancia);
-                }
-
+                resultado.verificarComando(distanceBetweenActors(comandoPorPartes));
                 break;
 
 
             // Mostra todos os comandos existentes.
             case "HELP":
-                System.out.println("""
-                        \
-                        Comandos disponíveis:
-                        COUNT_MOVIES_MONTH_YEAR <month> <year>
-                        COUNT_MOVIES_DIRECTOR <full-name>
-                        COUNT_ACTORS_IN_2_YEARS <year-1> <year-2>
-                        COUNT_MOVIES_BETWEEN_YEARS_WITH_N_ACTORS <year-start> <year-end> <min> <max>
-                        GET_MOVIES_ACTOR_YEAR <year> <full-name>
-                        GET_MOVIES_WITH_ACTOR_CONTAINING <name>
-                        GET_TOP_4_YEARS_WITH_MOVIES_CONTAINING <search-string>
-                        GET_ACTORS_BY_DIRECTOR <num> <full-name>
-                        TOP_MONTH_MOVIE_COUNT <year>
-                        TOP_VOTED_ACTORS <num> <year>
-                        TOP_MOVIES_WITH_MORE_GENDER <num> <year> <gender>
-                        TOP_MOVIES_WITH_GENDER_BIAS <num> <year>
-                        TOP_6_DIRECTORS_WITHIN_FAMILY <year-start> <year-end>
-                        INSERT_ACTOR <id>;<name>;<gender>;<movie-id>
-                        INSERT_DIRECTOR <id>;<name>;<movie-id>
-                        DISTANCE_BETWEEN_ACTORS <actor-1>,<actor-2>
-                        HELP
-                        QUIT""");
+                help();
                 break;
 
+                
             default:
+                // Comando inserido é inválido ou o formato como foram inseridos os valores (parâmetros).
                 resultado.comandoInvalido();
                 break;
         }
@@ -1193,6 +905,8 @@ public class Main {
         char genero = comandoPorPartes[3].charAt(0);
         HashMap<String, Integer> ocorrenciaPorNomeFilme = new HashMap<>(); // key - nome do filme ; value - ocorrências
 
+        // Procuro todos os filmes que tem a data de lançamento igual ao anoAlvo.
+        // Depois analiso se preciso guarda a quantidade do número atores ou atrizes que participaram nesse filme.
         for (Filme filme : listaFilmes) {
             if (filme.getMovieReleaseOnlyYear().equals(anoAlvo)) {
                 if (genero == 'M') {
@@ -1203,11 +917,260 @@ public class Main {
             }
         }
 
+        // Ordeda alfabeticamente primeiro e depois ordenada pelo número de ocorrências (do maior ao menor).
         ArrayList<String> nomeFilmesOrdenados = new ArrayList<>(ocorrenciaPorNomeFilme.keySet());
         Collections.sort(nomeFilmesOrdenados);
         nomeFilmesOrdenados.sort(Comparator.comparing((String nomeFilme) -> ocorrenciaPorNomeFilme.get(nomeFilme)).reversed());
 
         return retornaFormatoIdealString(nomeFilmesOrdenados, ocorrenciaPorNomeFilme, Math.min(ocorrenciaPorNomeFilme.size(), numMaximo));
+    }
+    //
+    //
+    private static ArrayList<String> topMoviesWithGenderBias(String[] comandoPorPartes) {
+        int numMaximo = Integer.parseInt(comandoPorPartes[1]);
+        String anoAlvo = comandoPorPartes[2];
+        HashMap<String, Integer> porcentagemPorNomeFilme = new HashMap<>();
+        HashMap<String, Character> generoPorNomeFilme = new HashMap<>();
+        String nomeFilmeAtual;
+        int numMasculino;
+        int numFeminino;
+        int porcentagem;
+        char genero;
+
+        // Procuro por filmes lançados no mesmo ano que o anoAlvo.
+        // Depois, analiso se esse filme tem pelo menos 11 ou mais atores. Caso não houver, procuro por outro filme.
+        // Se houver os atores necessários, faço uma porcentagem da quantidade de atores feminos com os masculinos.
+        // Guardo o gênero que tiver a maior quantidade ('M' ou 'F').
+        for (Filme filme : listaFilmes) {
+            if (filme.getMovieReleaseOnlyYear().equals(anoAlvo)) {
+                if (filme.getQuantAllActors() < 11) {
+                    continue;
+                }
+
+                numMasculino = filme.getNumMaleActors();
+                numFeminino = filme.getNumFemaleActors();
+                porcentagem = (int) Math.round((Math.max(numMasculino, numFeminino) * 100.0) / (numMasculino + numFeminino));
+                genero = (numMasculino > numFeminino) ? 'M' : 'F';
+                nomeFilmeAtual = filme.getMovieName();
+
+                porcentagemPorNomeFilme.put(nomeFilmeAtual, porcentagem);
+                generoPorNomeFilme.put(nomeFilmeAtual, genero);
+            }
+        }
+
+        // Ordeno pelas ocorrências (do maior ao menor).
+        ArrayList<String> porcentagemOrdenada = new ArrayList<>(porcentagemPorNomeFilme.keySet());
+        porcentagemOrdenada.sort(Comparator.comparing((String nomeFilme) -> porcentagemPorNomeFilme.get(nomeFilme)).reversed());
+
+        return retornaFormatoIdealStringPor2ArrayList(porcentagemOrdenada, porcentagemPorNomeFilme, generoPorNomeFilme, Math.min(porcentagemPorNomeFilme.size(), numMaximo));
+    }
+    //
+    //
+    private static ArrayList<String> top6DirectorsWithinFamily(String[] comandoPorPartes) {
+        int anoInicio = Integer.parseInt(comandoPorPartes[1]);
+        int anoFim = Integer.parseInt(comandoPorPartes[2]);
+        int numMaximo = 6;
+        HashMap<String, Integer> ocorrenciasPorNomeDiretor = new HashMap<>(); // key - nome do diretor ; value - ocorrências
+        int anoAtual;
+        int ocorrencias;
+
+        for (Filme filme : listaFilmes) {
+            // Apenas analiso os filmes com 2 ou mais diretores.
+            if (filme.getAllDirectorsName().size() < 2) {
+                continue;
+            }
+
+            anoAtual = Integer.parseInt(filme.getMovieReleaseOnlyYear());
+            if (anoInicio <= anoAtual && anoAtual <= anoFim) {
+                for (String nomeDiretor1 : filme.getAllDirectorsName()) {
+                    String[] nomePartes1 = nomeDiretor1.split(" ");
+                    String ultimoNome1 = nomePartes1[nomePartes1.length - 1];
+
+                    for (String nomeDiretor2 : filme.getAllDirectorsName()) {
+                        String[] nomePartes2 = nomeDiretor2.split(" ");
+                        String ultimoNome2 = nomePartes2[nomePartes2.length - 1];
+
+                        if (nomeDiretor2.equals(nomeDiretor1)) {
+                            continue;
+                        }
+
+                        if (ultimoNome1.equals(ultimoNome2)) {
+                            ocorrencias = ocorrenciasPorNomeDiretor.getOrDefault(nomeDiretor2, 0) + 1;
+                            ocorrenciasPorNomeDiretor.put(nomeDiretor2, ocorrencias);
+                        }
+                    }
+                }
+            }
+        }
+
+        ArrayList<String> nomeDiretoresOrdenados = new ArrayList<>(ocorrenciasPorNomeDiretor.keySet());
+        nomeDiretoresOrdenados.sort(Comparator.comparing((String nomeDiretor) -> ocorrenciasPorNomeDiretor.get(nomeDiretor)).reversed());
+
+        return retornaFormatoIdealString(nomeDiretoresOrdenados, ocorrenciasPorNomeDiretor, Math.min(ocorrenciasPorNomeDiretor.size(), numMaximo));
+    }
+    //
+    //
+    private static boolean insertActor(String[] comandoPorPartes) {
+        String[] dadosNovoAtor = comandoPorPartes[1].split(";");
+
+        int id = Integer.parseInt(dadosNovoAtor[0].trim());
+        boolean dadosValidos = true;
+
+        // Vejo se já existe um ator com o id do novo ator.
+        for (Ator ator : listaAtores) {
+            if (ator.getActorId() == id) {
+                dadosValidos = false;
+                break;
+            }
+        }
+
+        // id já existente.
+        if (!dadosValidos) {
+            return dadosValidos;
+        }
+
+        String nome = dadosNovoAtor[1];
+        String genero = dadosNovoAtor[2];
+        int movieId = Integer.parseInt(dadosNovoAtor[3]);
+
+        Ator novoAtor = new Ator(id, nome, genero, movieId);
+        listaAtores.add(novoAtor);
+
+        // Adiciono o novo ator ao filme que atuou.
+        for (Filme filme : listaFilmes) {
+            if (filme.getMovieId() == movieId) {
+                filme.adicionarNovoAtor(id, nome, genero);
+                break;
+            }
+        }
+
+        return dadosValidos;
+    }
+    //
+    //
+    private static boolean insertDirector(String[] comandoPorPartes) {
+        String[] dadosNovoDiretor = comandoPorPartes[1].split(";");
+
+        int id = Integer.parseInt(dadosNovoDiretor[0].trim());
+        boolean dadosValidos = true;
+
+        // Vejo se já existe um diretor com o id do novo diretor.
+        for (Diretor diretor : listaDiretores) {
+            if (diretor.getDirectorId() == id) {
+                dadosValidos = false;
+                break;
+            }
+        }
+
+        // id já existente.
+        if (!dadosValidos) {
+            return dadosValidos;
+        }
+
+        String nome = dadosNovoDiretor[1];
+        int movieId = Integer.parseInt(dadosNovoDiretor[2]);
+        Diretor novoDiretor = new Diretor(id, nome, movieId);
+        listaDiretores.add(novoDiretor);
+
+        // Adiciono o novo diretor ao filme que atuou.
+        for (Filme filme : listaFilmes) {
+            if (filme.getMovieId() == movieId) {
+                filme.adicionarNovoDiretor(id, nome);
+                break;
+            }
+        }
+
+        return dadosValidos;
+    }
+    //
+    //
+    private static int distanceBetweenActors(String[] comandoPorPartes) {
+        String ator1 = comandoPorPartes[1].trim();
+        String ator2 = comandoPorPartes[2].trim();
+        int distancia = -1;
+
+        for (Filme filmeAtual : listaFilmes) {
+            // Os dois atores atuaram no mesmo filme.
+            if (filmeAtual.getAllActorsName().contains(ator1) && filmeAtual.getAllActorsName().contains(ator2)) {
+                distancia = 0;
+                break;
+            }
+
+            // Procuro por atores que trabalharam com o ator1, logo descarto a busca no ator1 em outros filmes e tenho como atorAlvo o ator2.
+            if (filmeAtual.getAllActorsName().contains(ator1)) {
+                distancia = verificaAtoresAturamFilmesDiferentes(ator1, ator2, filmeAtual);
+            }
+
+            // Procuro por atores que trabalharam com o ator2, logo descarto a busca no ator2 em outros filmes e tenho como atorAlvo o ator1.
+            if (filmeAtual.getAllActorsName().contains(ator2)) {
+                distancia = verificaAtoresAturamFilmesDiferentes(ator2, ator1, filmeAtual);
+            }
+
+            if (distancia == 1) {
+                break;
+            }
+        }
+
+        return distancia;
+    }
+    //
+    //
+    private static void help() {
+        System.out.println("""
+                        \
+                        Comandos disponíveis:
+                        COUNT_MOVIES_MONTH_YEAR <month> <year>
+                        COUNT_MOVIES_DIRECTOR <full-name>
+                        COUNT_ACTORS_IN_2_YEARS <year-1> <year-2>
+                        COUNT_MOVIES_BETWEEN_YEARS_WITH_N_ACTORS <year-start> <year-end> <min> <max>
+                        GET_MOVIES_ACTOR_YEAR <year> <full-name>
+                        GET_MOVIES_WITH_ACTOR_CONTAINING <name>
+                        GET_TOP_4_YEARS_WITH_MOVIES_CONTAINING <search-string>
+                        GET_ACTORS_BY_DIRECTOR <num> <full-name>
+                        TOP_MONTH_MOVIE_COUNT <year>
+                        TOP_VOTED_ACTORS <num> <year>
+                        TOP_MOVIES_WITH_MORE_GENDER <num> <year> <gender>
+                        TOP_MOVIES_WITH_GENDER_BIAS <num> <year>
+                        TOP_6_DIRECTORS_WITHIN_FAMILY <year-start> <year-end>
+                        INSERT_ACTOR <id>;<name>;<gender>;<movie-id>
+                        INSERT_DIRECTOR <id>;<name>;<movie-id>
+                        DISTANCE_BETWEEN_ACTORS <actor-1>,<actor-2>
+                        HELP
+                        QUIT""");
+    }
+    // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+
+
+
+    // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+    private static int verificaAtoresAturamFilmesDiferentes(String atorParaRetirar, String atorAlvo, Filme filmeAlvo) {
+        int distancia = -1;
+        ArrayList<String> todosAtoresFilme = new ArrayList<>(filmeAlvo.getAllActorsName());
+
+        todosAtoresFilme.remove(atorParaRetirar);
+
+        // Procuro por filmes os atores que contenham o mesmo ator que trabalhou no filmeAlvo e que tenha atuado com o atorAlvo.
+        for (Filme filmeAtual : listaFilmes) {
+            // É o mesmo filme que o filme Alvo.
+            if (filmeAlvo.getMovieId() == filmeAtual.getMovieId()) {
+                continue;
+            }
+
+            for (String ator : todosAtoresFilme) {
+                if (filmeAtual.getAllActorsName().contains(ator) && filmeAtual.getAllActorsName().contains(atorAlvo)) {
+                    distancia = 1;
+                    break;
+                }
+            }
+
+            if (distancia == 1) {
+                break;
+            }
+        }
+
+        return distancia;
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1237,6 +1200,19 @@ public class Main {
         for (int i = 0; i < limite; i++) {
             elemento = array.get(i);
             mescla.add(elemento+":"+map.get(elemento));
+        }
+
+        return mescla;
+    }
+    //
+    // Função que aceita dois HashMap.
+    private static ArrayList<String> retornaFormatoIdealStringPor2ArrayList(ArrayList<String> array, HashMap<String, Integer> map1, HashMap<String, Character> map2, int limite) {
+        ArrayList<String> mescla = new ArrayList<>();
+        String elemento;
+
+        for (int i = 0; i < limite; i++) {
+            elemento = array.get(i);
+            mescla.add(elemento+":"+map2.get(elemento)+":"+map1.get(elemento));
         }
 
         return mescla;
@@ -1277,7 +1253,8 @@ public class Main {
         String line;
         Scanner in = new Scanner(System.in);
         parseFiles(new File("."));
-        Result resultado = execute("HELP");
+        execute("HELP");
+        Result resultado;
 
         do {
             System.out.print("> ");
@@ -1296,57 +1273,5 @@ public class Main {
                 }
             }
         } while (line != null && !line.equals("QUIT"));
-
-        /*
-        long start = System.currentTimeMillis();
-        parseFiles(new File("test-files"));
-        long end = System.currentTimeMillis();
-        System.out.println("Tempo: " + (end - start) + " ms");
-        for (Object a : getObjects(TipoEntidade.FILME)) {
-            System.out.println(a);
-        }
-
-        System.out.println("--");
-        System.out.println(getObjects(TipoEntidade.REALIZADOR));
-        System.out.println("--");
-        System.out.println(getObjects(TipoEntidade.ATOR));
-        System.out.println("--");
-        System.out.println(getObjects(TipoEntidade.GENERO_CINEMATOGRAFICO));
-        System.out.println("--");
-
-        /*
-        System.out.println("filmes - " + listaFilmes.size());
-
-        for (Filme filme : listaFilmes) {
-            System.out.println(filme);
-        }
-
-        System.out.println("atores - " + listaAtores.size());
-        System.out.println("diretores - " + listaDiretores.size());
-        System.out.println("generos - " + listaGeneros.size());
-        System.out.println("genero-filmes - " + listaGeneroFilmes.size());
-        //for (GeneroFilme a : listaGeneroFilmes) {
-          //  System.out.println(a);
-        //}
-
-
-        for (Object a : getObjects(TipoEntidade.GENERO_CINEMATOGRAFICO)) {
-            System.out.println(a);
-        }
-
-
-        System.out.println("votos-filmes - " + listaVotosFilmes.size());
-
-        System.out.println("\n");
-
-        for (Object a : getObjects(TipoEntidade.INPUT_INVALIDO)) {
-            System.out.println(a);
-        }
-
-        parseFiles(new File("."));
-
-        parseFiles(new File("test-files"));
-
-         */
     }
 }

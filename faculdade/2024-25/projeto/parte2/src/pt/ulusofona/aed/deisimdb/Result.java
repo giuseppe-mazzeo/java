@@ -32,6 +32,23 @@ public class Result {
         }
     }
 
+    // Usado apenas no comando DISTANCE_BETWEEN_ACTORS.
+    public void verificarComando(int distancia) {
+        if (distancia != -1) {
+            comandoCorreto(distancia);
+        } else {
+            comandoNaoEncontrouResultado();
+        }
+    }
+
+    public void verificarComandoInsercao(boolean insercaoValida) {
+        if (insercaoValida) {
+            comandoInsercaoCorreto();
+        } else {
+            comandoInsercaoInvalido();
+        }
+    }
+
 
 
     public void comandoInvalido() {
@@ -60,13 +77,13 @@ public class Result {
         result = "No results";
     }
 
-    public void comandoInsercaoCorreto() {
+    private void comandoInsercaoCorreto() {
         success = true;
         error = null;
         result = "OK";
     }
 
-    public void comandoInsercaoInvalido() {
+    private void comandoInsercaoInvalido() {
         success = false;
         error = null;
         result = "Erro";
