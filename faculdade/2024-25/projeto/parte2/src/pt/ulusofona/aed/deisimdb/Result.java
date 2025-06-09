@@ -6,9 +6,9 @@ import java.util.HashSet;
 import java.util.Map;
 
 public class Result {
-    boolean success;
-    String error;
-    String result;
+    public boolean success;
+    public String error;
+    public String result;
 
 
 

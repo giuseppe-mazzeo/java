@@ -72,6 +72,14 @@ public class Filme {
         return movieName;
     }
 
+    public float getMovieDuration() {
+        return movieDuration;
+    }
+
+    public long getMovieBudget() {
+        return movieBudget;
+    }
+
     public String getMovieReleaseOnlyDay() {
         return day;
     }
@@ -118,6 +126,10 @@ public class Filme {
 
     public HashSet<String> getAllDirectorsName() {
         return new HashSet<>(idNomesDiretores.values());
+    }
+
+    public ArrayList<String> getGenerosAssociados() {
+        return generosAssociados;
     }
     // - - - - - - - - - - - - - - - - - - - - - - -
 

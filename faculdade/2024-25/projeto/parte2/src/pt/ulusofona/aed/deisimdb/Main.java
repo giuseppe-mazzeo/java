@@ -19,6 +19,7 @@ public class Main {
     public static int[] linhaNOK;
     public static int[] primeiraLinhaErrada;
     //
+    public static Quizz quizz = new Quizz();
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
@@ -234,7 +235,7 @@ public class Main {
             GeneroFilme novoGeneroFilme;
             int genreId;
             int movieId;
-            String genreName = "";
+            String genreName;
 
             while ((linha = reader.readLine()) != null) {
                 dataLinha = linha.split(",");
@@ -488,7 +489,6 @@ public class Main {
         Result resultado = new Result();
         String[] comandoPorPartes = comando.split(" ");
 
-        // Gambiarras... 🥲
         if (comandoPorPartes[0].equals("INSERT_ACTOR") || comandoPorPartes[0].equals("INSERT_DIRECTOR")) {
             String dadosNovoElemento = "";
             for (int i = 1; i < comandoPorPartes.length; i++) {
@@ -505,10 +505,6 @@ public class Main {
             comandoPorPartes[1] = atores.split(",")[0];
             comandoPorPartes[2] = atores.split(",")[1];
         }
-        String ano;
-        int anoInicio, anoFim, valor;
-        int num, esquerda, direita, meio;
-        char genero;
 
         switch (comandoPorPartes[0]) {
             // Conta quantos filmes foram feitos no mês e ano passado no parâmetro.
@@ -642,7 +638,13 @@ public class Main {
                 help();
                 break;
 
-                
+
+            case "QUIZZ_TIME":
+                quizzTime(comandoPorPartes);
+                resultado.comandoCorreto("");
+                break;
+
+
             default:
                 // Comando inserido é inválido ou o formato como foram inseridos os valores (parâmetros).
                 resultado.comandoInvalido();
@@ -660,7 +662,7 @@ public class Main {
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     // Todas as funções para executar cada comando.
     //
-    private static int countMoviesMonthYear(String[] comandoPorPartes) {
+    public static int countMoviesMonthYear(String[] comandoPorPartes) {
         String mes = retornaMesCom2Digitos(comandoPorPartes[1]);
         String ano = comandoPorPartes[2];
         int contador = 0;
@@ -676,7 +678,7 @@ public class Main {
     }
     //
     //
-    private static int countMoviesDirector(String[] comandoPorPartes) {
+    public static int countMoviesDirector(String[] comandoPorPartes) {
         String nomeDiretorAlvo = retornaNomeParametro(comandoPorPartes, 1);
         int contador = 0;
 
@@ -691,7 +693,7 @@ public class Main {
     }
     //
     //
-    private static int countActorsIn2Years(String[] comandoPorPartes) {
+    public static int countActorsIn2Years(String[] comandoPorPartes) {
         String ano1 = comandoPorPartes[1];
         String ano2 = comandoPorPartes[2];
         HashSet<Integer> actorsIdAno1 = new HashSet<>();
@@ -722,7 +724,7 @@ public class Main {
     }
     //
     //
-    private static int countMoviesBetweenYearsWithNActors(String[] comandoPorPartes) {
+    public static int countMoviesBetweenYearsWithNActors(String[] comandoPorPartes) {
         int anoInicio = Integer.parseInt(comandoPorPartes[1]);
         int anoFim = Integer.parseInt(comandoPorPartes[2]);
         int minAtores = Integer.parseInt(comandoPorPartes[3]);
@@ -748,7 +750,7 @@ public class Main {
     }
     //
     //
-    private static ArrayList<String> getMoviesActorYear(String[] comandoPorPartes) {
+    public static ArrayList<String> getMoviesActorYear(String[] comandoPorPartes) {
         String anoAlvo = comandoPorPartes[1];
         String nomeAtorAlvo = retornaNomeParametro(comandoPorPartes, 2);
         HashMap<String, String> lancamentoPorNomeFilme = new HashMap<>(); // key - nomeFilme ; value - lançamento na ordem: mês e dia
@@ -771,7 +773,7 @@ public class Main {
     }
     //
     //
-    private static ArrayList<String> getMoviesWithActorContaining(String[] comandoPorPartes) {
+    public static ArrayList<String> getMoviesWithActorContaining(String[] comandoPorPartes) {
         String nomeAtorAlvo = retornaNomeParametro(comandoPorPartes, 1);
         ArrayList<String> todosFilmes = new ArrayList<>();
 
@@ -790,7 +792,7 @@ public class Main {
     }
     //
     //
-    private static ArrayList<String> getTop4YearWithMoviesContaining(String[] comandoPorPartes) {
+    public static ArrayList<String> getTop4YearWithMoviesContaining(String[] comandoPorPartes) {
         String palavraAlvo = comandoPorPartes[1];
         HashMap<String, Integer> ocorrenciasPorAno = new HashMap<>(); // key - ano ; value - ocorrências
         String anoAtual;
@@ -817,7 +819,7 @@ public class Main {
     }
     //
     //
-    private static ArrayList<String> getActorsByDirector(String[] comandoPorPartes) {
+    public static ArrayList<String> getActorsByDirector(String[] comandoPorPartes) {
         int numVezes = Integer.parseInt(comandoPorPartes[1]);
         String nomeDiretorAlvo = retornaNomeParametro(comandoPorPartes, 2);
         HashMap<String, Integer> ocorrenciasPorNomeAtor = new HashMap<>(); // key - nome do ator ; value - ocorrências
@@ -846,7 +848,7 @@ public class Main {
     }
     //
     //
-    private static String topMonthMovieCount(String[] comandoPorPartes) {
+    public static String topMonthMovieCount(String[] comandoPorPartes) {
         String anoAlvo = comandoPorPartes[1];
         HashMap<Integer, Integer> ocorrenciaPorMes = new HashMap<>(); // key - mês ; value - ocorrência
         int mesAtual;
@@ -870,7 +872,7 @@ public class Main {
     }
     //
     //
-    private static ArrayList<String> topVotedActors(String[] comandoPorPartes) {
+    public static ArrayList<String> topVotedActors(String[] comandoPorPartes) {
         int numMaximo = Integer.parseInt(comandoPorPartes[1]);
         String anoAlvo = comandoPorPartes[2];
         HashMap<String, Float> votosPorAtor = new HashMap<>(); // key - ator ; value - voto (avaliação) do filme em que o ator atuou
@@ -899,7 +901,7 @@ public class Main {
     }
     //
     //
-    private static ArrayList<String> topMoviesWithGender(String[] comandoPorPartes) {
+    public static ArrayList<String> topMoviesWithGender(String[] comandoPorPartes) {
         int numMaximo = Integer.parseInt(comandoPorPartes[1]);
         String anoAlvo = comandoPorPartes[2];
         char genero = comandoPorPartes[3].charAt(0);
@@ -926,7 +928,7 @@ public class Main {
     }
     //
     //
-    private static ArrayList<String> topMoviesWithGenderBias(String[] comandoPorPartes) {
+    public static ArrayList<String> topMoviesWithGenderBias(String[] comandoPorPartes) {
         int numMaximo = Integer.parseInt(comandoPorPartes[1]);
         String anoAlvo = comandoPorPartes[2];
         HashMap<String, Integer> porcentagemPorNomeFilme = new HashMap<>();
@@ -966,7 +968,7 @@ public class Main {
     }
     //
     //
-    private static ArrayList<String> top6DirectorsWithinFamily(String[] comandoPorPartes) {
+    public static ArrayList<String> top6DirectorsWithinFamily(String[] comandoPorPartes) {
         int anoInicio = Integer.parseInt(comandoPorPartes[1]);
         int anoFim = Integer.parseInt(comandoPorPartes[2]);
         int numMaximo = 6;
@@ -1010,7 +1012,7 @@ public class Main {
     }
     //
     //
-    private static boolean insertActor(String[] comandoPorPartes) {
+    public static boolean insertActor(String[] comandoPorPartes) {
         String[] dadosNovoAtor = comandoPorPartes[1].split(";");
 
         int id = Integer.parseInt(dadosNovoAtor[0].trim());
@@ -1048,7 +1050,7 @@ public class Main {
     }
     //
     //
-    private static boolean insertDirector(String[] comandoPorPartes) {
+    public static boolean insertDirector(String[] comandoPorPartes) {
         String[] dadosNovoDiretor = comandoPorPartes[1].split(";");
 
         int id = Integer.parseInt(dadosNovoDiretor[0].trim());
@@ -1084,7 +1086,7 @@ public class Main {
     }
     //
     //
-    private static int distanceBetweenActors(String[] comandoPorPartes) {
+    public static int distanceBetweenActors(String[] comandoPorPartes) {
         String ator1 = comandoPorPartes[1].trim();
         String ator2 = comandoPorPartes[2].trim();
         int distancia = -1;
@@ -1115,7 +1117,7 @@ public class Main {
     }
     //
     //
-    private static void help() {
+    public static void help() {
         System.out.println("""
                         \
                         Comandos disponíveis:
@@ -1138,6 +1140,32 @@ public class Main {
                         HELP
                         QUIT""");
     }
+    // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+    // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+    // Código criatividade
+    // QUIZZ_TIME
+    private static void quizzTime(String[] comandoPorParte) {
+        if (comandoPorParte.length == 1) {
+            System.out.println(quizz.quizzApresentacao());
+            return;
+        }
+
+        switch (comandoPorParte[1]) {
+            case "history":
+                System.out.println(quizz.mostrarEstatisticaTodosJogadores());
+                break;
+
+            case "play":
+                quizz.jogar();
+                break;
+
+            default:
+                System.out.println("Comando inválido");
+        }
+    }
+    //
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
@@ -1252,7 +1280,7 @@ public class Main {
     public static void main(String[] args) {
         String line;
         Scanner in = new Scanner(System.in);
-        parseFiles(new File("."));
+        parseFiles(new File("test-files"));
         execute("HELP");
         Result resultado;
 

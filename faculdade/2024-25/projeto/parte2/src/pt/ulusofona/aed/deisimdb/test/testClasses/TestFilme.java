@@ -6,7 +6,6 @@ import pt.ulusofona.aed.deisimdb.Ator;
 import pt.ulusofona.aed.deisimdb.Diretor;
 import pt.ulusofona.aed.deisimdb.Filme;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class TestFilme {
@@ -207,7 +206,7 @@ public class TestFilme {
         filmeSonho.setDiretoresAssociados(diretores);
         filmePesadelo.setDiretoresAssociados(diretores);
 
-        if (!filmeSonho.getAllActorsName().containsAll(nomesDiretores) || !filmePesadelo.getAllActorsName().containsAll(nomesDiretores)) {
+        if (!filmeSonho.getAllDirectorsName().containsAll(nomesDiretores) || !filmePesadelo.getAllDirectorsName().containsAll(nomesDiretores)) {
             Assertions.fail("\n\nErro ao testar setDiretoresAssociados()");
         }
     }

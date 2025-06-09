@@ -18,6 +18,12 @@ public class GeneroFilme {
 
 
 
+    public String getGenreName() {
+        return genreName;
+    }
+
+
+
     @Override
     public String toString() {
         return genreId + " | " + genreName;

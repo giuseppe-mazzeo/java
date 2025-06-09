@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class TestMain {
 
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -107,11 +109,9 @@ public class TestMain {
 
         List<Filme> resultadoAtual = Main.listaFilmes;
 
-        Assertions.assertEquals("1000 | Up from the Depths | 1979-06-01" ,resultadoAtual.get(0).toString());
-        Assertions.assertEquals("999 | Up from the Depths | 1979-06-01 | 2" ,resultadoAtual.get(1).toString());
-        Assertions.assertEquals("95853 | Bunny Drop | 2011-08-20" ,resultadoAtual.get(2).toString());
-        Assertions.assertEquals("90532 | Shala | 2011-01-20" ,resultadoAtual.get(3).toString());
-        Assertions.assertEquals("13460 | Doomsday | 2008-03-14" ,resultadoAtual.get(4).toString());
+        Assertions.assertEquals("680 | Pulp Fiction | 1994-09-10 | Crime,Drama | Fantasma Tarantino,Joel Coen,Ola Ola,Ola Ola Ola,Quentin Tarantino | 2 | 1" ,resultadoAtual.get(0).toString());
+        Assertions.assertEquals("278 | The Shawshank Redemption | 1994-09-23 | Crime,Drama | Frank Darabont | 3 | 1" ,resultadoAtual.get(1).toString());
+        Assertions.assertEquals("27205 | Inception | 2010-07-14 | 3 | 1 | 3 | 0" ,resultadoAtual.get(2).toString());
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -209,9 +209,9 @@ public class TestMain {
         Main.parseFiles(new File("test-files"));
 
         ArrayList resultadoEsperado = new ArrayList<>();
-        resultadoEsperado.add("movies.csv | 6 | 2 | 3");
-        resultadoEsperado.add("actors.csv | 4 | 2 | 4");
-        resultadoEsperado.add("directors.csv | 3 | 2 | 2");
+        resultadoEsperado.add("movies.csv | 12 | 0 | -1");
+        resultadoEsperado.add("actors.csv | 41 | 0 | -1");
+        resultadoEsperado.add("directors.csv | 17 | 0 | -1");
         resultadoEsperado.add("genres.csv | 20 | 2 | 4");
         resultadoEsperado.add("genres_movies.csv | 3 | 2 | 2");
         resultadoEsperado.add("movie_votes.csv | 4 | 2 | 2");
@@ -230,4 +230,231 @@ public class TestMain {
     }
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+
+
+
+    @Test
+    public void testCountMoviesMonthYear() {
+        Result result = Main.execute("COUNT_MOVIES_MONTH_YEAR 09 1994");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals("2", result.getResult());
+
+        result = Main.execute("COUNT_MOVIES_MONTH_YEAR 07 2010");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals("1", result.getResult());
+    }
+
+
+    @Test
+    public void testCountMoviesDirector() {
+        Result result = Main.execute("COUNT_MOVIES_DIRECTOR Robert Zemeckis");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals("2", result.getResult());
+
+        result = Main.execute("COUNT_MOVIES_DIRECTOR Quentin Tarantino");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals("1", result.getResult());
+    }
+
+
+    @Test
+    public void testCountActorsIn2Years() {
+        Result result = Main.execute("COUNT_ACTORS_IN_2_YEARS 1994 2010");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals("0", result.getResult());
+
+        result = Main.execute("COUNT_ACTORS_IN_2_YEARS 1994 2000");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals("1", result.getResult());
+    }
+
+
+    @Test
+    public void testCountMoviesBetweenYearsWithNActors() {
+        Result result = Main.execute("COUNT_MOVIES_BETWEEN_YEARS_WITH_N_ACTORS 1994 1996 3 5");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals("0", result.getResult());
+
+        result = Main.execute("COUNT_MOVIES_BETWEEN_YEARS_WITH_N_ACTORS 1994 2009 0 4");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals("2", result.getResult());
+    }
+
+
+    @Test
+    public void testGetMoviesActorYear() {
+        Result result = Main.execute("GET_MOVIES_ACTOR_YEAR 1994 John Travolta");
+        assertNotNull(result);
+        assertTrue(result.success);
+        String[] resultParts = result.result.split("\n");
+        assertArrayEquals(new String[] {
+                "Forrest Gump",
+                "Pulp Fiction",
+                "The Shawshank Redemption"
+        }, resultParts);
+
+        result = Main.execute("GET_MOVIES_ACTOR_YEAR 2010 Christopher Nolan");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals("No results", result.getResult());
+    }
+
+
+    @Test
+    public void testGetMoviesWithActorContaining() {
+        Result result = Main.execute("GET_MOVIES_WITH_ACTOR_CONTAINING a");
+        assertNotNull(result);
+        assertTrue(result.success);
+        String[] resultParts = result.result.split("\n");
+        assertArrayEquals(new String[] {
+                "Alien",
+                "Cast Away",
+                "Forrest Gump",
+                "Inception",
+                "Interstellar",
+                "Pulp Fiction",
+                "Se7en",
+                "Shutter Island",
+                "The Dark Knight",
+                "The Shawshank Redemption"
+        }, resultParts);
+
+        result = Main.execute("GET_MOVIES_WITH_ACTOR_CONTAINING Travolta");
+        assertNotNull(result);
+        assertTrue(result.success);
+        resultParts = result.result.split("\n");
+        assertEquals(new String[]{
+                "Forrest Gump",
+                "Pulp Fiction",
+                "The Shawshank Redemption",
+        }, resultParts);
+    }
+
+
+    @Test
+    public void testGetTop4YearWithMoviesContaining() {
+        Result result = Main.execute("GET_TOP_4_YEARS_WITH_MOVIES_CONTAINING a");
+        assertNotNull(result);
+        assertTrue(result.success);
+        String[] resultParts = result.result.split("\n");
+        assertArrayEquals(new String[] {
+                "1994:1",
+                "2000:1",
+                "2008:1",
+                "2010:1"
+        }, resultParts);
+
+        result = Main.execute("GET_TOP_4_YEARS_WITH_MOVIES_CONTAINING on");
+        assertNotNull(result);
+        assertTrue(result.success);
+        resultParts = result.result.split("\n");
+        assertArrayEquals(new String[]{
+                "1994:2",
+                "2010:1"
+        }, resultParts);
+    }
+
+
+    @Test
+    public void testGetActorsByDirector() {
+        Result result = Main.execute("GET_ACTORS_BY_DIRECTOR 2 Christopher Nolan");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals("Christian Bale:2", result.result);
+
+        result = Main.execute("GET_ACTORS_BY_DIRECTOR 1 Joel Coen");
+        assertNotNull(result);
+        assertTrue(result.success);
+        String[] resultParts = result.result.split("\n");
+        assertArrayEquals(new String[]{
+                "Uma Thurman:1",
+                "Samuel L. Jackson:1",
+                "John Travolta:1"
+        }, resultParts);
+    }
+
+
+    @Test
+    public void testTopMonthMovieCount() {
+        Result result = Main.execute("TOP_MONTH_MOVIE_COUNT 1994");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals("9:2", result.result);
+
+        result = Main.execute("TOP_MONTH_MOVIE_COUNT 2010");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals("2:1", result.result);
+    }
+
+
+    @Test
+    public void testTopVotedActors() {
+        Result result = Main.execute("TOP_VOTED_ACTORS 2 2010");
+        assertNotNull(result);
+        assertTrue(result.success);
+        String[] resultParts = result.result.split("\n");
+        assertArrayEquals(new String[]{
+                "Joseph Gordon-Levitt:8.8",
+                "Elliot Page:8.8"
+        }, resultParts);
+
+        result = Main.execute("TOP_VOTED_ACTORS 3 1994");
+        assertNotNull(result);
+        assertTrue(result.success);
+        resultParts = result.result.split("\n");
+        assertArrayEquals(new String[]{
+                "Morgan Freeman:9.3",
+                "Tim Robbins:9.3",
+                "Uma Thurman:9.1"
+        }, resultParts);
+    }
+
+
+    @Test
+    public void testTopMoviesWithGenderBias() {
+        Result result = Main.execute("TOP_MOVIES_WITH_GENDER_BIAS 2 1994");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals("No results", result.result);
+
+        result = Main.execute("TOP_MOVIES_WITH_GENDER_BIAS 2 2020");
+        assertNotNull(result);
+        assertTrue(result.success);
+        String[] resultParts = result.result.split("\n");
+        assertArrayEquals(new String[]{
+                "So Homens:F:71"
+        }, resultParts);
+    }
+
+    @Test
+    public void testTopMoviesWithGender() {
+        Result result = Main.execute("TOP_MOVIES_WITH_GENDER_BIAS 2 1994");
+        assertNotNull(result);
+        assertTrue(result.success);
+        String[] resultParts = result.result.split("\n");
+        assertEquals(new String[]{
+                "The Shawshank Redemption:3",
+                "Forrest Gump:2",
+                "Pulp Fiction:2"
+        }, resultParts);
+
+        result = Main.execute("TOP_MOVIES_WITH_MORE_GENDER 2 2010 F");
+        assertNotNull(result);
+        assertTrue(result.success);
+        assertEquals(new String[]{
+                "Inception:0",
+                "Shutter Island:0"
+        }, resultParts);
+    }
 }
