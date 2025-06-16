@@ -556,6 +556,15 @@ public class Main {
             // Retorna todos os atores que trabalharam n ou mais vezes com um diretor.
             // Ordenação é indiferente.
             case "GET_ACTORS_BY_DIRECTOR": // <num> <full-name>
+                int numVezes = Integer.parseInt(comandoPorPartes[1]);
+
+                if (numVezes <= 0) {
+                    resultado.success = false;
+                    resultado.error = null;
+                    resultado.result = "COMANDO INVALIDO";
+                    break;
+                }
+
                 resultado.verificarComando(getActorsByDirector(comandoPorPartes));
                 break;
 
@@ -586,8 +595,17 @@ public class Main {
             // Retorna os filmes do ano indicado que tem uma maior deferença entre os gêneros dos atores.
             // São apenas consideredos filmes com 11 ou mais atores.
             // Ordenado pela porcentagem de atores masculinos e femininos (ignorar empates).
-            case "TOP_MOVIES_WITH_GENDER_BIAS": // <num> <year>
-                resultado.verificarComando(topMoviesWithGenderBias(comandoPorPartes));
+            case "TOP_MOVIES_WITH_GENDER_BIAS": // <num> <year> (<min> <max>)
+                ArrayList<String> retorno = topMoviesWithGenderBias(comandoPorPartes);
+
+                if (retorno == null) {
+                    resultado.success = false;
+                    resultado.error = null;
+                    resultado.result = "ERRO";
+                    break;
+                }
+
+                resultado.verificarComando(retorno);
                 break;
 
 
@@ -617,7 +635,22 @@ public class Main {
             // Caso a inserção do novo diretor der certo, será mostrada uma mensagem 'OK'. Caso contrário, será mostrada 'Erro'.
             // Os dados do diretor passado no comando devem ser separados por ponto e vígula.
             case "INSERT_DIRECTOR":
-                resultado.verificarComandoInsercao(insertDirector(comandoPorPartes));
+                retorno = insertDirector(comandoPorPartes);
+
+                if (retorno != null) {
+                    String nomes = "";
+
+                    for (String nomeDiretores : retorno) {
+                        nomes += nomeDiretores;
+                    }
+
+                    resultado.success = true;
+                    resultado.error = null;
+                    resultado.result = nomes;
+                    break;
+                }
+
+                resultado.comandoInsercaoInvalido();
                 break;
 
 
@@ -931,6 +964,18 @@ public class Main {
     public static ArrayList<String> topMoviesWithGenderBias(String[] comandoPorPartes) {
         int numMaximo = Integer.parseInt(comandoPorPartes[1]);
         String anoAlvo = comandoPorPartes[2];
+        int min = 0;
+        int max = 0;
+
+        if (comandoPorPartes.length == 5) {
+            min = Integer.parseInt(comandoPorPartes[3]);
+            max = Integer.parseInt(comandoPorPartes[4]);
+
+            if (min >= max) {
+                return null;
+            }
+        }
+
         HashMap<String, Integer> porcentagemPorNomeFilme = new HashMap<>();
         HashMap<String, Character> generoPorNomeFilme = new HashMap<>();
         String nomeFilmeAtual;
@@ -945,8 +990,10 @@ public class Main {
         // Guardo o gênero que tiver a maior quantidade ('M' ou 'F').
         for (Filme filme : listaFilmes) {
             if (filme.getMovieReleaseOnlyYear().equals(anoAlvo)) {
-                if (filme.getQuantAllActors() < 11) {
-                    continue;
+                if (min <= filme.getQuantAllActors() && filme.getQuantAllActors() <= max) {
+                    if (max < 11) {
+                        continue;
+                    }
                 }
 
                 numMasculino = filme.getNumMaleActors();
@@ -1050,7 +1097,7 @@ public class Main {
     }
     //
     //
-    public static boolean insertDirector(String[] comandoPorPartes) {
+    public static ArrayList<String> insertDirector(String[] comandoPorPartes) {
         String[] dadosNovoDiretor = comandoPorPartes[1].split(";");
 
         int id = Integer.parseInt(dadosNovoDiretor[0].trim());
@@ -1066,9 +1113,10 @@ public class Main {
 
         // id já existente.
         if (!dadosValidos) {
-            return dadosValidos;
+            return null;
         }
 
+        ArrayList<String> outrosRealizadores = new ArrayList<>();
         String nome = dadosNovoDiretor[1];
         int movieId = Integer.parseInt(dadosNovoDiretor[2]);
         Diretor novoDiretor = new Diretor(id, nome, movieId);
@@ -1077,12 +1125,15 @@ public class Main {
         // Adiciono o novo diretor ao filme que atuou.
         for (Filme filme : listaFilmes) {
             if (filme.getMovieId() == movieId) {
+                for (String nomeDiretor : filme.getAllDirectorsName()) {
+                    outrosRealizadores.add(nomeDiretor+"\n");
+                }
                 filme.adicionarNovoDiretor(id, nome);
                 break;
             }
         }
 
-        return dadosValidos;
+        return outrosRealizadores;
     }
     //
     //
@@ -1169,6 +1220,21 @@ public class Main {
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
+    static ArrayList getDirectorsByDuracao(double duracao) {
+        ArrayList<String> diretores = new ArrayList<>();
+
+        for (Filme filmeAtual : listaFilmes) {
+            if (duracao == filmeAtual.getMovieDuration()) {
+                for (Diretor diretor : listaDiretores) {
+                    if (filmeAtual.getMovieId() == diretor.getMovieId()) {
+                        diretores.add(diretor.toString());
+                    }
+                }
+            }
+        }
+
+        return diretores;
+    }
 
 
 

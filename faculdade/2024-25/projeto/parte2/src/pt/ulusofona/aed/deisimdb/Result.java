@@ -83,7 +83,7 @@ public class Result {
         result = "OK";
     }
 
-    private void comandoInsercaoInvalido() {
+    public void comandoInsercaoInvalido() {
         success = false;
         error = null;
         result = "Erro";

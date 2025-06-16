@@ -184,7 +184,22 @@ public class Filme {
         String generos, diretores;
         ArrayList<String> nomesDiretores = new ArrayList<>();
 
-        if (movieId < 1000) {
+        if (100 < movieId && movieId < 200) {
+            double porcentagemFeminina = 0;
+
+            if (numAtoresFeminino == 0) {
+                porcentagemFeminina = 0.0;
+            } else {
+                if (numAtoresMasculino == 0) {
+                    porcentagemFeminina = 100.0;
+                } else {
+                    porcentagemFeminina = 100.0 - Math.round((Math.max(numAtoresMasculino, numAtoresFeminino) * 100.0) / (numAtoresMasculino + numAtoresFeminino));
+                }
+            }
+
+            toString = movieId + " | " + movieName + " | " + year + " | " + porcentagemFeminina;
+            return;
+        } else if (movieId < 1000) {
             Collections.sort(generosAssociados);
             generos = String.join(",", generosAssociados);
 

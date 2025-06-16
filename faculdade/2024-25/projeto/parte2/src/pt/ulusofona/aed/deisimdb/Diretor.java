@@ -20,6 +20,10 @@ public class Diretor {
 
     // - - - - - - - - - - - - - - - - - - - - - - -
     // Funções getters
+    public int getMovieId() {
+        return movieId;
+    }
+
     public int getDirectorId() {
         return directorId;
     }
